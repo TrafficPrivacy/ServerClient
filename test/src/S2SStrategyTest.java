@@ -38,6 +38,9 @@ public class S2SStrategyTest {
             double lat = Math.random() * (LATMAX - LATMIN) + LATMIN;
             double lon = Math.random() * (LONMAX - LONMIN) + LONMIN;
             QueryResult closest = mHopper.getLocationIndex().findClosest(lat, lon, EdgeFilter.ALL_EDGES);
+            if (closest.getClosestEdge() == null) {
+                continue;
+            }
             pointIdx[i] = closest.getClosestEdge().getBaseNode();
         }
         return pointIdx;
@@ -105,10 +108,4 @@ public class S2SStrategyTest {
             }
         }
     }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
 }

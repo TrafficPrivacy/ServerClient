@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="org.mapsforge:mapsforge-themes:0.7.0" type="repository">
+    <properties maven-id="org.mapsforge:mapsforge-themes:0.7.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-themes-0.7.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-map-0.7.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-core-0.7.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kxml2-2.3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-themes-0.7.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-themes-0.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

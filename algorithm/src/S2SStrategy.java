@@ -1,4 +1,4 @@
-import com.graphhopper.routing.weighting.Weighting;
+import com.graphhopper.routing.weightinghting.Weighting;
 import com.graphhopper.util.EdgeExplorer;
 
 /**
