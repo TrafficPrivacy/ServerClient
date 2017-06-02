@@ -1,0 +1,26 @@
+<component name="libraryTable">
+  <library name="com.graphhopper:graphhopper-reader-osm:0.9.0" type="repository">
+    <properties maven-id="com.graphhopper:graphhopper-reader-osm:0.9.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/graphhopper-reader-osm-0.9.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/graphhopper-core-0.9.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/hppc-0.7.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xmlgraphics-commons-2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-io-1.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-annotations-2.8.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jts-1.13.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/osmosis-osm-binary-0.45.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/protobuf-java-2.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-log4j12-1.7.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/log4j-1.2.17.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/graphhopper-reader-osm-0.9.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/graphhopper-reader-osm-0.9.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
