@@ -1,17 +1,16 @@
-import com.graphhopper.routing.weighting.Weighting;
-import com.graphhopper.util.EdgeExplorer;
-import com.graphhopper.util.EdgeIterator;
-
 import java.util.*;
 
 public class Dijkstra extends S2SStrategy{
 
-    public Dijkstra(EdgeExplorer edgeExplorer, Weighting weighting) {
-        super(edgeExplorer, weighting);
+    public Dijkstra(EdgeProvider edgeProvider) {
+        super(edgeProvider);
     }
 
     @Override
-    public Paths compute(int[] set1, int[] set2) {
+    public Paths compute(int[] set1, int[] set2) throws Exception{
+        if (mEdgeProvider == null) {
+            throw new Exception("No edge provider provided");
+        }
         Paths paths = new Paths();
         for (int start : set1) {
             Paths newPaths = dijkstra(start, set2);
@@ -32,7 +31,8 @@ public class Dijkstra extends S2SStrategy{
         Paths resultPaths = new Paths();
 
         for (int i : set) {
-            setSet.add(i);
+            if (i != start)         // no point of computing the path to itself
+                setSet.add(i);
         }
 
         // dijkstra
@@ -45,10 +45,13 @@ public class Dijkstra extends S2SStrategy{
             NodeWrapper current = queue.poll();
             if (current.mNodeID == -1)
                 continue;
-            EdgeIterator iter = mOutEdgeExplorer.setBaseNode(current.mNodeID);
+            //EdgeIterator iter = mOutEdgeExplorer.setBaseNode(current.mNodeID);
+            EdgeIter iter = mEdgeProvider.getIterator(current.mNodeID, current.mPreviousEdgeID);
             while (iter.next()) {
-                int nextID = iter.getAdjNode();
-                double tempCost = current.mCost + mWeighting.calcWeight(iter, false, current.mPreviousEdgeID);
+
+                int nextID = iter.getNext();
+                //double tempCost = current.mCost + mWeighting.calcWeight(iter, false, current.mPreviousEdgeID);
+                double tempCost = iter.getCost() + current.mCost;
                 if (nodeReference.containsKey(nextID)) {
                     NodeWrapper next = nodeReference.get(nextID);
                     // decrease key operation in the priority queue
@@ -84,7 +87,7 @@ public class Dijkstra extends S2SStrategy{
                 }
                 Integer[] points = new Integer[array.size()];
                 array.toArray(points);
-                resultPaths.addPath(start, current.mNodeID, current.mDistance, points);
+                resultPaths.addPath(start, current.mNodeID, current.mDistance, current.mCost,points);
             }
         }
 

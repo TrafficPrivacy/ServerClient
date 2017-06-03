@@ -3,7 +3,6 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.weighting.FastestWeighting;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.EdgeExplorer;
@@ -41,8 +40,13 @@ class MatrixComputer {
                                      false, true));
         try {
             /*TODO: change the weight*/
-            mStrategy = S2SStrategy.strategyFactory(strategy, outEdgeExplorer,
-                                        new FastestWeighting(em.getEncoder("car")));
+            mStrategy = S2SStrategy.strategyFactory(strategy, new S2SStrategy.EdgeProvider() {
+                @Override
+                public S2SStrategy.EdgeIter getIterator(int current, int prevEdgeID) {
+                    return new DefaultEdgeIter(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
+                         .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,7 +90,7 @@ class MatrixComputer {
         return new Pair<>(allArray, borderArray);
     }
 
-    public Paths inCirclePaths(int[] allPoints, int[] borderPoints) {
+    public Paths inCirclePaths(int[] allPoints, int[] borderPoints) throws Exception{
         return mStrategy.compute(allPoints, borderPoints);
     }
 }
@@ -132,14 +136,22 @@ public class Server {
 
         Pair<int[], int[]> srcCircle = mMatrixComputer.getCircle(new GHPoint(srcLat, srcLon), RADIUS);
         Pair<int[], int[]> destCircle = mMatrixComputer.getCircle(new GHPoint(destLat, destLon), RADIUS);
-        Paths srcPaths = mMatrixComputer.inCirclePaths(srcCircle.mFirst, srcCircle.mSecond);
-        Paths destPaths = mMatrixComputer.inCirclePaths(destCircle.mFirst, destCircle.mSecond);
-        Paths interPaths = mMatrixComputer.inCirclePaths(srcCircle.mSecond, destCircle.mSecond);
+        Paths srcPaths = new Paths(),
+                destPaths = new Paths(),
+                interPaths = new Paths();
+        try {
+            srcPaths = mMatrixComputer.inCirclePaths(srcCircle.mFirst, srcCircle.mSecond);
+            destPaths = mMatrixComputer.inCirclePaths(destCircle.mFirst, destCircle.mSecond);
+            interPaths = mMatrixComputer.inCirclePaths(srcCircle.mSecond, destCircle.mSecond);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
 
         Reply reply = new Reply(srcCircle, destCircle, srcPaths, destPaths, interPaths);
-        ObjectOutputStream Oout = new ObjectOutputStream(out);
-        Oout.writeObject(reply);
-        Oout.close();
+        ObjectOutputStream oOut = new ObjectOutputStream(out);
+        oOut.writeObject(reply);
+        oOut.close();
         out.close();
     }
 }

@@ -9,6 +9,8 @@ import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.routing.weighting.*;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.storage.index.QueryResult;
+import com.graphhopper.util.EdgeExplorer;
+import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.Parameters;
 import org.junit.After;
 import org.junit.Before;
@@ -52,13 +54,15 @@ public class S2SStrategyTest {
                                       nodeAccess.getLat(to), nodeAccess.getLon(to));
         GHRequest req = new GHRequest(nodeAccess.getLat(from), nodeAccess.getLon(from),
                                       nodeAccess.getLat(to), nodeAccess.getLon(to))
-                        .setWeighting("fastest")
+//                        .setWeighting("fastest")
                         .setAlgorithm(Parameters.Algorithms.DIJKSTRA_BI);
 
         req.getHints().put(Parameters.Routing.INSTRUCTIONS, "false");
         GHResponse resp = mHopper.route(req);
         return resp.getBest();
     }
+
+
 
     @Before
     public void setUp() throws Exception {
@@ -71,41 +75,57 @@ public class S2SStrategyTest {
                   .importOrLoad();
         mStartSet = generatePoints(STARTSETSIZE);
         mDestSet  = generatePoints(DESTSETSIZE);
-        mStrategy = S2SStrategy.strategyFactory(ALGORITHM, mHopper.getGraphHopperStorage()
-                        .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)),
-                        new FastestWeighting(em.getEncoder("car")));
+        //mStrategy = S2SStrategy.strategyFactory(ALGORITHM, mHopper.getGraphHopperStorage()
+        //                .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)),
+        //                new FastestWeighting(em.getEncoder("car")));
+        mStrategy = S2SStrategy.strategyFactory(ALGORITHM, new S2SStrategy.EdgeProvider() {
+            @Override
+            public S2SStrategy.EdgeIter getIterator(int current, int prevEdgeID) {
+                return new DefaultEdgeIter(current, prevEdgeID, mHopper.getGraphHopperStorage()
+                        .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
+            }
+        });
     }
 
     @Test
     public void test() throws Exception {
+        long millis = System.currentTimeMillis();
         Paths paths = mStrategy.compute(mStartSet, mDestSet);
-        NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
-        // check each pair against graphhopper's result
-        ArrayList<PathWrapper> ghPaths = new ArrayList<>();
-        for (int i = 0; i < STARTSETSIZE; i ++) {
-            for (int j = 0; j < DESTSETSIZE; j ++) {
-                PathWrapper ghPath;
-                try {
-                    ghPath = calcPath(mDestSet[j], mStartSet[i]);
-                } catch (Exception e) {
-                    System.out.println("GH says there is no path");
-                    continue;
-                }
-                ghPaths.add(ghPath);
 
-                double myDist = paths.findPath(mStartSet[i], mDestSet[j]).mFirst;
-                Integer[] myPath = paths.findPath(mStartSet[i], mDestSet[j]).mSecond;
-                System.out.printf("gh distance %f, my distance %f\n", ghPath.getDistance(), myDist);
-                //assertEquals("Path disatnce", ghPath.getDistance(), myDist, 1000.0);
+        long curMillis = System.currentTimeMillis();
+        System.out.printf("Strategy computation time: %d\n", curMillis - millis);
 
-                for (int k = 0; k < ghPath.getPoints().size(); k ++) {
-                    System.out.printf("gh path: (%f, %f)\n", ghPath.getPoints().getLat(k), ghPath.getPoints().getLon(k));
-                }
+        return;
 
-                for (int k = 0; k < myPath.length; k++) {
-                    System.out.printf("my path (%f, %f)\n", nodeAccess.getLat(myPath[k]), nodeAccess.getLon(myPath[k]));
-                }
-            }
-        }
+        //NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
+        //// check each pair against graphhopper's result
+        //ArrayList<PathWrapper> ghPaths = new ArrayList<>();
+        //for (int i = 0; i < STARTSETSIZE; i ++) {
+        //    for (int j = 0; j < DESTSETSIZE; j ++) {
+        //        PathWrapper ghPath;
+        //        try {
+        //            ghPath = calcPath(mDestSet[j], mStartSet[i]);
+        //        } catch (Exception e) {
+        //            System.out.println("GH says there is no path");
+        //            continue;
+        //        }
+        //        ghPaths.add(ghPath);
+
+        //        double myDist = paths.findDistance(mStartSet[i], mDestSet[j]);
+        //        double myWeight = paths.findWeight(mStartSet[i], mDestSet[j]);
+        //        Integer[] myPath = paths.findPath(mStartSet[i], mDestSet[j]);
+        //        //System.out.printf("gh distance %f, my distance %f\n", ghPath.getDistance(), myDist);
+        //        System.out.printf("gh weight %f, my weight %f\n", ghPath.getRouteWeight(), myWeight);
+        //        //assertEquals("Path disatnce", ghPath.getDistance(), myDist, 1000.0);
+        //        assertEquals("Path Weight", ghPath.getRouteWeight(), myWeight, myWeight * 0.01);
+        //        //for (int k = 0; k < ghPath.getPoints().size(); k ++) {
+        //        //    System.out.printf("gh path: (%f, %f)\n", ghPath.getPoints().getLat(k), ghPath.getPoints().getLon(k));
+        //        //}
+
+        //        //for (int k = 0; k < myPath.length; k++) {
+        //        //    System.out.printf("my path (%f, %f)\n", nodeAccess.getLat(myPath[k]), nodeAccess.getLon(myPath[k]));
+        //        //}
+        //    }
+        //}
     }
 }

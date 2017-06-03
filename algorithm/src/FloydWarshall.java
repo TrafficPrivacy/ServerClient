@@ -3,8 +3,8 @@ import com.graphhopper.util.EdgeExplorer;
 
 public class FloydWarshall extends S2SStrategy{
 
-    public FloydWarshall(EdgeExplorer edgeExplorer, Weighting weighting) {
-        super(edgeExplorer, weighting);
+    public FloydWarshall(EdgeProvider edgeProvider) {
+        super(edgeProvider);
     }
 
     @Override

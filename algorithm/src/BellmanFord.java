@@ -3,8 +3,8 @@ import com.graphhopper.util.EdgeExplorer;
 
 public class BellmanFord extends S2SStrategy{
 
-    public BellmanFord(EdgeExplorer edgeExplorer, Weighting weighting) {
-        super(edgeExplorer, weighting);
+    public BellmanFord(EdgeProvider edgeProvider) {
+        super(edgeProvider);
     }
 
     @Override
