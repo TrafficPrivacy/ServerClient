@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static java.lang.System.exit;
@@ -5,11 +6,15 @@ import static java.lang.System.exit;
 public class FlagParser {
     private HashMap<String, String> mFlags;
     private HashMap<String, String> mHelps;
+    private ArrayList<String> mUnFlagged;
+    private ArrayList<Pair<String, String>> mUnflaggedHelps;
 
 
     public FlagParser() {
         mFlags = new HashMap<>();
         mHelps = new HashMap<>();
+        mUnFlagged = new ArrayList<>();
+        mUnflaggedHelps = new ArrayList<>();
     }
 
     public void addFlag(String flag, String help, String defaultArg) {
@@ -17,23 +22,35 @@ public class FlagParser {
         mHelps.put(flag, help);
     }
 
+    public void addUnflagged(String name, String help) {
+        mUnflaggedHelps.add(new Pair<>(name, help));
+    }
+
     public void parseArgs(String[] args) {
         for (int i = 0; i < args.length; i++) {
-            String arg = "";
             if (args[i].startsWith("-")) {
+                if (args[i].equals("--help") || args[i].equals("-h")) {
+                    printHelp();
+                    exit(0);
+                }
                 String flag = args[i];
                 if ((i + 1) < args.length && !args[i + 1].startsWith("-")) {
-                    arg = args[i + 1];
-                    i ++;
+
+                    if (mFlags.containsKey(flag)) {
+                        mFlags.put(flag, args[i + 1]);
+                    } else {
+                        printHelp();
+                        exit(1);
+                    }
+
+                    i++;
                 }
-                mFlags.put(flag, arg);
             } else {
-                printHelp();
-                exit(1);
+                mUnFlagged.add(args[i]);
             }
         }
 
-        if (mFlags.size() < mHelps.size()) {
+        if (mUnFlagged.size() != mUnflaggedHelps.size()) {
             printHelp();
             exit(1);
         }
@@ -47,5 +64,11 @@ public class FlagParser {
 
     public void printHelp() {
         System.out.println("Argument incorrect");
+    }
+
+    public String[] getUnflagged() {
+        String[] args = new String[mUnFlagged.size()];
+        mUnFlagged.toArray(args);
+        return args;
     }
 }
