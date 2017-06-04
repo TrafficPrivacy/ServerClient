@@ -194,8 +194,8 @@ public final class MapUI {
             }
             mPaths.add(list);
             // shitty implementation
-//            mStarts.add(new LatLong(path.getLat(0), path.getLon(0)));
-//            mEnds.add(new LatLong(path.getLat(path.size() - 1), path.getLon(path.size() - 1)));
+            mStarts.add(new LatLong(path.getLat(0), path.getLon(0)));
+            mEnds.add(new LatLong(path.getLat(path.size() - 1), path.getLon(path.size() - 1)));
         }
     }
 

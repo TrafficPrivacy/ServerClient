@@ -149,7 +149,7 @@ public class Client {
         System.out.printf("main path weight: %f\n", paths.findWeight(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]));
 
         // reconstruct main path
-        Integer[] mainPath = paths.findPath(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]);
+        Integer[] mainPath = paths.findPath(reply.mSrcCircle.mFirst[2], reply.mDestCircle.mFirst[4]);
         PointList mainList = new PointList();
 
         for (int i = 0; i < mainPath.length; i++) {

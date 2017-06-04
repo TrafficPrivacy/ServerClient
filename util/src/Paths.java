@@ -2,6 +2,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Paths implements Serializable{
+    /*TODO: fix the potential hash collision*/
     private HashMap<Integer, Integer[]> mPaths;
     private HashMap<Integer, Double> mDistances;
     private HashMap<Integer, Double> mWeights;
