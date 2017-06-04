@@ -112,7 +112,7 @@ public class Server {
     private ServerSocket mServer;
     private MatrixComputer mMatrixComputer;
 
-    private final double RADIUS = 500.0;
+    private final double RADIUS = 1000.0;
 
     public Server(int port, String osmPath, String osmFolder, int strategy) throws IOException {
         mPort = port;

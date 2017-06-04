@@ -224,7 +224,7 @@ public final class MapUI {
                 LatLong curt;
                 HashSet<Pair<LatLong, LatLong>> set = new HashSet<>();
                 for (int j = 1; j < path.size(); j++) {
-//                    createDot(path.get(j), new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
+                    createDot(path.get(j), new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
                     curt = path.get(j);
                     set.add(new Pair<>(prev, curt));
                     prev = curt;
@@ -311,36 +311,6 @@ public final class MapUI {
                 prev = curt;
             }
         }
-    }
-
-    private ArrayList<LatLong> getConvex(ArrayList<LatLong> dots) {
-        int n = dots.size();
-        if (n < 3)
-            return null;
-        ArrayList<LatLong> convex = new ArrayList<LatLong>();
-        int leftMost = 0;
-        for (int i = 1; i < n; i++) {
-            if (dots.get(i).longitude < dots.get(leftMost).longitude)
-                leftMost = i;
-        }
-        int p = leftMost, q, counter = 0;
-        do {
-            q = (p + 1) % n;
-            for (int i = 0; i < n; i++) {
-                if (convexHelper(dots.get(p), dots.get(i), dots.get(q)))
-                    q = i;
-            }
-            convex.add(dots.get(p));
-            p = q;
-            counter ++;
-        } while (p != leftMost && counter <= dots.size());
-        convex.add(dots.get(leftMost));
-        return convex;
-    }
-
-    private boolean convexHelper(LatLong p, LatLong q, LatLong r) {
-        double val = (q.latitude - p.latitude) * (r.longitude - q.longitude) - (q.longitude - p.longitude) * (r.latitude - q.latitude);
-        return !(val >= 0);
     }
 
     /////// Helper Functions ///////
@@ -499,7 +469,7 @@ public final class MapUI {
             paintStroke.setColor(pathcolor);
             paintStroke.setStrokeWidth(pathstrokeWidth);
             this.setPaintStroke(paintStroke);
-            List<LatLong> convex = getConvex(dots);
+            List<LatLong> convex = MyPoint.convertToLatlong(Convex.getConvex(MyPoint.convertFromLatlong(dots)));
             if (convex != null)
                 super.getLatLongs().addAll(convex);
             else

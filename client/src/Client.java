@@ -4,6 +4,7 @@ import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
+import org.mapsforge.core.model.LatLong;
 
 import java.io.*;
 import java.net.Socket;
@@ -149,7 +150,7 @@ public class Client {
         System.out.printf("main path weight: %f\n", paths.findWeight(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]));
 
         // reconstruct main path
-        Integer[] mainPath = paths.findPath(reply.mSrcCircle.mFirst[2], reply.mDestCircle.mFirst[4]);
+        Integer[] mainPath = paths.findPath(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]);
         PointList mainList = new PointList();
 
         for (int i = 0; i < mainPath.length; i++) {
@@ -197,9 +198,20 @@ public class Client {
         }
 
         System.out.println("main path length: " + mainList.size());
-        mUI.addPath(mainList);
-        mUI.setMainPath(mainList);
+        //mUI.addPath(mainList);
         mUI.setVisible(true);
+
+        for (int idx : reply.mSrcCircle.mFirst) {
+            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
+            mUI.createDot(dot, new java.awt.Color(6, 0, 133, 255).getRGB(), 6);
+        }
+
+        for (int idx : reply.mSrcCircle.mSecond) {
+            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
+            mUI.createDot(dot, new java.awt.Color(133, 22, 9, 255).getRGB(), 6);
+        }
+
+        mUI.setMainPath(mainList);
         mUI.showUpdate();
     }
 }

@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="com.graphhopper:graphhopper-reader-osm:0.9.0" level="project" />
+    <orderEntry type="library" name="org.mapsforge:mapsforge-core:0.8.0" level="project" />
   </component>
 </module>
