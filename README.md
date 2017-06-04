@@ -1,5 +1,5 @@
 # ServerClient
-Serer and Client for demo
+Server and Client for demo
 
 # To run:
 Checkout the repository.
