@@ -76,17 +76,12 @@ class MatrixComputer {
             allArray[i] = closest.getClosestEdge().getBaseNode();
         }
         // find all the border points
-        ArrayList<GHPoint> borderPoints = new ArrayList<>();
-        for (GHPoint point : points) {
-            if (spTree.getNeighbors(point).isEmpty()) {
-                borderPoints.add(point); // Since the sptree is directed in this implementation
-            }
-        }
-        int[] borderArray = new int[borderPoints.size()];
+        ArrayList<MyPoint> border = Convex.getConvex(MyPoint.convertFromGHPoint(points));
+        int[] borderArray = new int[border.size()];
         for (int i = 0; i < borderArray.length; i++) {
             QueryResult closest = mGraphhopper
                                 .getLocationIndex()
-                                .findClosest(borderPoints.get(i).lat, borderPoints.get(i).lon, EdgeFilter.ALL_EDGES);
+                                .findClosest(border.get(i).mFirst, border.get(i).mSecond, EdgeFilter.ALL_EDGES);
             borderArray[i] = closest.getClosestEdge().getBaseNode();
         }
         return new Pair<>(allArray, borderArray);

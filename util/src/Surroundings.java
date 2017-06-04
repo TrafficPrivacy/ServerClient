@@ -55,8 +55,8 @@ public class Surroundings {
     private AdjacencyList<GHPoint> DijkstraSSSP(int start, double distBound) {
         /* TODO: maybe reuse the dijkstra from algorithm*/
         AdjacencyList<GHPoint> spTree = new AdjacencyList<>();
-        HashMap<Integer, NodeWrapper> nodeReference = new HashMap<Integer, NodeWrapper>();
-        PriorityQueue<NodeWrapper> queue = new PriorityQueue<NodeWrapper>();
+        HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
+        PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
         /** Dijkstra **/
         nodeReference.put(start, new NodeWrapper(start, 0, start));
         queue.add(nodeReference.get(start));

@@ -58,8 +58,17 @@ public class Client {
 
         // add edges in the destination circle
         for (int dstIdx : dstAll) {
+
+            if (dstIdx == 413177) {
+                System.out.println("Found 413177 in dest circle");
+            }
+
             for (int dstBorderIdx : dstBorder) {
                 if (reply.mDestPaths.findWeight(dstIdx, dstBorderIdx) > 0) {
+                    if (dstIdx == 413177) {
+                        System.out.printf("found 413177 to %d\n", dstBorderIdx);
+                    }
+
                     graph.insertEdge(dstIdx, dstBorderIdx)
                             .setWeight(dstIdx, dstBorderIdx, reply.mDestPaths.findWeight(dstIdx, dstBorderIdx))
                             .setDistance(dstIdx, dstBorderIdx, reply.mDestPaths.findDistance(dstIdx, dstBorderIdx));
@@ -147,58 +156,25 @@ public class Client {
 
         Pair<HashMap<MyPoint, Integer>, HashMap<Integer, MyPoint>> references = mapNodes(reply);
 
-        System.out.printf("main path weight: %f\n", paths.findWeight(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]));
-
-        // reconstruct main path
-        Integer[] mainPath = paths.findPath(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]);
-        PointList mainList = new PointList();
-
-        for (int i = 0; i < mainPath.length; i++) {
-            MyPoint myPoint = references.mSecond.get(mainPath[i]);
-            System.out.printf("%d: (%f, %f)\n", i, myPoint.mFirst, myPoint.mSecond);
-        }
-
-        Integer[] srcCirPath = reply.mSrcPaths.findPath(mainPath[2], mainPath[3]);
-        Integer[] interPath = reply.mInterPaths.findPath(mainPath[2], mainPath[1]);
-        Integer[] destPath = reply.mDestPaths.findPath(mainPath[0], mainPath[1]);
-
-        // some debug checks
-        // check mainPath[2] is on the source border
-        boolean on_2 = false;
-        for (int i = 0; i < reply.mSrcCircle.mSecond.length; i++) {
-            if (mainPath[2] == reply.mSrcCircle.mSecond[i]) {
-                on_2 = true;
-                break;
-            }
-        }
-        System.out.println("Mainpath[2] on border: " + on_2);
-
-        // check mainPath[1] is on the dest border
-        boolean on_1 = false;
-        for (int i = 0; i < reply.mDestCircle.mSecond.length; i++) {
-            if (mainPath[1] == reply.mDestCircle.mSecond[i]) {
-                on_1 = true;
-                break;
-            }
-        }
-        System.out.println("Mainpath[1] on border: " + on_1);
-
         NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
 
-        for (int idx : srcCirPath) {
-            mainList.add(new GHPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+        System.out.printf("Number of eventual path: %d\n", paths.numOfPaths());
+
+//        System.out.printf("main path weight: %f\n", paths.findWeight(reply.mDestCircle.mFirst[0], reply.mSrcCircle.mFirst[0]));
+
+//        System.out.printf("(%f, %f), (%f, %f)\n", nodeAccess.getLat(reply.mSrcCircle.mFirst[0]), nodeAccess.getLon(reply.mSrcCircle.mFirst[0]),
+//                                                  nodeAccess.getLat(reply.mDestCircle.mFirst[0]), nodeAccess.getLon(reply.mDestCircle.mFirst[0]));
+
+        for (int idx : reply.mDestCircle.mFirst) {
+            System.out.println(idx);
         }
 
-        for (int i = interPath.length - 1; i >= 0; i--) {
-            mainList.add(new GHPoint(nodeAccess.getLat(interPath[i]), nodeAccess.getLon(interPath[i])));
+        System.out.printf("point looked at: (%d, %d)\n", reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]);
+
+        for (Pair<Integer, Integer> path : paths.paths) {
+            System.out.printf("(%d, %d)\n", path.mFirst, path.mSecond);
         }
 
-        for (int idx : destPath) {
-            mainList.add(new GHPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
-        }
-
-        System.out.println("main path length: " + mainList.size());
-        //mUI.addPath(mainList);
         mUI.setVisible(true);
 
         for (int idx : reply.mSrcCircle.mFirst) {
@@ -211,7 +187,17 @@ public class Client {
             mUI.createDot(dot, new java.awt.Color(133, 22, 9, 255).getRGB(), 6);
         }
 
-        mUI.setMainPath(mainList);
+        for (int idx : reply.mDestCircle.mFirst) {
+            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
+            mUI.createDot(dot, new java.awt.Color(6, 0, 133, 255).getRGB(), 6);
+        }
+
+        for (int idx : reply.mDestCircle.mSecond) {
+            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
+            mUI.createDot(dot, new java.awt.Color(133, 22, 9, 255).getRGB(), 6);
+        }
+
+        //mUI.setMainPath(mainList);
         mUI.showUpdate();
     }
 }
