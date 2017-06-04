@@ -4,6 +4,7 @@ import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.GraphHopperStorage;
+import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.shapes.GHPoint;
@@ -43,7 +44,7 @@ class MatrixComputer {
             mStrategy = S2SStrategy.strategyFactory(strategy, new S2SStrategy.EdgeProvider() {
                 @Override
                 public S2SStrategy.EdgeIter getIterator(int current, int prevEdgeID) {
-                    return new DefaultEdgeIter(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
+                    return new DefaultEdgeIterator(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
                          .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
                 }
             });
@@ -64,6 +65,7 @@ class MatrixComputer {
      */
     public Pair<int[], int[]> getCircle(GHPoint center, double radius) {
         AdjacencyList<GHPoint> spTree = mSurroundings.getSurrounding(center.getLat(), center.getLon(), radius);
+        System.out.printf("Number of points %d\n", spTree.getNodes().size());
         ArrayList<GHPoint> points = spTree.getNodes();
         int[] allArray = new int[points.size()];
         // find all points
@@ -90,8 +92,12 @@ class MatrixComputer {
         return new Pair<>(allArray, borderArray);
     }
 
-    public Paths inCirclePaths(int[] allPoints, int[] borderPoints) throws Exception{
-        return mStrategy.compute(allPoints, borderPoints);
+    public Paths set2Set(int[] set1, int[] set2) throws Exception {
+        return mStrategy.compute(set1, set2);
+    }
+
+    public NodeAccess getNodeAccess() {
+        return mGraphhopper.getGraphHopperStorage().getNodeAccess();
     }
 }
 
@@ -130,9 +136,20 @@ public class Server {
         DataOutputStream out = new DataOutputStream(sock.getOutputStream());
 
         double srcLat = in.readDouble();
+        System.out.println("received: " + srcLat);
         double srcLon = in.readDouble();
+        System.out.println("received: " + srcLon);
         double destLat = in.readDouble();
+        System.out.println("received: " + destLat);
         double destLon = in.readDouble();
+        System.out.println("received: " + destLon);
+
+        srcLat = 40.111319;
+        srcLon = -88.22794;
+        destLat = 41.665346;
+        destLon = -87.761192;
+
+        System.out.printf("from (%f, %f) to (%f, %f)", srcLat, srcLon, destLat, destLon);
 
         Pair<int[], int[]> srcCircle = mMatrixComputer.getCircle(new GHPoint(srcLat, srcLon), RADIUS);
         Pair<int[], int[]> destCircle = mMatrixComputer.getCircle(new GHPoint(destLat, destLon), RADIUS);
@@ -140,15 +157,31 @@ public class Server {
                 destPaths = new Paths(),
                 interPaths = new Paths();
         try {
-            srcPaths = mMatrixComputer.inCirclePaths(srcCircle.mFirst, srcCircle.mSecond);
-            destPaths = mMatrixComputer.inCirclePaths(destCircle.mFirst, destCircle.mSecond);
-            interPaths = mMatrixComputer.inCirclePaths(srcCircle.mSecond, destCircle.mSecond);
+            srcPaths = mMatrixComputer.set2Set(srcCircle.mFirst, srcCircle.mSecond);
+            destPaths = mMatrixComputer.set2Set(destCircle.mFirst, destCircle.mSecond);
+            interPaths = mMatrixComputer.set2Set(srcCircle.mSecond, destCircle.mSecond);
         } catch (Exception e) {
             e.printStackTrace();
 
         }
 
-        Reply reply = new Reply(srcCircle, destCircle, srcPaths, destPaths, interPaths);
+        // generate the index to geolocation reference
+        ArrayList<MyPoint> srcGeo = new ArrayList<>();
+        ArrayList<MyPoint> destGeo = new ArrayList<>();
+        NodeAccess nodeAccess = mMatrixComputer.getNodeAccess();
+        for (int i = 0; i < srcCircle.mFirst.length; i++) {
+            srcGeo.add(new MyPoint(nodeAccess.getLat(srcCircle.mFirst[i]), nodeAccess.getLon(srcCircle.mFirst[i])));
+        }
+        for (int i = 0; i < destCircle.mFirst.length; i++) {
+            destGeo.add(new MyPoint(nodeAccess.getLat(destCircle.mFirst[i]), nodeAccess.getLon(destCircle.mFirst[i])));
+        }
+
+        MyPoint[] srcRef  = new MyPoint[srcGeo.size()];
+        MyPoint[] destRef = new MyPoint[destGeo.size()];
+        srcGeo.toArray(srcRef);
+        destGeo.toArray(destRef);
+
+        Reply reply = new Reply(srcCircle, destCircle, srcPaths, destPaths, interPaths, srcRef, destRef);
         ObjectOutputStream oOut = new ObjectOutputStream(out);
         oOut.writeObject(reply);
         oOut.close();

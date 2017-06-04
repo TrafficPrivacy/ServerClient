@@ -13,5 +13,6 @@
     <orderEntry type="module" module-name="util" />
     <orderEntry type="library" name="org.mapsforge:mapsforge-themes:0.7.0" level="project" />
     <orderEntry type="library" name="org.mapsforge:mapsforge-map-reader:0.8.0" level="project" />
+    <orderEntry type="module" module-name="algorithm" />
   </component>
 </module>

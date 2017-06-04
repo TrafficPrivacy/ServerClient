@@ -6,19 +6,11 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.weighting.*;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.storage.index.QueryResult;
-import com.graphhopper.util.EdgeExplorer;
-import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.Parameters;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
 
 public class S2SStrategyTest {
     final private double LATMIN = 39.65;
@@ -81,7 +73,7 @@ public class S2SStrategyTest {
         mStrategy = S2SStrategy.strategyFactory(ALGORITHM, new S2SStrategy.EdgeProvider() {
             @Override
             public S2SStrategy.EdgeIter getIterator(int current, int prevEdgeID) {
-                return new DefaultEdgeIter(current, prevEdgeID, mHopper.getGraphHopperStorage()
+                return new DefaultEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
                         .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
             }
         });

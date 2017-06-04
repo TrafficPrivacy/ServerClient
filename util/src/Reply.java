@@ -1,18 +1,25 @@
+import com.graphhopper.util.shapes.GHPoint;
+
 import java.io.Serializable;
 
 public class Reply implements Serializable{
     public final Pair<int[], int[]> mSrcCircle;
     public final Pair<int[], int[]> mDestCircle;
-    public final Paths srcPaths;
-    public final Paths destPaths;
-    public final Paths interPaths;
+    public final Paths mSrcPaths;
+    public final Paths mDestPaths;
+    public final Paths mInterPaths;
+    public final MyPoint[] mSrcReference;
+    public final MyPoint[] mDestReference;
 
-    public Reply(Pair<int[], int[]> mSrcCircle, Pair<int[], int[]> mDestCircle, Paths srcPaths, Paths destPaths, Paths interPaths) {
-        this.mSrcCircle = mSrcCircle;
-        this.mDestCircle = mDestCircle;
-        this.srcPaths = srcPaths;
-        this.destPaths = destPaths;
-        this.interPaths = interPaths;
+    public Reply(Pair<int[], int[]> srcCircle, Pair<int[], int[]> destCircle, Paths srcPaths, Paths destPaths,
+                 Paths interPaths, MyPoint[] srcRef, MyPoint[] destRef) {
+        mSrcCircle = srcCircle;
+        mDestCircle = destCircle;
+        mSrcPaths = srcPaths;
+        mDestPaths = destPaths;
+        mInterPaths = interPaths;
+        mSrcReference = srcRef;
+        mDestReference = destRef;
     }
 }
 

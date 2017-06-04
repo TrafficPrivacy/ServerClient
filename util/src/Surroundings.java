@@ -62,6 +62,8 @@ public class Surroundings {
         queue.add(nodeReference.get(start));
         while (!queue.isEmpty()) {
             NodeWrapper current = queue.poll();
+            if (current.mNodeID == -1)
+                continue;
             EdgeIterator iter = mOutEdgeExplorer.setBaseNode(current.mNodeID);
             while (iter.next()) {
                 int nextID = iter.getAdjNode();

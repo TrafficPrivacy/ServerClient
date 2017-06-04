@@ -24,7 +24,7 @@ public class ClientEdgeIterator extends S2SStrategy.EdgeIter{
 
     @Override
     public Boolean next() {
-        return !(mNeighbors == null) && (++mCurIdx < mNeighbors.size());
+        return (mNeighbors != null) && (++mCurIdx < mNeighbors.size());
     }
 
     @Override
