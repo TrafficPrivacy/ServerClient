@@ -19,6 +19,7 @@
 import com.graphhopper.util.PointList;
 import org.mapsforge.core.graphics.*;
 import org.mapsforge.core.graphics.Canvas;
+import org.mapsforge.core.graphics.Color;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
@@ -172,13 +173,16 @@ public final class MapUI {
             LatLong prev = new LatLong(path.getLat(0), path.getLon(0));
             LatLong curt;
             list.add(prev);
+            System.out.println("set main path");
             for (int i = 1; i < path.size(); i++) {
                 curt = new LatLong(path.getLat(i), path.getLon(i));
+                System.out.printf("(%f, %f)\n", path.getLat(i), path.getLon(i));
                 list.add(curt);
                 mMainPathSet.add(new Pair<>(prev, curt));
             }
             mMainPath = list;
             mPaths.add(list);
+            //createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
         }
     }
 

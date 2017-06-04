@@ -1,6 +1,7 @@
 import com.graphhopper.GraphHopper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
 
@@ -144,18 +145,61 @@ public class Client {
         Paths paths = mStrategy.compute(reply.mSrcCircle.mFirst, reply.mDestCircle.mFirst);
 
         Pair<HashMap<MyPoint, Integer>, HashMap<Integer, MyPoint>> references = mapNodes(reply);
-        GHPoint start = new GHPoint(startPoint.mFirst, startPoint.mSecond);
-        GHPoint end = new GHPoint(endPoint.mFirst, endPoint.mSecond);
 
-        System.out.printf("main path weight: %f\n", paths.findWeight(references.mFirst.get(start), references.mFirst.get(end)));
+        System.out.printf("main path weight: %f\n", paths.findWeight(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]));
 
         // reconstruct main path
-        Integer[] mainPath = paths.findPath(references.mFirst.get(start), references.mFirst.get(end));
+        Integer[] mainPath = paths.findPath(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]);
         PointList mainList = new PointList();
-        for (int idx : mainPath) {
-            mainList.add(new MyPoint.GHAdapter(references.mSecond.get(idx)));
+
+        for (int i = 0; i < mainPath.length; i++) {
+            MyPoint myPoint = references.mSecond.get(mainPath[i]);
+            System.out.printf("%d: (%f, %f)\n", i, myPoint.mFirst, myPoint.mSecond);
         }
+
+        Integer[] srcCirPath = reply.mSrcPaths.findPath(mainPath[2], mainPath[3]);
+        Integer[] interPath = reply.mInterPaths.findPath(mainPath[2], mainPath[1]);
+        Integer[] destPath = reply.mDestPaths.findPath(mainPath[0], mainPath[1]);
+
+        // some debug checks
+        // check mainPath[2] is on the source border
+        boolean on_2 = false;
+        for (int i = 0; i < reply.mSrcCircle.mSecond.length; i++) {
+            if (mainPath[2] == reply.mSrcCircle.mSecond[i]) {
+                on_2 = true;
+                break;
+            }
+        }
+        System.out.println("Mainpath[2] on border: " + on_2);
+
+        // check mainPath[1] is on the dest border
+        boolean on_1 = false;
+        for (int i = 0; i < reply.mDestCircle.mSecond.length; i++) {
+            if (mainPath[1] == reply.mDestCircle.mSecond[i]) {
+                on_1 = true;
+                break;
+            }
+        }
+        System.out.println("Mainpath[1] on border: " + on_1);
+
+        NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
+
+        for (int idx : srcCirPath) {
+            mainList.add(new GHPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+        }
+
+        for (int i = interPath.length - 1; i >= 0; i--) {
+            mainList.add(new GHPoint(nodeAccess.getLat(interPath[i]), nodeAccess.getLon(interPath[i])));
+        }
+
+        for (int idx : destPath) {
+            mainList.add(new GHPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+        }
+
+        System.out.println("main path length: " + mainList.size());
+        mUI.addPath(mainList);
         mUI.setMainPath(mainList);
         mUI.setVisible(true);
+        mUI.showUpdate();
     }
 }
