@@ -4,13 +4,13 @@ import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
 
-public class DefaultEdgeIter extends S2SStrategy.EdgeIter {
+public class DefaultEdgeIterator extends S2SStrategy.EdgeIter {
 
     private int mPrevEdge;
     private EdgeIterator mGhEdgeIterator;
     private Weighting mWeight;
 
-    public DefaultEdgeIter(int current, int prevEdge, EdgeExplorer outEdgeExplorer) {
+    public DefaultEdgeIterator(int current, int prevEdge, EdgeExplorer outEdgeExplorer) {
         mPrevEdge = prevEdge;
         mGhEdgeIterator = outEdgeExplorer.setBaseNode(current);
         EncodingManager em = new EncodingManager("car");
