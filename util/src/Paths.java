@@ -4,9 +4,7 @@ import java.util.HashMap;
 
 public class Paths implements Serializable{
     /*TODO: fix the potential hash collision*/
-    private HashMap<Integer, Integer[]> mPaths;
-    private HashMap<Integer, Double> mDistances;
-    private HashMap<Integer, Double> mWeights;
+    private HashMap<Pair<Integer, Integer>, Triple<Integer[], Double, Double>> mPaths;
 
     /*TODO: remove the debug stuff*/
     // debug
@@ -14,40 +12,37 @@ public class Paths implements Serializable{
 
     public Paths() {
         mPaths = new HashMap<>();
-        mDistances = new HashMap<>();
-        mWeights = new HashMap<>();
         // debug
         paths = new ArrayList<>();
     }
 
     public Integer[] findPath(int start, int end) {
         Pair<Integer, Integer> queryPoint = new Pair<>(start, end);
-        if (!mPaths.containsKey(queryPoint.hashCode()))
+        if (!mPaths.containsKey(queryPoint))
             return null;
-        return mPaths.get(queryPoint.hashCode());
+        return mPaths.get(queryPoint).mFirst;
     }
 
     public double findDistance(int start, int end) {
         Pair<Integer, Integer> queryPoint = new Pair<>(start, end);
-        if (!mDistances.containsKey(queryPoint.hashCode()))
+        if (!mPaths.containsKey(queryPoint))
             return -1;
-        return mDistances.get(queryPoint.hashCode());
+        return mPaths.get(queryPoint).mThird;
     }
 
     public double findWeight(int start, int end) {
         Pair<Integer, Integer> queryPoint = new Pair<>(start, end);
-        if (!mWeights.containsKey(queryPoint.hashCode()))
+        if (!mPaths.containsKey(queryPoint))
             return -1;
-        return mWeights.get(queryPoint.hashCode());
+        return mPaths.get(queryPoint).mSecond;
     }
 
     public void addPath(int start, int end, double distance, double weight, Integer[] path) {
         Pair<Integer, Integer> queryPoint = new Pair<>(start, end);
         if (mPaths.containsKey(queryPoint.hashCode()))
             return;
-        mPaths.put(queryPoint.hashCode(), path);
-        mDistances.put(queryPoint.hashCode(), distance);
-        mWeights.put(queryPoint.hashCode(), weight);
+        Triple<Integer[], Double, Double> info = new Triple<>(path, weight, distance);
+        mPaths.put(queryPoint, info);
 
         //debug
         paths.add(queryPoint);
@@ -55,8 +50,6 @@ public class Paths implements Serializable{
 
     public void addAll(Paths paths) {
         mPaths.putAll(paths.mPaths);
-        mDistances.putAll(paths.mDistances);
-        mWeights.putAll(paths.mWeights);
         // debug
         this.paths.addAll(paths.paths);
     }
