@@ -64,16 +64,15 @@ class MatrixComputer {
      *         circle. The second represents the border points.
      */
     public Pair<int[], int[]> getCircle(GHPoint center, double radius) {
-        AdjacencyList<GHPoint> spTree = mSurroundings.getSurrounding(center.getLat(), center.getLon(), radius);
-        System.out.printf("Number of points %d\n", spTree.getNodes().size());
-        ArrayList<GHPoint> points = spTree.getNodes();
+        ArrayList<GHPoint> points = mSurroundings.getSurrounding(center.getLat(), center.getLon(), radius);
+        System.out.printf("Number of points %d\n", points.size());
         int[] allArray = new int[points.size()];
         // find all points
         for (int i = 0; i < allArray.length; i++) {
             QueryResult closest = mGraphhopper
                                 .getLocationIndex()
                                 .findClosest(points.get(i).lat, points.get(i).lon, EdgeFilter.ALL_EDGES);
-            allArray[i] = closest.getClosestEdge().getBaseNode();
+            allArray[i] = closest.getClosestNode();
         }
         // find all the border points
         ArrayList<MyPoint> border = Convex.getConvex(MyPoint.convertFromGHPoint(points));
@@ -82,7 +81,7 @@ class MatrixComputer {
             QueryResult closest = mGraphhopper
                                 .getLocationIndex()
                                 .findClosest(border.get(i).mFirst, border.get(i).mSecond, EdgeFilter.ALL_EDGES);
-            borderArray[i] = closest.getClosestEdge().getBaseNode();
+            borderArray[i] = closest.getClosestNode();
         }
         return new Pair<>(allArray, borderArray);
     }
@@ -152,8 +151,10 @@ public class Server {
                 destPaths = new Paths(),
                 interPaths = new Paths();
         try {
+            System.out.println("src border size: " + srcCircle.mSecond.length);
             srcPaths = mMatrixComputer.set2Set(srcCircle.mFirst, srcCircle.mSecond);
-            destPaths = mMatrixComputer.set2Set(destCircle.mFirst, destCircle.mSecond);
+            System.out.println("dst border size: " + destCircle.mSecond.length);
+            destPaths = mMatrixComputer.set2Set(destCircle.mSecond, destCircle.mFirst);
             interPaths = mMatrixComputer.set2Set(srcCircle.mSecond, destCircle.mSecond);
         } catch (Exception e) {
             e.printStackTrace();
