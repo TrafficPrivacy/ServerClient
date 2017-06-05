@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Paths implements Serializable{
     /*TODO: fix the potential hash collision*/
@@ -56,5 +57,9 @@ public class Paths implements Serializable{
 
     public int numOfPaths() {
         return mPaths.size();
+    }
+
+    public Set<Pair<Integer, Integer>> getPaths() {
+        return mPaths.keySet();
     }
 }

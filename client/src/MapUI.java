@@ -181,7 +181,7 @@ public final class MapUI {
             }
             mMainPath = list;
             mPaths.add(list);
-            createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
+            //createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
         }
     }
 
@@ -223,7 +223,7 @@ public final class MapUI {
                 LatLong curt;
                 HashSet<Pair<LatLong, LatLong>> set = new HashSet<>();
                 for (int j = 1; j < path.size(); j++) {
-                    createDot(path.get(j), new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
+                    //createDot(path.get(j), new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
                     curt = path.get(j);
                     set.add(new Pair<>(prev, curt));
                     prev = curt;

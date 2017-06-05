@@ -238,7 +238,13 @@ public class Client {
                                         paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
         System.out.println("Main path weight: " + paths.findWeight(start, end));
         mUI.setMainPath(mainPath);
-        mUI.addPath(mainPath);
+
+        for (Pair<Integer, Integer> path : paths.getPaths()) {
+            ArrayList<MyPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
+                                        paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
+            mUI.addPath(otherPath);
+        }
         mUI.showUpdate();
+        System.out.println("Update done");
     }
 }
