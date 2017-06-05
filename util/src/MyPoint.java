@@ -19,19 +19,35 @@ public class MyPoint extends Pair<Double, Double>{
     }
 
     public static ArrayList<MyPoint> convertFromLatlong(ArrayList<LatLong> input) {
-        return (ArrayList<MyPoint>) (input.stream().map(i -> new MyPoint(i)).collect(Collectors.toList()));
+        ArrayList<MyPoint> result = new ArrayList<>();
+        for (LatLong latLong : input) {
+            result.add(new MyPoint(latLong.getLatitude(), latLong.getLongitude()));
+        }
+        return result;
     }
 
     public static ArrayList<MyPoint> convertFromGHPoint(ArrayList<GHPoint> input) {
-        return (ArrayList<MyPoint>) (input.stream().map(i -> new MyPoint(i)).collect(Collectors.toList()));
+        ArrayList<MyPoint> result = new ArrayList<>();
+        for (GHPoint ghPoint : input) {
+            result.add(new MyPoint(ghPoint.getLat(), ghPoint.getLon()));
+        }
+        return result;
     }
 
     public static ArrayList<LatLong> convertToLatlong(ArrayList<MyPoint> input) {
-        return (ArrayList<LatLong>) (input.stream().map(i -> (LatLong)new LatLongAdapter(i)).collect(Collectors.toList()));
+        ArrayList<LatLong> result = new ArrayList<>();
+        for (MyPoint myPoint : input) {
+            result.add(new LatLong(myPoint.mFirst, myPoint.mSecond));
+        }
+        return result;
     }
 
     public static ArrayList<GHPoint> convertToGHPoint(ArrayList<MyPoint> input) {
-        return (ArrayList<GHPoint>) (input.stream().map(i -> (GHPoint)new GHAdapter(i)).collect(Collectors.toList()));
+        ArrayList<GHPoint> result = new ArrayList<>();
+        for (MyPoint myPoint : input) {
+            result.add(new GHPoint(myPoint.mFirst, myPoint.mSecond));
+        }
+        return result;
     }
 
     public static class GHAdapter extends GHPoint {

@@ -77,23 +77,28 @@ public class Dijkstra extends S2SStrategy{
             if (setSet.contains(current.mNodeID)) {
                 Deque<Integer> stack = new ArrayDeque<>();
                 ArrayList<Integer> array = new ArrayList<>();
-                stack.add(current.mNodeID);
                 NodeWrapper loc_current = current;
-                while (loc_current.mNodeID != loc_current.mParent) {
-                    stack.add(loc_current.mParent);
+                do {
+                    array.add(loc_current.mNodeID);
                     loc_current = nodeReference.get(loc_current.mParent);
-                }
+                } while(loc_current.mNodeID != loc_current.mParent);
+                array.add(loc_current.mNodeID);
                 setSet.remove(current.mNodeID);
-
-                // reverse the stack
-                for (Integer i : stack) {
-                    array.add(i);
+                if (current.mNodeID == 465825 && start == 587468) {
+                    System.out.println("Found 465825");
                 }
+
                 Integer[] points = new Integer[array.size()];
-                array.toArray(points);
-                resultPaths.addPath(start, current.mNodeID, current.mDistance, current.mCost,points);
+                for (int i = array.size() - 1; i >= 0; i --) {
+                    points[array.size() - 1 - i] = array.get(i);
+                    if (current.mNodeID == 465825 && start == 587468) {
+                        System.out.println(points[array.size() - 1 - i]);
+                    }
+                }
+                resultPaths.addPath(start, current.mNodeID, current.mDistance, current.mCost, points);
             }
         }
+        //System.out.printf("queue empty: %s, set size: %d\n", queue.isEmpty(), setSet.size());
         return resultPaths;
     }
 

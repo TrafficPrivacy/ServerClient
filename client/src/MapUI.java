@@ -167,35 +167,34 @@ public final class MapUI {
         return 0;
     }
 
-    public void setMainPath(PointList path) {
+    public void setMainPath(ArrayList<MyPoint> path) {
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<LatLong>();
-            LatLong prev = new LatLong(path.getLat(0), path.getLon(0));
+            LatLong prev = new LatLong(path.get(0).mFirst, path.get(0).mSecond);
             LatLong curt;
             list.add(prev);
             System.out.println("set main path");
             for (int i = 1; i < path.size(); i++) {
-                curt = new LatLong(path.getLat(i), path.getLon(i));
-                System.out.printf("(%f, %f)\n", path.getLat(i), path.getLon(i));
+                curt = new LatLong(path.get(i).mFirst, path.get(i).mSecond);
                 list.add(curt);
                 mMainPathSet.add(new Pair<>(prev, curt));
             }
             mMainPath = list;
             mPaths.add(list);
-            //createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
+            createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
         }
     }
 
-    public void addPath(PointList path) {
+    public void addPath(ArrayList<MyPoint> path) {
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<>();
             for (int i = 0; i < path.size(); i++) {
-                list.add(new LatLong(path.getLat(i), path.getLon(i)));
+                list.add(new LatLong(path.get(i).mFirst, path.get(i).mSecond));
             }
             mPaths.add(list);
             // shitty implementation
-            mStarts.add(new LatLong(path.getLat(0), path.getLon(0)));
-            mEnds.add(new LatLong(path.getLat(path.size() - 1), path.getLon(path.size() - 1)));
+            mStarts.add(new LatLong(path.get(0).mFirst, path.get(0).mSecond));
+            mEnds.add(new LatLong(path.get(path.size() - 1).mFirst, path.get(path.size() - 1).mSecond));
         }
     }
 

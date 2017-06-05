@@ -1,5 +1,6 @@
 import com.graphhopper.GraphHopper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
+import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.PointList;
@@ -8,7 +9,10 @@ import org.mapsforge.core.model.LatLong;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Client {
     private int mServerPort;
@@ -103,6 +107,40 @@ public class Client {
         return new Pair<>(map1, map2);
     }
 
+    private ArrayList<MyPoint> recoveryPath(int start, int end, Paths finalPath, Paths srcPaths,
+                                            Paths dstPaths, Paths interPath) {
+        NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
+        ArrayList<MyPoint> path = new ArrayList<>();
+        Integer[] metaPath = finalPath.findPath(start, end);
+        if (metaPath != null) {
+            System.out.println("metaPath length: " + metaPath.length);
+            System.out.printf("%d, %d\n", metaPath[0], metaPath[1]);
+            for (int i = 1; i < metaPath.length; i++) {
+            /*TODO: find a better implementation*/
+                Integer[] sPath = srcPaths.findPath(metaPath[i - 1], metaPath[i]);
+                Integer[] iPath = interPath.findPath(metaPath[i - 1], metaPath[i]);
+                Integer[] dPath = dstPaths.findPath(metaPath[i - 1], metaPath[i]);
+                if (sPath != null) {
+                    System.out.println("Found spath");
+                    for (int idx : sPath) {
+                        path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+                    }
+                } else if (iPath != null) {
+                    System.out.println("Found ipath");
+                    for (int idx : iPath) {
+                        path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+                    }
+                } else if (dPath != null) {
+                    System.out.println("Found dpath");
+                    for (int idx : dPath) {
+                        path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+                    }
+                }
+            }
+        }
+        return path;
+    }
+
     /**
      * Compute the route and visualize it.
      * **Note** currently doesn't have random shift
@@ -155,7 +193,7 @@ public class Client {
 
         System.out.printf("Number of eventual path: %d\n", paths.numOfPaths());
 
-        System.out.printf("main path weight: %f\n", paths.findWeight(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]));
+        // path recovery and visualization
 
         mUI.setVisible(true);
 
@@ -179,8 +217,28 @@ public class Client {
             mUI.createDot(dot, new java.awt.Color(133, 22, 9, 255).getRGB(), 6);
         }
 
+        // extract info about start and end
 
-        //mUI.setMainPath(mainList);
+        int start = 587468;
+        for (int i = 0; i < reply.mSrcReference.length; i++) {
+            if (startPoint.equals(reply.mSrcReference[i])) {
+                start = reply.mSrcCircle.mFirst[i];
+                break;
+            }
+        }
+        int end = 465825;
+        for (int i = 0; i < reply.mDestReference.length; i++) {
+            if (endPoint.equals(reply.mDestReference[i])) {
+                end = reply.mDestCircle.mFirst[i];
+                break;
+            }
+        }
+        System.out.printf("%d, %d\n", start, end);
+        ArrayList<MyPoint> mainPath = recoveryPath(start, end,
+                                        paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
+        System.out.println("Main path weight: " + paths.findWeight(start, end));
+        mUI.setMainPath(mainPath);
+        mUI.addPath(mainPath);
         mUI.showUpdate();
     }
 }
