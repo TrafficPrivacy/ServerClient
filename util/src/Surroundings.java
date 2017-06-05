@@ -12,6 +12,8 @@ import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.shapes.GHPoint;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -46,15 +48,14 @@ public class Surroundings {
      * @param distance
      * @return
      */
-    public AdjacencyList<GHPoint> getSurrounding(double latitude, double longitude, double distance) {
+    public ArrayList<GHPoint> getSurrounding(double latitude, double longitude, double distance) {
         QueryResult closest = mIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES);
         System.out.println("closest ID = " + closest.getClosestNode());
         return DijkstraSSSP(closest.getClosestNode(), distance);
     }
 
-    private AdjacencyList<GHPoint> DijkstraSSSP(int start, double distBound) {
+    private ArrayList<GHPoint> DijkstraSSSP(int start, double distBound) {
         /* TODO: maybe reuse the dijkstra from algorithm*/
-        AdjacencyList<GHPoint> spTree = new AdjacencyList<>();
         HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
         PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
         /** Dijkstra **/
@@ -85,17 +86,12 @@ public class Surroundings {
                 }
             }
         }
-
-        /** convert to shortest path tree **/
+        ArrayList<GHPoint> nodes = new ArrayList<>();
         NodeAccess nodeAccess = mGhStore.getNodeAccess();
-        for (NodeWrapper node : nodeReference.values()) {
-            if (node.mParent != node.mNodeID) {
-                GHPoint parent = new GHPoint(nodeAccess.getLat(node.mParent), nodeAccess.getLon(node.mParent));
-                GHPoint current = new GHPoint(nodeAccess.getLat(node.mNodeID), nodeAccess.getLon(node.mNodeID));
-                spTree.insertEdge(parent, current);
-            }
+        for (int idx : nodeReference.keySet()) {
+            nodes.add(new GHPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
         }
-        return spTree;
+        return nodes;
     }
 
     private class NodeWrapper implements Comparable {

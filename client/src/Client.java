@@ -57,21 +57,14 @@ public class Client {
         }
 
         // add edges in the destination circle
+
         for (int dstIdx : dstAll) {
 
-            if (dstIdx == 413177) {
-                System.out.println("Found 413177 in dest circle");
-            }
-
             for (int dstBorderIdx : dstBorder) {
-                if (reply.mDestPaths.findWeight(dstIdx, dstBorderIdx) > 0) {
-                    if (dstIdx == 413177) {
-                        System.out.printf("found 413177 to %d\n", dstBorderIdx);
-                    }
-
-                    graph.insertEdge(dstIdx, dstBorderIdx)
-                            .setWeight(dstIdx, dstBorderIdx, reply.mDestPaths.findWeight(dstIdx, dstBorderIdx))
-                            .setDistance(dstIdx, dstBorderIdx, reply.mDestPaths.findDistance(dstIdx, dstBorderIdx));
+                if (reply.mDestPaths.findWeight(dstBorderIdx, dstIdx) > 0) {        // Notice
+                    graph.insertEdge(dstBorderIdx, dstIdx)
+                            .setWeight(dstBorderIdx, dstIdx, reply.mDestPaths.findWeight(dstBorderIdx, dstIdx))
+                            .setDistance(dstBorderIdx, dstIdx, reply.mDestPaths.findDistance(dstBorderIdx, dstIdx));
                 }
             }
         }
@@ -154,26 +147,15 @@ public class Client {
 
         Paths paths = mStrategy.compute(reply.mSrcCircle.mFirst, reply.mDestCircle.mFirst);
 
+        System.out.printf("src size: %d, dst size: %d\n", reply.mSrcCircle.mFirst.length, reply.mDestCircle.mFirst.length);
+
         Pair<HashMap<MyPoint, Integer>, HashMap<Integer, MyPoint>> references = mapNodes(reply);
 
         NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
 
         System.out.printf("Number of eventual path: %d\n", paths.numOfPaths());
 
-//        System.out.printf("main path weight: %f\n", paths.findWeight(reply.mDestCircle.mFirst[0], reply.mSrcCircle.mFirst[0]));
-
-//        System.out.printf("(%f, %f), (%f, %f)\n", nodeAccess.getLat(reply.mSrcCircle.mFirst[0]), nodeAccess.getLon(reply.mSrcCircle.mFirst[0]),
-//                                                  nodeAccess.getLat(reply.mDestCircle.mFirst[0]), nodeAccess.getLon(reply.mDestCircle.mFirst[0]));
-
-        for (int idx : reply.mDestCircle.mFirst) {
-            System.out.println(idx);
-        }
-
-        System.out.printf("point looked at: (%d, %d)\n", reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]);
-
-        for (Pair<Integer, Integer> path : paths.paths) {
-            System.out.printf("(%d, %d)\n", path.mFirst, path.mSecond);
-        }
+        System.out.printf("main path weight: %f\n", paths.findWeight(reply.mSrcCircle.mFirst[0], reply.mDestCircle.mFirst[0]));
 
         mUI.setVisible(true);
 
@@ -196,6 +178,7 @@ public class Client {
             LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
             mUI.createDot(dot, new java.awt.Color(133, 22, 9, 255).getRGB(), 6);
         }
+
 
         //mUI.setMainPath(mainList);
         mUI.showUpdate();

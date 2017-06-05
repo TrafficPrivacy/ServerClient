@@ -45,11 +45,15 @@ public class Dijkstra extends S2SStrategy{
             NodeWrapper current = queue.poll();
             if (current.mNodeID == -1)
                 continue;
+
             //EdgeIterator iter = mOutEdgeExplorer.setBaseNode(current.mNodeID);
             EdgeIter iter = mEdgeProvider.getIterator(current.mNodeID, current.mPreviousEdgeID);
             while (iter.next()) {
 
                 int nextID = iter.getNext();
+
+                if (nextID == -1)
+                    System.out.printf("current id: %d, next id: %d\n", current.mNodeID, nextID);
                 //double tempCost = current.mCost + mWeighting.calcWeight(iter, false, current.mPreviousEdgeID);
                 double tempCost = iter.getCost() + current.mCost;
                 if (nodeReference.containsKey(nextID)) {
@@ -90,7 +94,6 @@ public class Dijkstra extends S2SStrategy{
                 resultPaths.addPath(start, current.mNodeID, current.mDistance, current.mCost,points);
             }
         }
-
         return resultPaths;
     }
 
