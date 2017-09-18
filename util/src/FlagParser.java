@@ -36,8 +36,6 @@ public class FlagParser {
                 String flag = args[i];
                 if ((i + 1) < args.length && !args[i + 1].startsWith("-")) {
 
-                    System.out.printf("flag: %s, arg: %s\n", flag, args[i + 1]);
-
                     if (mFlags.containsKey(flag)) {
                         mFlags.put(flag, args[i + 1]);
                     } else {
@@ -48,7 +46,6 @@ public class FlagParser {
                     i++;
                 }
             } else {
-                System.out.println("unflagged: " + args[i]);
                 mUnFlagged.add(args[i]);
             }
         }
@@ -66,7 +63,20 @@ public class FlagParser {
     }
 
     public void printHelp() {
-        System.out.println("Argument incorrect");
+        System.out.print("Arguments: ");
+        for (Pair p : mUnflaggedHelps) {
+            System.out.print(p.mFirst + " ");
+        }
+        for (String flag : mHelps.keySet()) {
+            System.out.print(flag + " ");
+        }
+        System.out.println("\n\nDetails:");
+        for (Pair p : mUnflaggedHelps) {
+            System.out.printf("    %-12s:%s\n", p.mFirst, p.mSecond);
+        }
+        for (String flag : mHelps.keySet()) {
+            System.out.printf("    %-12s:%s\n", flag, mHelps.get(flag));
+        }
     }
 
     public String[] getUnflagged() {
