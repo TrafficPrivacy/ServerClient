@@ -28,7 +28,7 @@ public class FlagParser {
 
     public void parseArgs(String[] args) {
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-")) {
+            if (args[i].startsWith("--") || args[i] == "-h") {
                 if (args[i].equals("--help") || args[i].equals("-h")) {
                     printHelp();
                     exit(0);
@@ -39,6 +39,7 @@ public class FlagParser {
                     if (mFlags.containsKey(flag)) {
                         mFlags.put(flag, args[i + 1]);
                     } else {
+                        System.err.printf( "Error, unknown flag: %s\n", flag);
                         printHelp();
                         exit(1);
                     }
@@ -51,6 +52,9 @@ public class FlagParser {
         }
 
         if (mUnFlagged.size() != mUnflaggedHelps.size()) {
+            System.err.printf("Error: expected %d unflagged parameters, got %d\n",
+                    mUnflaggedHelps.size(),
+                    mUnFlagged.size());
             printHelp();
             exit(1);
         }

@@ -2,10 +2,6 @@
 public class ClientMain {
     private static FlagParser mFlagParser;
     private static Client mClient;
-    private final static double SRCLAT = 40.088316;
-    private final static double SRCLON = -88.283558;
-    private final static double DSTLAT = 40.103942;
-    private final static double DSTLON = -88.203392;
 
     public static void main(String[] args) throws Exception{
         addFlags();
@@ -22,7 +18,8 @@ public class ClientMain {
         String ghPath  = mFlagParser.getArg("--ghPath");
         String mapPath = mFlagParser.getArg("--mapPath");
         mClient = new Client(ip, port, osmPath, ghPath, mapPath);
-        mClient.compute(new Pair<>(SRCLAT, SRCLON), new Pair<>(DSTLAT, DSTLON));
+        mClient.compute(new Pair<>(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])),
+                        new Pair<>(Double.parseDouble(coords[2]), Double.parseDouble(coords[3])));
         System.out.println("Going to return");
     }
 

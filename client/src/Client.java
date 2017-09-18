@@ -114,25 +114,20 @@ public class Client {
         ArrayList<MyPoint> path = new ArrayList<>();
         Integer[] metaPath = finalPath.findPath(start, end);
         if (metaPath != null) {
-//            System.out.println("metaPath length: " + metaPath.length);
-//            System.out.printf("%d, %d\n", metaPath[0], metaPath[1]);
             for (int i = 1; i < metaPath.length; i++) {
             /*TODO: find a better implementation*/
                 Integer[] sPath = srcPaths.findPath(metaPath[i - 1], metaPath[i]);
                 Integer[] iPath = interPath.findPath(metaPath[i - 1], metaPath[i]);
                 Integer[] dPath = dstPaths.findPath(metaPath[i - 1], metaPath[i]);
                 if (sPath != null) {
-//                    System.out.println("Found spath");
                     for (int idx : sPath) {
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (iPath != null) {
-//                    System.out.println("Found ipath");
                     for (int idx : iPath) {
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (dPath != null) {
-//                    System.out.println("Found dpath");
                     for (int idx : dPath) {
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
@@ -192,32 +187,14 @@ public class Client {
 
         System.out.printf("src size: %d, dst size: %d\n", reply.mSrcCircle.mFirst.length, reply.mDestCircle.mFirst.length);
 
-        Pair<HashMap<MyPoint, Integer>, HashMap<Integer, MyPoint>> references = mapNodes(reply);
-
-        NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
-
         System.out.printf("Number of eventual path: %d\n", paths.numOfPaths());
 
         // path recovery and visualization
 
         mUI.setVisible(true);
 
-        // extract info about start and end
-
         int start = findNearest(startPoint);
-//        for (int i = 0; i < reply.mSrcReference.length; i++) {
-//            if (startPoint.equals(reply.mSrcReference[i])) {
-//                start = reply.mSrcCircle.mFirst[i];
-//                break;
-//            }
-//        }
         int end = findNearest(endPoint);
-//        for (int i = 0; i < reply.mDestReference.length; i++) {
-//            if (endPoint.equals(reply.mDestReference[i])) {
-//                end = reply.mDestCircle.mFirst[i];
-//                break;
-//            }
-//        }
         System.out.printf("%d, %d\n", start, end);
         ArrayList<MyPoint> mainPath = recoveryPath(start, end,
                                         paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
