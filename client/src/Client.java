@@ -3,6 +3,7 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
+import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
 import org.mapsforge.core.model.LatLong;
@@ -113,25 +114,25 @@ public class Client {
         ArrayList<MyPoint> path = new ArrayList<>();
         Integer[] metaPath = finalPath.findPath(start, end);
         if (metaPath != null) {
-            System.out.println("metaPath length: " + metaPath.length);
-            System.out.printf("%d, %d\n", metaPath[0], metaPath[1]);
+//            System.out.println("metaPath length: " + metaPath.length);
+//            System.out.printf("%d, %d\n", metaPath[0], metaPath[1]);
             for (int i = 1; i < metaPath.length; i++) {
             /*TODO: find a better implementation*/
                 Integer[] sPath = srcPaths.findPath(metaPath[i - 1], metaPath[i]);
                 Integer[] iPath = interPath.findPath(metaPath[i - 1], metaPath[i]);
                 Integer[] dPath = dstPaths.findPath(metaPath[i - 1], metaPath[i]);
                 if (sPath != null) {
-                    System.out.println("Found spath");
+//                    System.out.println("Found spath");
                     for (int idx : sPath) {
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (iPath != null) {
-                    System.out.println("Found ipath");
+//                    System.out.println("Found ipath");
                     for (int idx : iPath) {
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (dPath != null) {
-                    System.out.println("Found dpath");
+//                    System.out.println("Found dpath");
                     for (int idx : dPath) {
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
@@ -139,6 +140,13 @@ public class Client {
             }
         }
         return path;
+    }
+
+    private int findNearest(Pair<Double, Double> original) {
+        int closest = mHopper.getLocationIndex()
+                .findClosest(original.mFirst, original.mSecond, EdgeFilter.ALL_EDGES)
+                .getClosestNode();
+        return closest;
     }
 
     /**
@@ -168,11 +176,8 @@ public class Client {
         Reply reply = (Reply) oIn.readObject();
         System.out.println("client received");
         oIn.close();
-        System.out.println("1");
         in.close();
-        System.out.println("2");
         out.close();
-        System.out.println("3");
 
         AdjacencyList<Integer> graph = parseReply(reply);
 
@@ -197,42 +202,22 @@ public class Client {
 
         mUI.setVisible(true);
 
-        for (int idx : reply.mSrcCircle.mFirst) {
-            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
-            mUI.createDot(dot, new java.awt.Color(6, 0, 133, 255).getRGB(), 6);
-        }
-
-        for (int idx : reply.mSrcCircle.mSecond) {
-            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
-            mUI.createDot(dot, new java.awt.Color(133, 22, 9, 255).getRGB(), 6);
-        }
-
-        for (int idx : reply.mDestCircle.mFirst) {
-            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
-            mUI.createDot(dot, new java.awt.Color(6, 0, 133, 255).getRGB(), 6);
-        }
-
-        for (int idx : reply.mDestCircle.mSecond) {
-            LatLong dot = new LatLong(nodeAccess.getLat(idx), nodeAccess.getLon(idx));
-            mUI.createDot(dot, new java.awt.Color(133, 22, 9, 255).getRGB(), 6);
-        }
-
         // extract info about start and end
 
-        int start = 587468;
-        for (int i = 0; i < reply.mSrcReference.length; i++) {
-            if (startPoint.equals(reply.mSrcReference[i])) {
-                start = reply.mSrcCircle.mFirst[i];
-                break;
-            }
-        }
-        int end = 465825;
-        for (int i = 0; i < reply.mDestReference.length; i++) {
-            if (endPoint.equals(reply.mDestReference[i])) {
-                end = reply.mDestCircle.mFirst[i];
-                break;
-            }
-        }
+        int start = findNearest(startPoint);
+//        for (int i = 0; i < reply.mSrcReference.length; i++) {
+//            if (startPoint.equals(reply.mSrcReference[i])) {
+//                start = reply.mSrcCircle.mFirst[i];
+//                break;
+//            }
+//        }
+        int end = findNearest(endPoint);
+//        for (int i = 0; i < reply.mDestReference.length; i++) {
+//            if (endPoint.equals(reply.mDestReference[i])) {
+//                end = reply.mDestCircle.mFirst[i];
+//                break;
+//            }
+//        }
         System.out.printf("%d, %d\n", start, end);
         ArrayList<MyPoint> mainPath = recoveryPath(start, end,
                                         paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);

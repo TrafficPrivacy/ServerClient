@@ -26,4 +26,9 @@ public class Pair<T1, T2> implements Serializable{
         result = 31 * result + mSecond.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "" + mFirst + " " + mSecond;
+    }
 }

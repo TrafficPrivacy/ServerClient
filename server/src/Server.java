@@ -138,11 +138,6 @@ public class Server {
         double destLon = in.readDouble();
         System.out.println("received: " + destLon);
 
-        srcLat = 40.111319;
-        srcLon = -88.22794;
-        destLat = 41.665346;
-        destLon = -87.761192;
-
         System.out.printf("from (%f, %f) to (%f, %f)", srcLat, srcLon, destLat, destLon);
 
         Pair<int[], int[]> srcCircle = mMatrixComputer.getCircle(new GHPoint(srcLat, srcLon), RADIUS);

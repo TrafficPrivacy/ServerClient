@@ -2,10 +2,10 @@
 public class ClientMain {
     private static FlagParser mFlagParser;
     private static Client mClient;
-    private final static double SRCLAT = 40.111319;
-    private final static double SRCLON = -88.22794;
-    private final static double DSTLAT = 41.665346;
-    private final static double DSTLON = -87.761192;
+    private final static double SRCLAT = 40.088316;
+    private final static double SRCLON = -88.283558;
+    private final static double DSTLAT = 40.103942;
+    private final static double DSTLON = -88.203392;
 
     public static void main(String[] args) throws Exception{
         addFlags();
