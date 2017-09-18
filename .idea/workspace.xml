@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64c28ebf-15c4-4428-a771-d045c654ca03" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/src/Client.java" afterPath="$PROJECT_DIR$/client/src/Client.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/src/ClientMain.java" afterPath="$PROJECT_DIR$/client/src/ClientMain.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/src/MapUI.java" afterPath="$PROJECT_DIR$/client/src/MapUI.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/util/src/FlagParser.java" afterPath="$PROJECT_DIR$/util/src/FlagParser.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,11 +32,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MapUI.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MapUI.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/client/src/MapUI.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="343">
-              <caret line="234" column="40" lean-forward="true" selection-start-line="234" selection-start-column="40" selection-end-line="234" selection-end-column="40" />
+            <state relative-caret-position="487">
+              <caret line="455" column="13" lean-forward="true" selection-start-line="455" selection-start-column="13" selection-end-line="455" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#3659#3665#0" expanded="true" />
@@ -56,8 +52,8 @@
       <file leaf-file-name="Reply.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/util/src/Reply.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="4" lean-forward="false" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
+            <state relative-caret-position="345">
+              <caret line="23" column="1" lean-forward="true" selection-start-line="23" selection-start-column="1" selection-end-line="23" selection-end-column="1" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -65,7 +61,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ClientMain.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ClientMain.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/src/ClientMain.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="45">
@@ -157,6 +153,9 @@
     <findStrings>
       <find>lllllllllllllllllll</find>
       <find>startpoint</find>
+      <find>mLayers</find>
+      <find>MyConvexLayer</find>
+      <find>mSources</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -195,8 +194,8 @@
         <option value="$PROJECT_DIR$/server/src/Server.java" />
         <option value="$PROJECT_DIR$/client/src/Client.java" />
         <option value="$PROJECT_DIR$/util/src/FlagParser.java" />
-        <option value="$PROJECT_DIR$/client/src/MapUI.java" />
         <option value="$PROJECT_DIR$/client/src/ClientMain.java" />
+        <option value="$PROJECT_DIR$/client/src/MapUI.java" />
       </list>
     </option>
   </component>
@@ -556,7 +555,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26349893" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26349893" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32829374" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -931,36 +930,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/src/MyPoint.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="16" column="34" lean-forward="true" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/src/FlagParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="51" column="9" lean-forward="true" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/src/Reply.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="4" lean-forward="false" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server/src/Server.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-368">
@@ -1008,17 +977,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/src/MapUI.java">
+    <entry file="file://$PROJECT_DIR$/util/src/FlagParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="343">
-          <caret line="234" column="40" lean-forward="true" selection-start-line="234" selection-start-column="40" selection-end-line="234" selection-end-column="40" />
+        <state relative-caret-position="735">
+          <caret line="51" column="9" lean-forward="true" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3659#3665#0" expanded="true" />
-            <element signature="e#6924#6933#0" expanded="true" />
-            <element signature="e#11213#11231#0" expanded="true" />
-            <element signature="e#11297#11306#0" expanded="true" />
-            <element signature="e#11371#11380#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1028,6 +992,41 @@
         <state relative-caret-position="45">
           <caret line="3" column="34" lean-forward="false" selection-start-line="3" selection-start-column="34" selection-end-line="3" selection-end-column="34" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/MyPoint.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="16" column="34" lean-forward="true" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/Reply.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="1" lean-forward="true" selection-start-line="23" selection-start-column="1" selection-end-line="23" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/MapUI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="487">
+          <caret line="455" column="13" lean-forward="true" selection-start-line="455" selection-start-column="13" selection-end-line="455" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3659#3665#0" expanded="true" />
+            <element signature="e#6924#6933#0" expanded="true" />
+            <element signature="e#11213#11231#0" expanded="true" />
+            <element signature="e#11297#11306#0" expanded="true" />
+            <element signature="e#11371#11380#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

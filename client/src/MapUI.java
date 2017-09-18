@@ -451,8 +451,8 @@ public final class MapUI {
                     myLineLayer.setVisible(false);
                 }
                 bestLayer.setVisible(true);
-                mSources.get(bestIdx + 2).setVisible(true);
-                mTargets.get(bestIdx + 2).setVisible(true);
+                mSources.get(bestIdx + 1).setVisible(true);
+                mTargets.get(bestIdx + 1).setVisible(true);
             }
             MAP_VIEW.getLayerManager().redrawLayers();
         }
