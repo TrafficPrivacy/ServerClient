@@ -16,11 +16,9 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.graphhopper.util.PointList;
-import org.mapsforge.core.graphics.*;
-import org.mapsforge.core.graphics.Canvas;
-import org.mapsforge.core.graphics.Color;
+import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
@@ -48,8 +46,8 @@ import org.mapsforge.map.model.Model;
 import org.mapsforge.map.model.common.PreferencesFacade;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.reader.ReadBuffer;
+import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
-import org.mapsforge.map.rendertheme.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -268,10 +266,10 @@ public final class MapUI {
                     }
                     list.add(curt);
                 }
-                HashMap<LatLong, Integer> dots = new HashMap<LatLong, Integer>();
+                HashMap<LatLong, Integer> dots = new HashMap<>();
 
-                ArrayList<LatLong> sourceDots = new ArrayList<LatLong>();
-                ArrayList<LatLong> targetDots = new ArrayList<LatLong>();
+                ArrayList<LatLong> sourceDots = new ArrayList<>();
+                ArrayList<LatLong> targetDots = new ArrayList<>();
 
                 for (Pair<LatLong, LatLong> p : overLapList) {
                     dots.put(p.mFirst, new java.awt.Color(6, 0, 133, 255).getRGB());
@@ -287,9 +285,6 @@ public final class MapUI {
 
                     MAP_VIEW.getLayerManager().getLayers().add(myLineLayer);
                     mLayers.add(myLineLayer);
-//                    for (LatLong dot : sourceDots) {
-//                        createCircle(dot, getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())), 20);
-//                    }
                     MyConvexLayer newSource = new MyConvexLayer(GRAPHIC_FACTORY,
                             getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())),
                             6.0f, sourceDots);
@@ -478,7 +473,6 @@ public final class MapUI {
     private class MyLineLayer extends Polyline {
         private HashMap<LatLong, Integer> mDots;
         private List<LatLong> mPath;
-        private GraphicFactory mGraphicFactory;
 
         public MyLineLayer(GraphicFactory graphicFactory, HashMap<LatLong, Integer> dotWithColor, int pathcolor,
                            float pathstrokeWidth, List<LatLong> path) {
@@ -489,7 +483,6 @@ public final class MapUI {
             paintStroke.setStrokeWidth(pathstrokeWidth);
             this.setPaintStroke(paintStroke);
             mDots = dotWithColor;
-            mGraphicFactory = graphicFactory;
             mPath = path;
 
             super.getLatLongs().addAll(mPath);

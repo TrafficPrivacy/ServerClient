@@ -1,5 +1,3 @@
-import com.graphhopper.util.shapes.GHPoint;
-
 import java.io.Serializable;
 
 public class Reply implements Serializable{

@@ -3,17 +3,11 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
-import com.graphhopper.storage.index.QueryResult;
-import com.graphhopper.util.PointList;
-import com.graphhopper.util.shapes.GHPoint;
-import org.mapsforge.core.model.LatLong;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class Client {
     private int mServerPort;

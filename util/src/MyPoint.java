@@ -1,9 +1,7 @@
 import com.graphhopper.util.shapes.GHPoint;
 import org.mapsforge.core.model.LatLong;
-import sun.misc.resources.Messages_pt_BR;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class MyPoint extends Pair<Double, Double>{
     public MyPoint(Double first, Double second) {
