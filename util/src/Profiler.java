@@ -2,10 +2,26 @@
  *  Profiler to measure running time in a block of code
  */
 public class Profiler {
+    private int mLogLevel;
     private long mStart;
     private long mEnd;
     private StackTraceElement mBeginCall;
     private StackTraceElement mEndCall;
+
+    /**
+     * Create a profiler with log level of DEBUG
+     */
+    public Profiler() {
+        this(Logger.DEBUG);
+    }
+
+    /**
+     * Create a profiler with specified log level
+     * @param logLevel Appropriate log level
+     */
+    public Profiler(int logLevel) {
+        mLogLevel = logLevel;
+    }
 
     public void start() {
         mStart = System.nanoTime();
@@ -20,8 +36,8 @@ public class Profiler {
         mEnd = System.nanoTime();
         mEndCall = Thread.currentThread().getStackTrace()[2];
         if (!mEndCall.getMethodName().equals(mBeginCall.getMethodName())) {
-            System.out.printf("Warning: start() and end() should be called in the " +
-                            "same method. Profile started at: %s: %d and ends at: %s: %d\n",
+            Logger.printf(Logger.WARN, "start() and end() should be called in the same method. " +
+                    "Profile started at: %s: %d and ends at: %s: %d\n",
                     mBeginCall.getFileName(), mBeginCall.getLineNumber(),
                     mEndCall.getFileName(), mEndCall.getLineNumber());
         }
@@ -29,7 +45,7 @@ public class Profiler {
     }
 
     public void print() {
-        System.out.printf("Start: %20s: %6d; End: %20s: %6d; Total Time: %15d ns\n",
+        Logger.printf(mLogLevel, "Start: %20s: %-6d End: %20s: %-6d Total Time: %-15d ns\n",
                 mBeginCall.getFileName(), mBeginCall.getLineNumber(),
                 mEndCall.getFileName(), mEndCall.getLineNumber(),
                 timeElapsed());
