@@ -200,7 +200,9 @@ public class Client {
                                         paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
             mUI.addPath(otherPath);
         }
+        Profiler profiler = new Profiler();
+        profiler.start();
         mUI.showUpdate();
-        System.out.println("Update done");
+        profiler.endAndPrint();
     }
 }
