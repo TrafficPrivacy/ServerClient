@@ -1,8 +1,8 @@
 /*TODO: finish up the algorithm*/
 public class FloydWarshall extends S2SStrategy{
 
-    public FloydWarshall(EdgeProvider edgeProvider) {
-        super(edgeProvider);
+    public FloydWarshall(CallBacks callBacks) {
+        super(callBacks);
     }
 
     @Override

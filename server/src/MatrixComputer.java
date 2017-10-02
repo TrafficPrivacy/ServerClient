@@ -3,13 +3,16 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.weighting.BeelineWeightApproximator;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.storage.index.QueryResult;
+import com.graphhopper.util.DistanceCalcEarth;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.shapes.GHPoint;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MatrixComputer {
     final private String mOSMPath;
@@ -30,16 +33,41 @@ public class MatrixComputer {
                 .setEncodingManager(em)
                 .importOrLoad();
         GraphHopperStorage ghStore = mGraphhopper.getGraphHopperStorage();
-        /*TODO: change the hard coded name too*/
-        EdgeExplorer outEdgeExplorer = ghStore.createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"),
-                false, true));
         try {
             /*TODO: change the weight*/
-            mStrategy = S2SStrategy.strategyFactory(strategy, new S2SStrategy.EdgeProvider() {
+            mStrategy = S2SStrategy.strategyFactory(strategy, new CallBacks() {
                 @Override
-                public S2SStrategy.EdgeIter getIterator(int current, int prevEdgeID) {
+                public EdgeIter getIterator(int current, int prevEdgeID) {
+                    /*TODO: change the hard coded name too*/
                     return new DefaultEdgeIterator(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
                             .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
+                }
+
+                /**
+                 * Get the minimum potential among all the targets
+                 * @param current current node
+                 * @param targets the targets
+                 * @return the minimum potential
+                 */
+                @Override
+                public double getPotential(int current, HashSet<Integer> targets) {
+                    if (strategy != S2SStrategy.ASTAR) {
+                        return 0.0;
+                    }
+                    NodeAccess nodeAccess = mGraphhopper.getGraphHopperStorage().getNodeAccess();
+                    DistanceCalcEarth distanceCalcEarth = new DistanceCalcEarth();
+                    double minDist = 1e100;
+                    double fromLat = nodeAccess.getLat(current);
+                    double fromLon = nodeAccess.getLon(current);
+                    for (int target : targets) {
+                        double toLat = nodeAccess.getLat(target);
+                        double toLon = nodeAccess.getLon(target);
+                        double distance = distanceCalcEarth.calcDist(fromLat, fromLon, toLat, toLon);
+                        if (distance < minDist) {
+                            minDist = distance;
+                        }
+                    }
+                    return minDist;
                 }
             });
         } catch (Exception e) {

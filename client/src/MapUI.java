@@ -1,21 +1,3 @@
-/*
- * Copyright 2010, 2011, 2012, 2013 mapsforge.org
- * Copyright 2014 Christian Pesch
- * Copyright 2014 Ludwig M Brinckmann
- * Copyright 2014-2016 devemux86
- *
- * This program is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
@@ -117,7 +99,6 @@ public final class MapUI {
             @Override
             public void windowOpened(WindowEvent e) {
                 final Model model = mapView.getModel();
-                // model.init(preferencesFacade);
                 byte zoomLevel = LatLongUtils.zoomForBounds(model.mapViewDimension.getDimension(), boundingBox, model.displayModel.getTileSize());
                 model.mapViewPosition.setMapPosition(new MapPosition(boundingBox.getCenterPoint(), zoomLevel));
             }
@@ -179,7 +160,7 @@ public final class MapUI {
             }
             mMainPath = list;
             mPaths.add(list);
-            //createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
+            createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
         }
     }
 
@@ -215,11 +196,13 @@ public final class MapUI {
             HashSet<Pair<LatLong, LatLong>> overLapList = null;        // List for the start and end point of the paths
             HashMap<Pair<LatLong, LatLong>, HashSet<Pair<LatLong, LatLong>>> otherPaths = new HashMap<>();
             // convert path to hashset
+            Logger.println(Logger.DEBUG, "Check point 0");
             for (int i = 0; i < mPaths.size(); i++) {
                 List<LatLong> path = mPaths.get(i);
                 LatLong prev = path.get(0);
                 LatLong curt;
                 HashSet<Pair<LatLong, LatLong>> set = new HashSet<>();
+                Logger.printf(Logger.DEBUG, "i = %d, len = %d\n", i, path.size());
                 for (int j = 1; j < path.size(); j++) {
                     curt = path.get(j);
                     set.add(new Pair<>(prev, curt));
@@ -227,6 +210,7 @@ public final class MapUI {
                 }
                 otherPaths.put(new Pair<>(path.get(0), path.get(path.size() - 1)), set);
             }
+            Logger.println(Logger.DEBUG, "check point 1");
             LatLong prev = mMainPath.get(0);
             LatLong curt;
             for (int i = 1; i < mMainPath.size(); i++) {
@@ -234,6 +218,7 @@ public final class MapUI {
                 overLapList = new HashSet<>();
                 Pair<LatLong, LatLong> curPair = new Pair<>(prev, curt);
                 ArrayList<LatLong> list = new ArrayList<>();
+
                 for (Pair<LatLong, LatLong> key : otherPaths.keySet()) {
                     if (otherPaths.get(key).contains(curPair)) {
                         overLapList.add(key);
@@ -241,6 +226,7 @@ public final class MapUI {
                 }
                 list.add(prev);
                 list.add(curt);
+                Logger.println(Logger.DEBUG, "Check point 2");
                 while (overLapList.size() > 0) {
                     i++;
                     if (i >= mMainPath.size()) {
@@ -266,10 +252,15 @@ public final class MapUI {
                     }
                     list.add(curt);
                 }
+
+                Logger.println(Logger.DEBUG, "Check point 3");
+
                 HashMap<LatLong, Integer> dots = new HashMap<>();
 
                 ArrayList<LatLong> sourceDots = new ArrayList<>();
                 ArrayList<LatLong> targetDots = new ArrayList<>();
+
+                Logger.println(Logger.DEBUG, "Check point 4");
 
                 for (Pair<LatLong, LatLong> p : overLapList) {
                     dots.put(p.mFirst, new java.awt.Color(6, 0, 133, 255).getRGB());
@@ -277,6 +268,8 @@ public final class MapUI {
                     sourceDots.add(p.mFirst);
                     targetDots.add(p.mSecond);
                 }
+
+                Logger.println(Logger.DEBUG, "Check point 5");
 
                 if (overLapList.size() > 1) {
                     MyLineLayer myLineLayer = new MyLineLayer(GRAPHIC_FACTORY, dots,

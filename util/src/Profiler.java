@@ -23,16 +23,17 @@ public class Profiler {
         mLogLevel = logLevel;
     }
 
-    public void start() {
+    public Profiler start() {
         mStart = System.nanoTime();
         mBeginCall = Thread.currentThread().getStackTrace()[2];
+        return this;
     }
 
     public long timeElapsed() {
         return mEnd - mStart;
     }
 
-    public void endAndPrint() {
+    public Profiler endAndPrint() {
         mEnd = System.nanoTime();
         mEndCall = Thread.currentThread().getStackTrace()[2];
         if (!mEndCall.getMethodName().equals(mBeginCall.getMethodName())) {
@@ -42,13 +43,15 @@ public class Profiler {
                     mEndCall.getFileName(), mEndCall.getLineNumber());
         }
         print();
+        return this;
     }
 
-    public void print() {
-        Logger.printf(mLogLevel, "Start: %20s: %-6d End: %20s: %-6d Total Time: %-15d ns\n",
+    public Profiler print() {
+        Logger.printf(mLogLevel, "Start:[%15s:%-3d] End:[%15s: %-3d]Total Time: %-13d ns\n",
                 mBeginCall.getFileName(), mBeginCall.getLineNumber(),
                 mEndCall.getFileName(), mEndCall.getLineNumber(),
                 timeElapsed());
+        return this;
     }
 
 }

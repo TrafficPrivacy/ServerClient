@@ -4,7 +4,7 @@ import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
 
-public class DefaultEdgeIterator extends S2SStrategy.EdgeIter {
+public class DefaultEdgeIterator extends EdgeIter {
 
     private int mPrevEdge;
     private EdgeIterator mGhEdgeIterator;

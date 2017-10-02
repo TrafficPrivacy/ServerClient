@@ -1,8 +1,11 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.PriorityQueue;
 
-public class Dijkstra extends S2SStrategy {
+public class AStar extends S2SStrategy {
 
-    public Dijkstra(CallBacks callBacks) {
+    public AStar(CallBacks callBacks) {
         super(callBacks);
     }
 
@@ -13,19 +16,13 @@ public class Dijkstra extends S2SStrategy {
         }
         Paths paths = new Paths();
         for (int start : set1) {
-            Paths newPaths = dijkstra(start, set2);
+            Paths newPaths = astar(start, set2);
             paths.addAll(newPaths);
         }
         return paths;
     }
 
-    /**
-     * Implementation of one to all dijkstra
-     * @param start The graphhopper index for start node
-     * @param set The set of desitination ndoes
-     * @return a map of each pair of nodes to the distance and path (represented by an array of index)
-     */
-    private Paths dijkstra(int start, int[] set) {
+    private Paths astar(int start, int[] set) {
         // create a hash set for easier lookup
         HashSet<Integer> setSet = new HashSet<>();
         Paths resultPaths = new Paths();
@@ -48,9 +45,8 @@ public class Dijkstra extends S2SStrategy {
 
             EdgeIter iter = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
             while (iter.next()) {
-
                 int nextID = iter.getNext();
-                double tempCost = iter.getCost() + current.mCost;
+                double tempCost = current.mDistance + iter.getDistance() + mCallBacks.getPotential(nextID, setSet);
                 if (nodeReference.containsKey(nextID)) {
                     NodeWrapper next = nodeReference.get(nextID);
                     // decrease key operation in the priority queue
@@ -63,7 +59,7 @@ public class Dijkstra extends S2SStrategy {
                     }
                 } else {
                     NodeWrapper next = new NodeWrapper(nextID, tempCost, current.mNodeID,
-                                                iter.getEdge(), current.mDistance + iter.getDistance());
+                            iter.getEdge(), current.mDistance + iter.getDistance());
                     nodeReference.put(nextID, next);
                     queue.add(next);
                 }

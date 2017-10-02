@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class ClientEdgeIterator extends S2SStrategy.EdgeIter{
+public class ClientEdgeIterator extends EdgeIter {
     private AdjacencyList<Integer> mGraph;
     private ArrayList<Integer> mNeighbors;
     private int mCurrent;
@@ -17,6 +17,7 @@ public class ClientEdgeIterator extends S2SStrategy.EdgeIter{
      * Don't use
      * @return always false
      */
+    @Deprecated
     @Override
     public boolean hasNext() {
         return false;
@@ -30,7 +31,7 @@ public class ClientEdgeIterator extends S2SStrategy.EdgeIter{
     @Override
     public double getCost() {
         if (mNeighbors != null) {
-            return mGraph.getWeight(mCurrent, mNeighbors.get(mCurIdx));
+            return mGraph.getDistance(mCurrent, mNeighbors.get(mCurIdx));
         }
         return -1;
     }

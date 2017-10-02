@@ -70,9 +70,9 @@ public class S2SStrategyTest {
         //mStrategy = S2SStrategy.strategyFactory(ALGORITHM, mHopper.getGraphHopperStorage()
         //                .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)),
         //                new FastestWeighting(em.getEncoder("car")));
-        mStrategy = S2SStrategy.strategyFactory(ALGORITHM, new S2SStrategy.EdgeProvider() {
+        mStrategy = S2SStrategy.strategyFactory(ALGORITHM, new CallBacks() {
             @Override
-            public S2SStrategy.EdgeIter getIterator(int current, int prevEdgeID) {
+            public EdgeIter getIterator(int current, int prevEdgeID) {
                 return new DefaultEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
                         .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
             }

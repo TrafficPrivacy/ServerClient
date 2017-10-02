@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class Logger {
     private static int mVerboseLevel = 4;
 
-    private static final String FORMAT = "%-5s: %15s: %-4d ";
+    private static final String FORMAT = "%-5s:[%15s:%-4d] -- ";
     private static final String[] TYPES = {"ERROR", "WARN", "INFO", "DEBUG", "USER"};
 
     public static final int ERROR = 0;

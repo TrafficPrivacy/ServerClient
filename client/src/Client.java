@@ -3,11 +3,13 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
+import org.mapsforge.core.model.LatLong;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Client {
     private int mServerPort;
@@ -115,14 +117,17 @@ public class Client {
                 Integer[] dPath = dstPaths.findPath(metaPath[i - 1], metaPath[i]);
                 if (sPath != null) {
                     for (int idx : sPath) {
+                        Logger.printf(Logger.DEBUG, "idx = %d\n", idx);
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (iPath != null) {
                     for (int idx : iPath) {
+                        Logger.printf(Logger.DEBUG, "idx = %d\n", idx);
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (dPath != null) {
                     for (int idx : dPath) {
+                        Logger.printf(Logger.DEBUG, "idx = %d\n", idx);
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 }
@@ -163,25 +168,27 @@ public class Client {
 
         ObjectInputStream oIn = new ObjectInputStream(in);
         Reply reply = (Reply) oIn.readObject();
-        System.out.println("client received");
         oIn.close();
         in.close();
         out.close();
 
         AdjacencyList<Integer> graph = parseReply(reply);
 
-        mStrategy = S2SStrategy.strategyFactory(S2SStrategy.DIJKSTRA, new S2SStrategy.EdgeProvider() {
+        mStrategy = S2SStrategy.strategyFactory(S2SStrategy.DIJKSTRA, new CallBacks() {
             @Override
-            public S2SStrategy.EdgeIter getIterator(int current, int prevEdgeID) {
+            public EdgeIter getIterator(int current, int prevEdgeID) {
                 return new ClientEdgeIterator(current, graph);
+            }
+
+            @Override
+            public double getPotential(int current, HashSet<Integer> targets) {
+                return 0;
             }
         });
 
+        Profiler profiler = new Profiler().start();
         Paths paths = mStrategy.compute(reply.mSrcCircle.mFirst, reply.mDestCircle.mFirst);
-
-        System.out.printf("src size: %d, dst size: %d\n", reply.mSrcCircle.mFirst.length, reply.mDestCircle.mFirst.length);
-
-        System.out.printf("Number of eventual path: %d\n", paths.numOfPaths());
+        profiler.endAndPrint().start();
 
         // path recovery and visualization
 
@@ -192,17 +199,16 @@ public class Client {
         System.out.printf("%d, %d\n", start, end);
         ArrayList<MyPoint> mainPath = recoveryPath(start, end,
                                         paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
-        System.out.println("Main path weight: " + paths.findWeight(start, end));
+        Logger.printf(Logger.DEBUG, "Main path len: %d\n", mainPath.size());
+        System.out.println("Main path weight: " + paths.findDistance(start, end));
         mUI.setMainPath(mainPath);
 
-        for (Pair<Integer, Integer> path : paths.getPaths()) {
-            ArrayList<MyPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
-                                        paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
-            mUI.addPath(otherPath);
-        }
-        Profiler profiler = new Profiler();
-        profiler.start();
-        mUI.showUpdate();
+//        for (Pair<Integer, Integer> path : paths.getPaths()) {
+//            ArrayList<MyPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
+//                                        paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
+//            mUI.addPath(otherPath);
+//        }
         profiler.endAndPrint();
+        //mUI.showUpdate();
     }
 }
