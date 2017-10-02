@@ -89,8 +89,6 @@ public class Client {
         int[] srcIdx = reply.mSrcCircle.mFirst;
         int[] destIdx = reply.mDestCircle.mFirst;
 
-        System.out.printf("%d, %d\n", srcIdx.length, destIdx.length);
-
         for (int i = 0; i < srcIdx.length; i++) {
             map1.put(reply.mSrcReference[i], srcIdx[i]);
             map2.put(srcIdx[i], reply.mSrcReference[i]);
@@ -129,7 +127,6 @@ public class Client {
                     }
                 }
             }
-            Logger.printf(Logger.DEBUG, "num of nodes: %d\n", path.size());
         }
         return path;
     }
@@ -194,11 +191,8 @@ public class Client {
 
         int start = findNearest(startPoint);
         int end = findNearest(endPoint);
-        System.out.printf("%d, %d\n", start, end);
         ArrayList<MyPoint> mainPath = recoveryPath(start, end,
                                         paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
-        Logger.printf(Logger.DEBUG, "Main path len: %d\n", mainPath.size());
-        System.out.println("Main path weight: " + paths.findDistance(start, end));
         mUI.setMainPath(mainPath);
 
         for (Pair<Integer, Integer> path : paths.getPaths()) {

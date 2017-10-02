@@ -2,8 +2,11 @@ import java.util.*;
 
 public class Dijkstra extends S2SStrategy {
 
+    private int mCounter;
+
     public Dijkstra(CallBacks callBacks) {
         super(callBacks);
+        mCounter = 0;
     }
 
     @Override
@@ -16,6 +19,9 @@ public class Dijkstra extends S2SStrategy {
             Paths newPaths = dijkstra(start, set2);
             paths.addAll(newPaths);
         }
+
+        Logger.printf(Logger.DEBUG, "Expanded %d nodes\n", mCounter);
+
         return paths;
     }
 
@@ -37,60 +43,15 @@ public class Dijkstra extends S2SStrategy {
 
         // dijkstra
 
-//        HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
-//        PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
-//        nodeReference.put(start, new NodeWrapper(start, 0, start, -1, 0));
-//        queue.add(nodeReference.get(start));
-//        while (!queue.isEmpty() && setSet.size() > 0) {
-//            NodeWrapper current = queue.poll();
-//            if (current.mNodeID == -1)
-//                continue;
-//
-//            EdgeIter iter = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
-//            while (iter.next()) {
-//
-//                int nextID = iter.getNext();
-//                double tempCost = iter.getCost() + current.mCost;
-//                if (nodeReference.containsKey(nextID)) {
-//                    NodeWrapper next = nodeReference.get(nextID);
-//                    // decrease key operation in the priority queue
-//                    if (next.mCost > tempCost) {
-//                        queue.remove(next);
-//                        next.mCost = tempCost;
-//                        next.mParent = current.mNodeID;
-//                        next.mDistance = current.mDistance + iter.getDistance();
-//                        queue.add(next);
-//                    }
-//                } else {
-//                    NodeWrapper next = new NodeWrapper(nextID, tempCost, current.mNodeID,
-//                                                iter.getEdge(), current.mDistance + iter.getDistance());
-//                    nodeReference.put(nextID, next);
-//                    queue.add(next);
-//                }
-//            }
-//            // Path reconstruction. (We found a target point)
-//            if (setSet.contains(current.mNodeID)) {
-//                ArrayList<Integer> array = new ArrayList<>();
-//                NodeWrapper loc_current = current;
-//                do {
-//                    array.add(loc_current.mNodeID);
-//                    loc_current = nodeReference.get(loc_current.mParent);
-//                } while(loc_current.mNodeID != loc_current.mParent);
-//                array.add(loc_current.mNodeID);
-//                setSet.remove(current.mNodeID);
-//
-//                Integer[] points = new Integer[array.size()];
-//                for (int i = array.size() - 1; i >= 0; i --) {
-//                    points[array.size() - 1 - i] = array.get(i);
-//                }
-//                resultPaths.addPath(start, current.mNodeID, current.mDistance, current.mCost, points);
-//            }
         HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
         PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
         nodeReference.put(start, new NodeWrapper(start, 0, start, -1, 0));
         queue.add(nodeReference.get(start));
         while (!queue.isEmpty() && setSet.size() > 0) {
             NodeWrapper current = queue.poll();
+
+            mCounter ++;
+
             if (current.mNodeID == -1)
                 continue;
             current.mCost -= current.mPotential;

@@ -8,6 +8,7 @@ public class ServerMain {
         String osmPath = mFlagParser.getArg("--osmPath");
         String ghPath  = mFlagParser.getArg("--ghPath");
 
+        /* TODO: use command line argument to pass the parameter */
         Server server = new Server(port, osmPath, ghPath, S2SStrategy.ASTAR);
         server.run();
     }
