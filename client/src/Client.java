@@ -117,17 +117,14 @@ public class Client {
                 Integer[] dPath = dstPaths.findPath(metaPath[i - 1], metaPath[i]);
                 if (sPath != null) {
                     for (int idx : sPath) {
-                        Logger.printf(Logger.DEBUG, "idx = %d\n", idx);
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (iPath != null) {
                     for (int idx : iPath) {
-                        Logger.printf(Logger.DEBUG, "idx = %d\n", idx);
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (dPath != null) {
                     for (int idx : dPath) {
-                        Logger.printf(Logger.DEBUG, "idx = %d\n", idx);
                         path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 }
@@ -203,12 +200,12 @@ public class Client {
         System.out.println("Main path weight: " + paths.findDistance(start, end));
         mUI.setMainPath(mainPath);
 
-//        for (Pair<Integer, Integer> path : paths.getPaths()) {
-//            ArrayList<MyPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
-//                                        paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
-//            mUI.addPath(otherPath);
-//        }
+        for (Pair<Integer, Integer> path : paths.getPaths()) {
+            ArrayList<MyPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
+                                        paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
+            mUI.addPath(otherPath);
+        }
         profiler.endAndPrint();
-        //mUI.showUpdate();
+        mUI.showUpdate();
     }
 }

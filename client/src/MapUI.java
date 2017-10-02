@@ -160,7 +160,7 @@ public final class MapUI {
             }
             mMainPath = list;
             mPaths.add(list);
-            createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
+//            createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
         }
     }
 
@@ -196,7 +196,6 @@ public final class MapUI {
             HashSet<Pair<LatLong, LatLong>> overLapList = null;        // List for the start and end point of the paths
             HashMap<Pair<LatLong, LatLong>, HashSet<Pair<LatLong, LatLong>>> otherPaths = new HashMap<>();
             // convert path to hashset
-            Logger.println(Logger.DEBUG, "Check point 0");
             for (int i = 0; i < mPaths.size(); i++) {
                 List<LatLong> path = mPaths.get(i);
                 LatLong prev = path.get(0);
@@ -210,7 +209,6 @@ public final class MapUI {
                 }
                 otherPaths.put(new Pair<>(path.get(0), path.get(path.size() - 1)), set);
             }
-            Logger.println(Logger.DEBUG, "check point 1");
             LatLong prev = mMainPath.get(0);
             LatLong curt;
             for (int i = 1; i < mMainPath.size(); i++) {

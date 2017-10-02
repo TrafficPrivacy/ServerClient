@@ -8,7 +8,7 @@ public class ServerMain {
         String osmPath = mFlagParser.getArg("--osmPath");
         String ghPath  = mFlagParser.getArg("--ghPath");
 
-        Server server = new Server(port, osmPath, ghPath, S2SStrategy.DIJKSTRA);
+        Server server = new Server(port, osmPath, ghPath, S2SStrategy.ASTAR);
         server.run();
     }
 

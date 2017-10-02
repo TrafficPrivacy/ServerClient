@@ -1,6 +1,7 @@
 public class NodeWrapper implements Comparable {
     public double mDistance;
     public double mCost;
+    public double mPotential;
     public final int mNodeID;
     public int mParent;
     public int mPreviousEdgeID;

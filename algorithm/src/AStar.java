@@ -46,7 +46,8 @@ public class AStar extends S2SStrategy {
             EdgeIter iter = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
             while (iter.next()) {
                 int nextID = iter.getNext();
-                double tempCost = current.mDistance + iter.getDistance() + mCallBacks.getPotential(nextID, setSet);
+                double nextPotential = mCallBacks.getPotential(nextID, setSet);
+                double tempCost = current.mCost + iter.getCost() + nextPotential - current.mPotential;
                 if (nodeReference.containsKey(nextID)) {
                     NodeWrapper next = nodeReference.get(nextID);
                     // decrease key operation in the priority queue
@@ -55,11 +56,13 @@ public class AStar extends S2SStrategy {
                         next.mCost = tempCost;
                         next.mParent = current.mNodeID;
                         next.mDistance = current.mDistance + iter.getDistance();
+                        next.mPotential = nextPotential;
                         queue.add(next);
                     }
                 } else {
                     NodeWrapper next = new NodeWrapper(nextID, tempCost, current.mNodeID,
                             iter.getEdge(), current.mDistance + iter.getDistance());
+                    next.mPotential = nextPotential;
                     nodeReference.put(nextID, next);
                     queue.add(next);
                 }
