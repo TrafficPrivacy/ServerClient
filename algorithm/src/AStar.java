@@ -42,12 +42,12 @@ public class AStar extends S2SStrategy {
             NodeWrapper current = queue.poll();
             if (current.mNodeID == -1)
                 continue;
-
+            current.mCost -= current.mPotential;
             EdgeIter iter = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
             while (iter.next()) {
                 int nextID = iter.getNext();
                 double nextPotential = mCallBacks.getPotential(nextID, setSet);
-                double tempCost = current.mCost + iter.getCost() + nextPotential - current.mPotential;
+                double tempCost = current.mCost + iter.getCost() + nextPotential;
                 if (nodeReference.containsKey(nextID)) {
                     NodeWrapper next = nodeReference.get(nextID);
                     // decrease key operation in the priority queue

@@ -201,7 +201,6 @@ public final class MapUI {
                 LatLong prev = path.get(0);
                 LatLong curt;
                 HashSet<Pair<LatLong, LatLong>> set = new HashSet<>();
-                Logger.printf(Logger.DEBUG, "i = %d, len = %d\n", i, path.size());
                 for (int j = 1; j < path.size(); j++) {
                     curt = path.get(j);
                     set.add(new Pair<>(prev, curt));
@@ -224,7 +223,6 @@ public final class MapUI {
                 }
                 list.add(prev);
                 list.add(curt);
-                Logger.println(Logger.DEBUG, "Check point 2");
                 while (overLapList.size() > 0) {
                     i++;
                     if (i >= mMainPath.size()) {
@@ -251,14 +249,12 @@ public final class MapUI {
                     list.add(curt);
                 }
 
-                Logger.println(Logger.DEBUG, "Check point 3");
 
                 HashMap<LatLong, Integer> dots = new HashMap<>();
 
                 ArrayList<LatLong> sourceDots = new ArrayList<>();
                 ArrayList<LatLong> targetDots = new ArrayList<>();
 
-                Logger.println(Logger.DEBUG, "Check point 4");
 
                 for (Pair<LatLong, LatLong> p : overLapList) {
                     dots.put(p.mFirst, new java.awt.Color(6, 0, 133, 255).getRGB());
@@ -266,8 +262,6 @@ public final class MapUI {
                     sourceDots.add(p.mFirst);
                     targetDots.add(p.mSecond);
                 }
-
-                Logger.println(Logger.DEBUG, "Check point 5");
 
                 if (overLapList.size() > 1) {
                     MyLineLayer myLineLayer = new MyLineLayer(GRAPHIC_FACTORY, dots,

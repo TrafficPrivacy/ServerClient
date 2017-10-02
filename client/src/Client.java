@@ -129,6 +129,7 @@ public class Client {
                     }
                 }
             }
+            Logger.printf(Logger.DEBUG, "num of nodes: %d\n", path.size());
         }
         return path;
     }

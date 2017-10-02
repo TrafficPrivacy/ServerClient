@@ -39,6 +39,10 @@ public class MatrixComputer {
                 @Override
                 public EdgeIter getIterator(int current, int prevEdgeID) {
                     /*TODO: change the hard coded name too*/
+                    if (strategy == S2SStrategy.ASTAR) {
+                        return new AStarEdgeIterator(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
+                                .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
+                    }
                     return new DefaultEdgeIterator(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
                             .createEdgeExplorer(new DefaultEdgeFilter(em.getEncoder("car"), false, true)));
                 }

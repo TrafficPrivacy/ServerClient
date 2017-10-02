@@ -6,10 +6,16 @@ import com.graphhopper.util.EdgeIterator;
 
 public class DefaultEdgeIterator extends EdgeIter {
 
-    private int mPrevEdge;
-    private EdgeIterator mGhEdgeIterator;
-    private Weighting mWeight;
+    protected int mPrevEdge;
+    protected EdgeIterator mGhEdgeIterator;
+    protected Weighting mWeight;
 
+    /**
+     * Construct a new edge iterator
+     * @param current the current node id
+     * @param prevEdge the edge leads to this node
+     * @param outEdgeExplorer base graph edge iterator
+     */
     public DefaultEdgeIterator(int current, int prevEdge, EdgeExplorer outEdgeExplorer) {
         mPrevEdge = prevEdge;
         mGhEdgeIterator = outEdgeExplorer.setBaseNode(current);

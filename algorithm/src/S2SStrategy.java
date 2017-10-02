@@ -22,7 +22,7 @@ public abstract class S2SStrategy {
                 return new BellmanFord(callBacks);
 
             case ASTAR:
-                return new AStar(callBacks);
+                return new Dijkstra(callBacks);
 
             default:
                 throw new Exception("Invalid option for strategy");
