@@ -2,89 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="494546ed-1e7f-416a-ad61-b02c11e00466" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/com_graphhopper_graphhopper_reader_osm_0_9_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/org_mapsforge_mapsforge_core_0_8_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/org_mapsforge_mapsforge_map_awt_0_8_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/org_mapsforge_mapsforge_map_reader_0_8_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/org_mapsforge_mapsforge_themes_0_7_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/README.md" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/algorithm.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/AStar.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/AStarEdgeIterator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/BellmanFord.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/CallBacks.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/DefaultEdgeIterator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/Dijkstra.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/EdgeIter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/FloydWarshall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/NodeWrapper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/algorithm/src/S2SStrategy.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/client/client.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/client/src/Client.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/client/src/ClientEdgeIterator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/client/src/ClientMain.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/client/src/MapUI.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/download.sh" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/commons-io-1.3.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/commons-logging-1.0.4.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/graphhopper-core-0.9.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/graphhopper-reader-osm-0.9.0-javadoc.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/graphhopper-reader-osm-0.9.0-sources.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/graphhopper-reader-osm-0.9.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/hppc-0.7.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/jackson-annotations-2.8.4.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/jts-1.13.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/kxml2-2.3.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/log4j-1.2.17.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-core-0.7.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-core-0.8.0-javadoc.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-core-0.8.0-sources.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-core-0.8.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-0.7.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-0.8.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-awt-0.8.0-javadoc.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-awt-0.8.0-sources.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-awt-0.8.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-reader-0.8.0-javadoc.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-reader-0.8.0-sources.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-map-reader-0.8.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-themes-0.7.0-javadoc.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-themes-0.7.0-sources.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/mapsforge-themes-0.7.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/osmosis-osm-binary-0.45.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/protobuf-java-2.6.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/slf4j-api-1.7.25.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/slf4j-log4j12-1.7.25.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/svg-salamander-0.1.19.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/xmlgraphics-commons-2.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/server/server.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/server/src/MatrixComputer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/server/src/Server.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/server/src/ServerMain.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/lib/hamcrest-core-1.3.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/lib/junit-4.12.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/src/S2SStrategyTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/src/ServerTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/test.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/AdjacencyList.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Convex.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/FlagParser.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Logger.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/MyPoint.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Pair.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Paths.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Profiler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Reply.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Surroundings.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/src/Triple.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/util/util.iml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ServerClient.iml" afterPath="$PROJECT_DIR$/ServerClient.iml" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -96,99 +14,15 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="Client.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/client/Client.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="179" column="52" lean-forward="false" selection-start-line="179" selection-start-column="52" selection-end-line="179" selection-end-column="52" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ClientEdgeIterator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/client/ClientEdgeIterator.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="836">
-              <caret line="63" column="1" lean-forward="false" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ClientMain.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/client/ClientMain.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="25" column="49" lean-forward="false" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MatrixComputer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/server/MatrixComputer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="86" column="56" lean-forward="false" selection-start-line="86" selection-start-column="56" selection-end-line="86" selection-end-column="56" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Server.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/server/Server.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="768">
-              <caret line="91" column="16" lean-forward="false" selection-start-line="91" selection-start-column="16" selection-end-line="91" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ServerMain.java" pinned="false" current-in-tab="false">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="ServerMain.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/server/ServerMain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="493">
-              <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+            <state relative-caret-position="323">
+              <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Convex.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/util/Convex.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="595">
-              <caret line="35" column="1" lean-forward="false" selection-start-line="35" selection-start-column="1" selection-end-line="35" selection-end-column="1" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FlagParser.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/util/FlagParser.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-85">
-              <caret line="42" column="20" lean-forward="false" selection-start-line="42" selection-start-column="20" selection-end-line="42" selection-end-column="20" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" column="6" lean-forward="true" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -343,6 +177,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.38275862" />
     <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -356,7 +191,35 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Client">
+    <configuration name="Client" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" value="client.ClientMain" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="40.102039 -88.224335 41.8941 -87.711411 --port 12280 --osmPath data/illinois-latest.osm.pbf --ghPath data/illinois --mapPath data/illinois.map" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="ServerClient" />
+      <envs />
+    </configuration>
+    <configuration name="Server" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" value="server.ServerMain" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="--port 12280 --osmPath data/illinois-latest.osm.pbf --ghPath data/illinois" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="ServerClient" />
+      <envs />
+    </configuration>
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="WIDTH" value="400" />
       <option name="HEIGHT" value="300" />
@@ -437,6 +300,10 @@
       <properties />
       <listeners />
     </configuration>
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="Application.Server" />
+      <item index="1" class="java.lang.String" itemvalue="Application.Client" />
+    </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -459,24 +326,25 @@
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20704375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -487,11 +355,96 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/main/java/client/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2788">
+          <caret line="179" column="52" lean-forward="false" selection-start-line="179" selection-start-column="52" selection-end-line="179" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/client/ClientEdgeIterator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1071">
+          <caret line="63" column="1" lean-forward="false" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/client/ClientMain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="25" column="49" lean-forward="false" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/server/MatrixComputer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1207">
+          <caret line="86" column="56" lean-forward="false" selection-start-line="86" selection-start-column="56" selection-end-line="86" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/server/ServerMain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/server/Server.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1377">
+          <caret line="91" column="16" lean-forward="false" selection-start-line="91" selection-start-column="16" selection-end-line="91" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/util/Convex.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="595">
+          <caret line="35" column="1" lean-forward="false" selection-start-line="35" selection-start-column="1" selection-end-line="35" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/util/FlagParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1088">
+          <caret line="69" column="0" lean-forward="false" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="629">
+          <caret line="37" column="20" lean-forward="true" selection-start-line="37" selection-start-column="20" selection-end-line="37" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="6" lean-forward="true" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ServerClient.iml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -608,14 +561,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="31" lean-forward="false" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/client/MapUI.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="683">
@@ -679,17 +624,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/client/Client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="179" column="52" lean-forward="false" selection-start-line="179" selection-start-column="52" selection-end-line="179" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/client/ClientEdgeIterator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="836">
+        <state relative-caret-position="918">
           <caret line="63" column="1" lean-forward="false" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -709,7 +646,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/server/MatrixComputer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
+        <state relative-caret-position="1207">
           <caret line="86" column="56" lean-forward="false" selection-start-line="86" selection-start-column="56" selection-end-line="86" selection-end-column="56" />
           <folding />
         </state>
@@ -717,19 +654,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/server/Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="768">
+        <state relative-caret-position="1377">
           <caret line="91" column="16" lean-forward="false" selection-start-line="91" selection-start-column="16" selection-end-line="91" selection-end-column="16" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/server/ServerMain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -743,8 +670,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/util/FlagParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-85">
-          <caret line="42" column="20" lean-forward="false" selection-start-line="42" selection-start-column="20" selection-end-line="42" selection-end-column="20" />
+        <state relative-caret-position="1088">
+          <caret line="69" column="0" lean-forward="false" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -754,6 +681,32 @@
         <state relative-caret-position="34">
           <caret line="2" column="6" lean-forward="true" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="12" lean-forward="false" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/client/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="256">
+          <caret line="179" column="52" lean-forward="false" selection-start-line="179" selection-start-column="52" selection-end-line="179" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/server/ServerMain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
