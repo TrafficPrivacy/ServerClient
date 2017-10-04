@@ -16,7 +16,7 @@ Then run Server first and Client second.
  - Server:
 ```bash
 mvn exec:java -Dexec.mainClass="server.ServerMain" \
--Dexec.args="--port 12280 --osmPath data/linois-latest.osm.pbf \
+-Dexec.args="--port 12280 --osmPath data/illinois-latest.osm.pbf \
 --ghPath data/illinois"
 ```
  - Client:
