@@ -3,7 +3,7 @@ package client;
 import util.FlagParser;
 import util.Pair;
 
-public class ClientMain {
+public class ClientRunner {
     private static FlagParser mFlagParser;
     private static Client mClient;
 

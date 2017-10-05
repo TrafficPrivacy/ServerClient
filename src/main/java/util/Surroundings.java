@@ -58,10 +58,10 @@ public class Surroundings {
     }
 
     private ArrayList<GHPoint> DijkstraSSSP(int start, double distBound) {
-        /* TODO: maybe reuse the dijkstra from algorithm*/
+        /* TODO: maybe reuse the dijkstra from algorithm */
         HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
         PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
-        /** Dijkstra **/
+        /* Dijkstra */
         nodeReference.put(start, new NodeWrapper(start, 0, start));
         queue.add(nodeReference.get(start));
         while (!queue.isEmpty()) {

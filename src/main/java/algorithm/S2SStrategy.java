@@ -10,6 +10,7 @@ public abstract class S2SStrategy {
     public static final int FLOYWARSHALL = 1;
     public static final int BELLMANFORD = 2;
     public static final int ASTAR = 3;
+    public static final int ASTARNOREEVALUATE = 4;
 
     public static S2SStrategy strategyFactory(int type, CallBacks callBacks) throws Exception {
         switch (type) {
@@ -23,6 +24,9 @@ public abstract class S2SStrategy {
                 return new BellmanFord(callBacks);
 
             case ASTAR:
+                return new AStar(callBacks);
+
+            case ASTARNOREEVALUATE:
                 return new Dijkstra(callBacks);
 
             default:

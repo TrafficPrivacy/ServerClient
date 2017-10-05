@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Convex {
 
-    public static ArrayList<MyPoint> getConvex(ArrayList<MyPoint> dots) {
+    public static ArrayList<MapPoint> getConvex(ArrayList<MapPoint> dots) {
         int n = dots.size();
         if (n < 3)
             return null;
-        ArrayList<MyPoint> convex = new ArrayList<>();
+        ArrayList<MapPoint> convex = new ArrayList<>();
         int leftMost = 0;
         for (int i = 1; i < n; i++) {
             if (dots.get(i).mSecond < dots.get(leftMost).mSecond)
@@ -29,7 +29,7 @@ public class Convex {
         return convex;
     }
 
-    private static boolean convexHelper(MyPoint p, MyPoint q, MyPoint r) {
+    private static boolean convexHelper(MapPoint p, MapPoint q, MapPoint r) {
         double val = (q.mFirst - p.mFirst) * (r.mSecond - q.mSecond) - (q.mSecond - p.mSecond) * (r.mFirst - q.mFirst);
         return !(val >= 0);
     }

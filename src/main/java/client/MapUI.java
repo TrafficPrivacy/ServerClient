@@ -31,7 +31,7 @@ import org.mapsforge.map.reader.ReadBuffer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 import util.Convex;
-import util.MyPoint;
+import util.MapPoint;
 import util.Pair;
 
 import javax.swing.*;
@@ -149,7 +149,7 @@ public final class MapUI {
         return 0;
     }
 
-    public void setMainPath(ArrayList<MyPoint> path) {
+    public void setMainPath(ArrayList<MapPoint> path) {
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<LatLong>();
             LatLong prev = new LatLong(path.get(0).mFirst, path.get(0).mSecond);
@@ -167,7 +167,7 @@ public final class MapUI {
         }
     }
 
-    public void addPath(ArrayList<MyPoint> path) {
+    public void addPath(ArrayList<MapPoint> path) {
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<>();
             for (int i = 0; i < path.size(); i++) {
@@ -450,7 +450,7 @@ public final class MapUI {
             paintStroke.setColor(pathcolor);
             paintStroke.setStrokeWidth(pathstrokeWidth);
             this.setPaintStroke(paintStroke);
-            List<LatLong> convex = MyPoint.convertToLatlong(Convex.getConvex(MyPoint.convertFromLatlong(dots)));
+            List<LatLong> convex = MapPoint.convertToLatlong(Convex.getConvex(MapPoint.convertFromLatlong(dots)));
             if (convex != null)
                 super.getLatLongs().addAll(convex);
             else

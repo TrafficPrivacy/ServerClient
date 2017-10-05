@@ -1,5 +1,6 @@
 package algorithm;
 
+import sun.rmi.runtime.Log;
 import util.Logger;
 import util.Paths;
 
@@ -9,12 +10,16 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 
 public class Dijkstra extends S2SStrategy {
+    protected PriorityQueue<NodeWrapper> mQueue;
+    protected HashMap<Integer, NodeWrapper> mNodeReference;
+    protected HashSet<Integer> mTargets;
 
-    private int mCounter;
 
     public Dijkstra(CallBacks callBacks) {
         super(callBacks);
-        mCounter = 0;
+        mQueue = new PriorityQueue<>();
+        mNodeReference = new HashMap<>();
+        mTargets = new HashSet<>();
     }
 
     @Override
@@ -27,9 +32,6 @@ public class Dijkstra extends S2SStrategy {
             Paths newPaths = dijkstra(start, set2);
             paths.addAll(newPaths);
         }
-
-        Logger.printf(Logger.DEBUG, "Expanded %d nodes\n", mCounter);
-
         return paths;
     }
 
@@ -40,84 +42,74 @@ public class Dijkstra extends S2SStrategy {
      * @return a map of each pair of nodes to the distance and path (represented by an array of index)
      */
     private Paths dijkstra(int start, int[] set) {
-        // create a hash set for easier lookup
-        HashSet<Integer> setSet = new HashSet<>();
+        mTargets.clear();
+        mQueue.clear();
+        mNodeReference.clear();
+
+        /* create a hash set to track unsettled targets */
         Paths resultPaths = new Paths();
 
         for (int i : set) {
             if (i != start)         // no point of computing the path to itself
-                setSet.add(i);
+                mTargets.add(i);
         }
 
-        // dijkstra
-
-        HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
-        PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
-        nodeReference.put(start, new NodeWrapper(start, 0, start, -1, 0));
-        queue.add(nodeReference.get(start));
-        while (!queue.isEmpty() && setSet.size() > 0) {
-            NodeWrapper current = queue.poll();
-
-            mCounter ++;
-
+        /* Dijkstra iterations */
+        mNodeReference.put(start, new NodeWrapper(start, 0, start, -1, 0));
+        mQueue.add(mNodeReference.get(start));
+        while (!mQueue.isEmpty() && mTargets.size() > 0) {
+            NodeWrapper current = mQueue.poll();
             if (current.mNodeID == -1)
                 continue;
             current.mCost -= current.mPotential;
-            EdgeIter iter = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
-            while (iter.next()) {
-                int nextID = iter.getNext();
-                double nextPotential = mCallBacks.getPotential(nextID, setSet);
-                double tempCost = current.mCost + iter.getCost() + nextPotential;
-                if (nodeReference.containsKey(nextID)) {
-                    NodeWrapper next = nodeReference.get(nextID);
-                    // decrease key operation in the priority queue
+            EdgeIter nextNodes = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
+            while (nextNodes.next()) {
+                int nextID = nextNodes.getNext();
+                double nextPotential = mCallBacks.getPotential(nextID, mTargets);
+                double tempCost = current.mCost + nextNodes.getCost() + nextPotential;
+                NodeWrapper next;
+                if (mNodeReference.containsKey(nextID)) {
+                    next = mNodeReference.get(nextID);
+                    /* Decrease Key */
                     if (next.mCost > tempCost) {
-                        queue.remove(next);
+                        mQueue.remove(next);
                         next.mCost = tempCost;
                         next.mParent = current.mNodeID;
-                        next.mDistance = current.mDistance + iter.getDistance();
+                        next.mDistance = current.mDistance + nextNodes.getDistance();
                         next.mPotential = nextPotential;
-                        queue.add(next);
+                        mQueue.add(next);
                     }
                 } else {
-                    NodeWrapper next = new NodeWrapper(nextID, tempCost, current.mNodeID,
-                            iter.getEdge(), current.mDistance + iter.getDistance());
+                    next = new NodeWrapper(nextID, tempCost, current.mNodeID,
+                            nextNodes.getEdge(), current.mDistance + nextNodes.getDistance());
+                    mNodeReference.put(nextID, next);
                     next.mPotential = nextPotential;
-                    nodeReference.put(nextID, next);
-                    queue.add(next);
+                    mQueue.add(next);
                 }
             }
-            // Path reconstruction. (We found a target point)
-            if (setSet.contains(current.mNodeID)) {
-                ArrayList<Integer> array = new ArrayList<>();
-                NodeWrapper loc_current = current;
-                do {
-                    array.add(loc_current.mNodeID);
-                    loc_current = nodeReference.get(loc_current.mParent);
-                } while(loc_current.mNodeID != loc_current.mParent);
-                array.add(loc_current.mNodeID);
-                setSet.remove(current.mNodeID);
-
-                /* TODO: recalculate potential */
-
-//                NodeWrapper[] tempQueue = new NodeWrapper[queue.size()];
-//                queue.toArray(tempQueue);
-//                queue.clear();
-//                for (NodeWrapper nodeWrapper : tempQueue) {
-//                    double newPotential = mCallBacks.getPotential(nodeWrapper.mNodeID, setSet);
-//                    nodeWrapper.mCost -= nodeWrapper.mPotential;
-//                    nodeWrapper.mCost += newPotential;
-//                    nodeWrapper.mPotential = newPotential;
-//                    queue.add(nodeWrapper);
-//                }
-
-                Integer[] points = new Integer[array.size()];
-                for (int i = array.size() - 1; i >= 0; i --) {
-                    points[array.size() - 1 - i] = array.get(i);
-                }
+            /* Path Reconstruction */
+            if (mTargets.contains(current.mNodeID)) {
+                Integer[] points = reconstructPath(current);
                 resultPaths.addPath(start, current.mNodeID, current.mDistance, current.mCost, points);
             }
         }
         return resultPaths;
+    }
+
+    protected Integer[] reconstructPath(NodeWrapper current) {
+        ArrayList<Integer> array = new ArrayList<>();
+        NodeWrapper loc_current = current;
+        do {
+            array.add(loc_current.mNodeID);
+            loc_current = mNodeReference.get(loc_current.mParent);
+        } while(loc_current.mNodeID != loc_current.mParent);
+        array.add(loc_current.mNodeID);
+        mTargets.remove(current.mNodeID);
+
+        Integer[] points = new Integer[array.size()];
+        for (int i = array.size() - 1; i >= 0; i --) {
+            points[array.size() - 1 - i] = array.get(i);
+        }
+        return points;
     }
 }

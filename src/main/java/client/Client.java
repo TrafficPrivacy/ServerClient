@@ -88,9 +88,9 @@ public class Client {
         return graph;
     }
 
-    private Pair<HashMap<MyPoint, Integer>, HashMap<Integer, MyPoint>> mapNodes(Reply reply) {
-        HashMap<MyPoint, Integer> map1 = new HashMap<>();
-        HashMap<Integer, MyPoint> map2 = new HashMap<>();
+    private Pair<HashMap<MapPoint, Integer>, HashMap<Integer, MapPoint>> mapNodes(Reply reply) {
+        HashMap<MapPoint, Integer> map1 = new HashMap<>();
+        HashMap<Integer, MapPoint> map2 = new HashMap<>();
         int[] srcIdx = reply.mSrcCircle.mFirst;
         int[] destIdx = reply.mDestCircle.mFirst;
 
@@ -107,10 +107,10 @@ public class Client {
         return new Pair<>(map1, map2);
     }
 
-    private ArrayList<MyPoint> recoveryPath(int start, int end, Paths finalPath, Paths srcPaths,
-                                            Paths dstPaths, Paths interPath) {
+    private ArrayList<MapPoint> recoveryPath(int start, int end, Paths finalPath, Paths srcPaths,
+                                             Paths dstPaths, Paths interPath) {
         NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
-        ArrayList<MyPoint> path = new ArrayList<>();
+        ArrayList<MapPoint> path = new ArrayList<>();
         Integer[] metaPath = finalPath.findPath(start, end);
         if (metaPath != null) {
             for (int i = 1; i < metaPath.length; i++) {
@@ -120,15 +120,15 @@ public class Client {
                 Integer[] dPath = dstPaths.findPath(metaPath[i - 1], metaPath[i]);
                 if (sPath != null) {
                     for (int idx : sPath) {
-                        path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+                        path.add(new MapPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (iPath != null) {
                     for (int idx : iPath) {
-                        path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+                        path.add(new MapPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 } else if (dPath != null) {
                     for (int idx : dPath) {
-                        path.add(new MyPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+                        path.add(new MapPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
                     }
                 }
             }
@@ -196,12 +196,12 @@ public class Client {
 
         int start = findNearest(startPoint);
         int end = findNearest(endPoint);
-        ArrayList<MyPoint> mainPath = recoveryPath(start, end,
+        ArrayList<MapPoint> mainPath = recoveryPath(start, end,
                 paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
         mUI.setMainPath(mainPath);
 
         for (Pair<Integer, Integer> path : paths.getPaths()) {
-            ArrayList<MyPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
+            ArrayList<MapPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
                     paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
             mUI.addPath(otherPath);
         }

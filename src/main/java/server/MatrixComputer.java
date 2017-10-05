@@ -16,19 +16,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class MatrixComputer {
-    final private String mOSMPath;
-    final private String mOSMFOlder;
     private int mStrategy;
     private EncodingManager mEm;
-    private GraphHopper mGraphhopper;
+    private GraphHopper mHopper;
     private Surroundings mSurroundings;
 
     public MatrixComputer(String osmPath, String osmFolder, int strategy) {
-        mOSMPath = osmPath;
-        mOSMFOlder = osmFolder;
         /*TODO: change this hard coded encoding*/
         mEm = new EncodingManager("car");
-        mGraphhopper = new GraphHopperOSM()
+        mHopper = new GraphHopperOSM()
                 .setOSMFile(osmPath)
                 .forDesktop()
                 .setGraphHopperLocation(osmFolder)
@@ -36,8 +32,8 @@ public class MatrixComputer {
                 .importOrLoad();
 
         mStrategy = strategy;
-        mSurroundings = new Surroundings(mGraphhopper.getGraphHopperStorage(),
-                mGraphhopper.getLocationIndex(), mEm.getEncoder("car"));
+        mSurroundings = new Surroundings(mHopper.getGraphHopperStorage(),
+                mHopper.getLocationIndex(), mEm.getEncoder("car"));
     }
 
     public Surroundings getmSurroundings() {
@@ -56,16 +52,16 @@ public class MatrixComputer {
         int[] allArray = new int[points.size()];
         // find all points
         for (int i = 0; i < allArray.length; i++) {
-            QueryResult closest = mGraphhopper
+            QueryResult closest = mHopper
                     .getLocationIndex()
                     .findClosest(points.get(i).lat, points.get(i).lon, EdgeFilter.ALL_EDGES);
             allArray[i] = closest.getClosestNode();
         }
         // find all the border points
-        ArrayList<MyPoint> border = Convex.getConvex(MyPoint.convertFromGHPoint(points));
+        ArrayList<MapPoint> border = Convex.getConvex(MapPoint.convertFromGHPoint(points));
         int[] borderArray = new int[border.size()];
         for (int i = 0; i < borderArray.length; i++) {
-            QueryResult closest = mGraphhopper
+            QueryResult closest = mHopper
                     .getLocationIndex()
                     .findClosest(border.get(i).mFirst, border.get(i).mSecond, EdgeFilter.ALL_EDGES);
             borderArray[i] = closest.getClosestNode();
@@ -81,10 +77,10 @@ public class MatrixComputer {
                 public EdgeIter getIterator(int current, int prevEdgeID) {
                     /*TODO: change the hard coded name too*/
                     if (mStrategy == S2SStrategy.ASTAR) {
-                        return new AStarEdgeIterator(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
+                        return new AStarEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
                                 .createEdgeExplorer(new DefaultEdgeFilter(mEm.getEncoder("car"), false, true)));
                     }
-                    return new DefaultEdgeIterator(current, prevEdgeID, mGraphhopper.getGraphHopperStorage()
+                    return new DefaultEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
                             .createEdgeExplorer(new DefaultEdgeFilter(mEm.getEncoder("car"), false, true)));
                 }
 
@@ -99,7 +95,7 @@ public class MatrixComputer {
                     if (mStrategy != S2SStrategy.ASTAR) {
                         return 0.0;
                     }
-                    NodeAccess nodeAccess = mGraphhopper.getGraphHopperStorage().getNodeAccess();
+                    NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
                     DistanceCalcEarth distanceCalcEarth = new DistanceCalcEarth();
                     double fromLat = nodeAccess.getLat(current);
                     double fromLon = nodeAccess.getLon(current);
@@ -129,7 +125,7 @@ public class MatrixComputer {
     }
 
     public NodeAccess getNodeAccess() {
-        return mGraphhopper.getGraphHopperStorage().getNodeAccess();
+        return mHopper.getGraphHopperStorage().getNodeAccess();
     }
 }
 

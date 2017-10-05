@@ -3,7 +3,7 @@ package server;
 import algorithm.S2SStrategy;
 import util.FlagParser;
 
-public class ServerMain {
+public class ServerRunner {
     private static FlagParser mFlagParser;
 
     public static void main(String[] args) throws Exception{

@@ -8,11 +8,11 @@ public class Reply implements Serializable {
     public final Paths mSrcPaths;
     public final Paths mDestPaths;
     public final Paths mInterPaths;
-    public final MyPoint[] mSrcReference;
-    public final MyPoint[] mDestReference;
+    public final MapPoint[] mSrcReference;
+    public final MapPoint[] mDestReference;
 
     public Reply(Pair<int[], int[]> srcCircle, Pair<int[], int[]> destCircle, Paths srcPaths, Paths destPaths,
-                 Paths interPaths, MyPoint[] srcRef, MyPoint[] destRef) {
+                 Paths interPaths, MapPoint[] srcRef, MapPoint[] destRef) {
         mSrcCircle = srcCircle;
         mDestCircle = destCircle;
         mSrcPaths = srcPaths;
