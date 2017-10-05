@@ -15,16 +15,16 @@ Then run Server first and Client second.
 
  - Server:
 ```bash
-   mvn exec:java -Dexec.mainClass="server.ServerRunner" \
-   -Dexec.args="--port 12280 --osmPath data/linois-latest.osm.pbf \
-   --ghPath data/illinois"
+mvn exec:java -Dexec.mainClass="server.ServerRunner" \
+-Dexec.args="--port 12280 --osmPath data/linois-latest.osm.pbf \
+--ghPath data/illinois"
 ```
  - Client:
 ```bash
-   mvn exec:java -Dexec.mainClass="client.ClientRunner" \
-   -Dexec.args="40.102039 -88.224335 41.8941 -87.711411 \
-   --port 12280 --osmPath data/illinois-latest.osm.pbf \
-   --ghPath data/illinois --mapPath data/illinois.map"
+mvn exec:java -Dexec.mainClass="client.ClientRunner" \
+-Dexec.args="40.102039 -88.224335 41.8941 -87.711411 \
+--port 12280 --osmPath data/illinois-latest.osm.pbf \
+--ghPath data/illinois --mapPath data/illinois.map"
 ```
  - Change the arguments in `-Dexec.args=` for different command line arguments
 
