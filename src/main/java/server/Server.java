@@ -24,7 +24,7 @@ public class Server {
 
     private final double RADIUS = 500.0;
 
-    public Server(int port, String osmPath, String osmFolder, int strategy) throws IOException {
+    public Server(int port, String osmPath, String osmFolder, String strategy) throws IOException {
         mServer = new ServerSocket(port);
         mMatrixComputer = new MatrixComputer(osmPath, osmFolder, strategy);
     }
@@ -61,7 +61,7 @@ public class Server {
         out.close();
     }
 
-    public Reply calculate(double srcLat, double srcLon, double dstLat, double dstLon) throws Exception {
+    private Reply calculate(double srcLat, double srcLon, double dstLat, double dstLon) throws Exception {
         Pair<int[], int[]> srcCircle = mMatrixComputer.getCircle(new GHPoint(srcLat, srcLon), RADIUS);
         Pair<int[], int[]> dstCircle = mMatrixComputer.getCircle(new GHPoint(dstLat, dstLon), RADIUS);
         Paths srcPaths = new Paths();
@@ -88,11 +88,6 @@ public class Server {
             dstGeo.add(new MapPoint(nodeAccess.getLat(dstCircle.mFirst[i]), nodeAccess.getLon(dstCircle.mFirst[i])));
         }
 
-        MapPoint[] srcRef  = new MapPoint[srcGeo.size()];
-        MapPoint[] dstRef = new MapPoint[dstGeo.size()];
-        srcGeo.toArray(srcRef);
-        dstGeo.toArray(dstRef);
-
-        return new Reply(srcCircle, dstCircle, srcPaths, dstPaths, interPaths, srcRef, dstRef);
+        return new Reply(srcCircle, dstCircle, srcPaths, dstPaths, interPaths);
     }
 }

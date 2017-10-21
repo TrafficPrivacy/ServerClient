@@ -11,6 +11,7 @@ import com.graphhopper.storage.NodeAccess;
 import util.*;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,106 +35,6 @@ public class Client {
                 .setEncodingManager(em)
                 .importOrLoad();
         mServerIP = serverIP;
-    }
-
-
-
-    private AdjacencyList<Integer> parseReply(Reply reply) {
-        AdjacencyList<Integer> graph = new AdjacencyList<>();
-        int[] srcAll = reply.mSrcCircle.mFirst;
-        int[] srcBorder = reply.mSrcCircle.mSecond;
-        int[] dstAll = reply.mDestCircle.mFirst;
-        int[] dstBorder = reply.mDestCircle.mSecond;
-        // add all the nodes
-        for (int index : srcAll) {
-            graph.insertNode(index);
-        }
-        for (int index : dstAll) {
-            graph.insertNode(index);
-        }
-        // add edges in the source circle
-        for (int srcIdx : srcAll) {
-            for (int srcBorderIdx : srcBorder) {
-                if (reply.mSrcPaths.findWeight(srcIdx, srcBorderIdx) > 0) {
-                    graph.insertEdge(srcIdx, srcBorderIdx)
-                            .setWeight(srcIdx, srcBorderIdx, reply.mSrcPaths.findWeight(srcIdx, srcBorderIdx))
-                            .setDistance(srcIdx, srcBorderIdx, reply.mSrcPaths.findDistance(srcIdx, srcBorderIdx));
-                }
-            }
-        }
-
-        // add edges in the destination circle
-
-        for (int dstIdx : dstAll) {
-
-            for (int dstBorderIdx : dstBorder) {
-                if (reply.mDestPaths.findWeight(dstBorderIdx, dstIdx) > 0) {        // Notice
-                    graph.insertEdge(dstBorderIdx, dstIdx)
-                            .setWeight(dstBorderIdx, dstIdx, reply.mDestPaths.findWeight(dstBorderIdx, dstIdx))
-                            .setDistance(dstBorderIdx, dstIdx, reply.mDestPaths.findDistance(dstBorderIdx, dstIdx));
-                }
-            }
-        }
-
-        // add edges between borders of two circles
-        for (int srcBIdx : srcBorder) {
-            for (int dstBIdx : dstBorder) {
-                if (reply.mInterPaths.findWeight(srcBIdx, dstBIdx) > 0) {
-                    graph.insertEdge(srcBIdx, dstBIdx)
-                            .setWeight(srcBIdx, dstBIdx, reply.mInterPaths.findWeight(srcBIdx, dstBIdx))
-                            .setDistance(srcBIdx, dstBIdx, reply.mInterPaths.findDistance(srcBIdx, dstBIdx));
-                }
-            }
-        }
-        return graph;
-    }
-
-    private Pair<HashMap<MapPoint, Integer>, HashMap<Integer, MapPoint>> mapNodes(Reply reply) {
-        HashMap<MapPoint, Integer> map1 = new HashMap<>();
-        HashMap<Integer, MapPoint> map2 = new HashMap<>();
-        int[] srcIdx = reply.mSrcCircle.mFirst;
-        int[] destIdx = reply.mDestCircle.mFirst;
-
-        for (int i = 0; i < srcIdx.length; i++) {
-            map1.put(reply.mSrcReference[i], srcIdx[i]);
-            map2.put(srcIdx[i], reply.mSrcReference[i]);
-        }
-
-        for (int i = 0; i < destIdx.length; i++) {
-            map1.put(reply.mDestReference[i], destIdx[i]);
-            map2.put(destIdx[i], reply.mDestReference[i]);
-        }
-
-        return new Pair<>(map1, map2);
-    }
-
-    private ArrayList<MapPoint> recoveryPath(int start, int end, Paths finalPath, Paths srcPaths,
-                                             Paths dstPaths, Paths interPath) {
-        NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
-        ArrayList<MapPoint> path = new ArrayList<>();
-        Integer[] metaPath = finalPath.findPath(start, end);
-        if (metaPath != null) {
-            for (int i = 1; i < metaPath.length; i++) {
-            /*TODO: find a better implementation*/
-                Integer[] sPath = srcPaths.findPath(metaPath[i - 1], metaPath[i]);
-                Integer[] iPath = interPath.findPath(metaPath[i - 1], metaPath[i]);
-                Integer[] dPath = dstPaths.findPath(metaPath[i - 1], metaPath[i]);
-                if (sPath != null) {
-                    for (int idx : sPath) {
-                        path.add(new MapPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
-                    }
-                } else if (iPath != null) {
-                    for (int idx : iPath) {
-                        path.add(new MapPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
-                    }
-                } else if (dPath != null) {
-                    for (int idx : dPath) {
-                        path.add(new MapPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
-                    }
-                }
-            }
-        }
-        return path;
     }
 
     private int findNearest(Pair<Double, Double> original) {
@@ -172,7 +73,7 @@ public class Client {
         in.close();
         out.close();
 
-        AdjacencyList<Integer> graph = parseReply(reply);
+        AdjacencyList<Integer> graph = reply.parse();
 
         mStrategy = S2SStrategy.strategyFactory(S2SStrategy.DIJKSTRA, new CallBacks() {
             @Override
@@ -187,7 +88,7 @@ public class Client {
         });
 
         Profiler profiler = new Profiler().start();
-        Paths paths = mStrategy.compute(reply.mSrcCircle.mFirst, reply.mDestCircle.mFirst);
+        Paths paths = mStrategy.compute(reply.getSrcPoints(), reply.getDstPoints());
         profiler.endAndPrint().start();
 
         // path recovery and visualization
@@ -196,13 +97,12 @@ public class Client {
 
         int start = findNearest(startPoint);
         int end = findNearest(endPoint);
-        ArrayList<MapPoint> mainPath = recoveryPath(start, end,
-                paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
+        ArrayList<MapPoint> mainPath =
+                reply.recoveryPath(paths.findPath(start, end), mHopper.getGraphHopperStorage().getNodeAccess());
         mUI.setMainPath(mainPath);
 
-        for (Pair<Integer, Integer> path : paths.getPaths()) {
-            ArrayList<MapPoint> otherPath = recoveryPath(path.mFirst, path.mSecond,
-                    paths, reply.mSrcPaths, reply.mDestPaths, reply.mInterPaths);
+        for (Integer[] path : paths.getPaths()) {
+            ArrayList<MapPoint> otherPath = reply.recoveryPath(path, mHopper.getGraphHopperStorage().getNodeAccess());
             mUI.addPath(otherPath);
         }
         profiler.endAndPrint();

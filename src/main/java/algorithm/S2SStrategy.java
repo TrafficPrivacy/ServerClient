@@ -6,31 +6,38 @@ public abstract class S2SStrategy {
 
     protected CallBacks mCallBacks;
 
-    public static final int DIJKSTRA = 0;
-    public static final int FLOYWARSHALL = 1;
-    public static final int BELLMANFORD = 2;
-    public static final int ASTAR = 3;
-    public static final int ASTARNOREEVALUATE = 4;
+    public static final String DIJKSTRA = "DIJKSTRA";
+    public static final String FLOYWARSHALL = "FLOYWARSHALL";
+    public static final String BELLMANFORD = "BELLMANFORD";
+    public static final String ASTAR = "ASTAR";
+    public static final String ASTARNOREEVALUATE = "ASTARNOREEVALUATE";
 
-    public static S2SStrategy strategyFactory(int type, CallBacks callBacks) throws Exception {
-        switch (type) {
-            case DIJKSTRA:
-                return new Dijkstra(callBacks);
+    public static S2SStrategy strategyFactory(String type, CallBacks callBacks) throws Exception {
 
-            case FLOYWARSHALL:
-                return new FloydWarshall(callBacks);
+        if (type.equalsIgnoreCase(DIJKSTRA)) {
 
-            case BELLMANFORD:
-                return new BellmanFord(callBacks);
+            return new Dijkstra(callBacks);
 
-            case ASTAR:
-                return new AStar(callBacks);
+        } else if (type.equalsIgnoreCase(FLOYWARSHALL)) {
 
-            case ASTARNOREEVALUATE:
-                return new Dijkstra(callBacks);
+            return new FloydWarshall(callBacks);
 
-            default:
-                throw new Exception("Invalid option for strategy");
+        } else if (type.equalsIgnoreCase(BELLMANFORD)) {
+
+            return new BellmanFord(callBacks);
+
+        } else if (type.equalsIgnoreCase(ASTAR)) {
+
+            return new AStar(callBacks);
+
+        } else if (type.equalsIgnoreCase(ASTARNOREEVALUATE)) {
+
+            return new Dijkstra(callBacks);
+
+        } else {
+
+            throw new Exception("Invalid option for strategy");
+
         }
     }
 

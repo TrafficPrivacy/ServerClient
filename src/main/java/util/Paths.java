@@ -7,16 +7,11 @@ import java.util.Set;
 
 public class Paths implements Serializable {
     /*TODO: fix the potential hash collision*/
+    // values are distance and weight
     private HashMap<Pair<Integer, Integer>, Triple<Integer[], Double, Double>> mPaths;
-
-    /*TODO: remove the debug stuff*/
-    // debug
-    public ArrayList<Pair<Integer, Integer>> paths;
 
     public Paths() {
         mPaths = new HashMap<>();
-        // debug
-        paths = new ArrayList<>();
     }
 
     public Integer[] findPath(int start, int end) {
@@ -46,22 +41,21 @@ public class Paths implements Serializable {
             return;
         Triple<Integer[], Double, Double> info = new Triple<>(path, weight, distance);
         mPaths.put(queryPoint, info);
-
-        //debug
-        paths.add(queryPoint);
     }
 
     public void addAll(Paths paths) {
         mPaths.putAll(paths.mPaths);
-        // debug
-        this.paths.addAll(paths.paths);
     }
 
-    public int numOfPaths() {
+    public int size() {
         return mPaths.size();
     }
 
-    public Set<Pair<Integer, Integer>> getPaths() {
-        return mPaths.keySet();
+    public ArrayList<Integer[]> getPaths() {
+        ArrayList<Integer[]> paths = new ArrayList<>();
+        for (Pair<Integer, Integer> key : mPaths.keySet()) {
+            paths.add(mPaths.get(key).mFirst);
+        }
+        return paths;
     }
 }

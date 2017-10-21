@@ -16,7 +16,7 @@ public class AdjacencyList<Node>{
 
     public AdjacencyList<Node> insertNode(Node n) {
         if (!mTable.containsKey(n))
-            mTable.put(n, new ArrayList<Node>());
+            mTable.put(n, new ArrayList<>());
         return this;
     }
 

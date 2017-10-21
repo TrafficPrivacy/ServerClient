@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class MatrixComputer {
-    private int mStrategy;
+    private String mStrategy;
     private EncodingManager mEm;
     private GraphHopper mHopper;
     private Surroundings mSurroundings;
 
-    public MatrixComputer(String osmPath, String osmFolder, int strategy) {
+    public MatrixComputer(String osmPath, String osmFolder, String strategy) {
         /*TODO: change this hard coded encoding*/
         mEm = new EncodingManager("car");
         mHopper = new GraphHopperOSM()
@@ -76,7 +76,7 @@ public class MatrixComputer {
                 @Override
                 public EdgeIter getIterator(int current, int prevEdgeID) {
                     /*TODO: change the hard coded name too*/
-                    if (mStrategy == S2SStrategy.ASTAR) {
+                    if (mStrategy.equalsIgnoreCase(S2SStrategy.ASTAR)) {
                         return new AStarEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
                                 .createEdgeExplorer(new DefaultEdgeFilter(mEm.getEncoder("car"), false, true)));
                     }
@@ -92,7 +92,7 @@ public class MatrixComputer {
                  */
                 @Override
                 public double getPotential(int current, HashSet<Integer> targets) {
-                    if (mStrategy != S2SStrategy.ASTAR) {
+                    if (!mStrategy.equalsIgnoreCase(S2SStrategy.ASTAR)) {
                         return 0.0;
                     }
                     NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
