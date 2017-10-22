@@ -6,7 +6,7 @@ import util.FlagParser;
 public class ServerRunner {
     private static FlagParser mFlagParser;
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         addFlags();
         mFlagParser.parseArgs(args);
         int port  = Integer.parseInt(mFlagParser.getArg("--port"));
@@ -18,7 +18,7 @@ public class ServerRunner {
         server.run();
     }
 
-    public static void addFlags() {
+    private static void addFlags() {
         if (mFlagParser == null) {
             mFlagParser = new FlagParser();
         }

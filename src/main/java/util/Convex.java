@@ -7,7 +7,7 @@ public class Convex {
     public static ArrayList<MapPoint> getConvex(ArrayList<MapPoint> dots) {
         int n = dots.size();
         if (n < 3)
-            return null;
+            return new ArrayList<>();
         ArrayList<MapPoint> convex = new ArrayList<>();
         int leftMost = 0;
         for (int i = 1; i < n; i++) {
