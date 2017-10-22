@@ -26,7 +26,7 @@ public class Client {
             String pbfPath,
             String ghPath,
             PostProcess postProcess
-    ) throws Exception{
+    ) throws IOException{
         mServerPort = serverPort;
         EncodingManager em = new EncodingManager("car");
         mHopper = new GraphHopperOSM()
@@ -36,6 +36,10 @@ public class Client {
                 .setEncodingManager(em)
                 .importOrLoad();
         mServerIP = serverIP;
+        mPostProcess = postProcess;
+    }
+
+    public void setPostProcess(PostProcess postProcess) {
         mPostProcess = postProcess;
     }
 

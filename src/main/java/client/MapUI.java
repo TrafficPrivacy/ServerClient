@@ -157,6 +157,7 @@ public final class MapUI implements PostProcess{
                 curt = new MapPoint.LatLongAdapter(path.get(i));
                 list.add(curt);
                 mMainPathSet.add(new Pair<>(prev, curt));
+                prev = curt;
             }
             mMainPath = list;
             mPaths.add(list);

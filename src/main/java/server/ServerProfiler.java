@@ -24,9 +24,12 @@ public class ServerProfiler {
     private static FlagParser mFlagParser;
     private static Server mServer;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         setupArgs();
         mFlagParser.parseArgs(args);
+        String osmPath = mFlagParser.getArg("--osmPath");
+        String ghPath = mFlagParser.getArg("--ghPath");
+        String strategy = mFlagParser.getArg("--strategy");
         mHopper = new GraphHopperOSM()
                 .setOSMFile(mFlagParser.getArg("--osmPath"))
                 .forDesktop()
@@ -35,9 +38,10 @@ public class ServerProfiler {
                 .importOrLoad();
         try {
             mServer = new Server(0,
-                    mFlagParser.getArg("--osmPath"),
-                    mFlagParser.getArg("--ghPath"),
-                    mFlagParser.getArg("--strategy"));
+                    osmPath,
+                    ghPath,
+                    strategy
+                    );
         } catch (IOException e) {
             e.printStackTrace();
             exit(1);
@@ -50,11 +54,11 @@ public class ServerProfiler {
         if (mFlagParser == null) {
             mFlagParser = new FlagParser();
         }
+        mFlagParser.addFlag("--iterations", "The number of iterations", "");
+        mFlagParser.addFlag("--strategy", "The strategy to use", "");
+        mFlagParser.addFlag("--outFilePath", "The generated csv file", "data/server.csv");
         mFlagParser.addFlag("--osmPath", "The path of the osm file", "");
         mFlagParser.addFlag("--ghPath", "The location of the graphhopper data directory", "");
-        mFlagParser.addFlag("--iterations", "The number of iterations", "");
-        mFlagParser.addFlag("--outFilePath", "The generated csv file", "data/server.csv");
-        mFlagParser.addFlag("--strategy", "The strategy to use", "");
     }
 
     private static void run(int numIterations, String outPath) {

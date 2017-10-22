@@ -21,7 +21,8 @@ public class ClientRunner {
         String osmPath = mFlagParser.getArg("--osmPath");
         String ghPath  = mFlagParser.getArg("--ghPath");
         String mapPath = mFlagParser.getArg("--mapPath");
-        mClient = new Client(ip, port, osmPath, ghPath, mapPath);
+        PostProcess mapUI = new MapUI(mapPath, "Client");
+        mClient = new Client(ip, port, osmPath, ghPath, mapUI);
         mClient.compute(new Pair<>(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])),
                 new Pair<>(Double.parseDouble(coords[2]), Double.parseDouble(coords[3])));
         System.out.println("Going to return");

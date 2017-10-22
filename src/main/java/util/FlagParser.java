@@ -2,26 +2,34 @@ package util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import static java.lang.System.exit;
 
 public class FlagParser {
     private HashMap<String, String> mFlags;
-    private HashMap<String, String> mHelps;
+    private LinkedHashMap<String, String> mHelps;
     private ArrayList<String> mUnFlagged;
     private ArrayList<Pair<String, String>> mUnflaggedHelps;
 
 
     public FlagParser() {
         mFlags = new HashMap<>();
-        mHelps = new HashMap<>();
+        mHelps = new LinkedHashMap<>();
         mUnFlagged = new ArrayList<>();
         mUnflaggedHelps = new ArrayList<>();
     }
 
+    /**
+     * Add a flag. The order of adding will be preserved when printing out help
+     * @param flag The flag. starts with "--"
+     * @param help The help message
+     * @param defaultArg The default value. "" means no default
+     */
     public void addFlag(String flag, String help, String defaultArg) {
         if (!defaultArg.equals("")) {
             mFlags.put(flag, defaultArg);
+            help = help + " (default: " + defaultArg + ")";
         }
         mHelps.put(flag, help);
     }
@@ -69,12 +77,16 @@ public class FlagParser {
         }
     }
 
-    public String getArg(String flag) {
+    public String getArg(String flag) throws Exception {
         if (!mFlags.containsKey(flag))
-            return null;
+            throw new Exception("No such flag: " + flag);
         return mFlags.get(flag);
     }
 
+    /**
+     * Printing out the helps will the following order:
+     * Unflagged, flagged (in order with addFlag)
+     */
     public void printHelp() {
         System.out.print("Arguments: ");
         for (Pair p : mUnflaggedHelps) {

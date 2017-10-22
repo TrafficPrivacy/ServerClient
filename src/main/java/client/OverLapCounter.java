@@ -21,7 +21,6 @@ public class OverLapCounter implements PostProcess{
         mMainPathCount = new LinkedHashMap<>();
     }
 
-
     @Override
     public void setMainPath(ArrayList<MapPoint> path) {
         if (path.size() > 0) {
@@ -30,6 +29,7 @@ public class OverLapCounter implements PostProcess{
             for (int i = 1; i < path.size(); i++) {
                 curt = path.get(i);
                 mMainPathCount.put(new Pair<>(prev, curt), 1);
+                prev = curt;
             }
         }
     }
@@ -42,10 +42,11 @@ public class OverLapCounter implements PostProcess{
             for (int i = 1; i < path.size(); i++) {
                 curt = path.get(i);
                 Pair segment = new Pair<>(prev, curt);
-                if (mMainPathCount.containsValue(segment)) {
+                if (mMainPathCount.containsKey(segment)) {
                     int curCount = mMainPathCount.get(segment);
                     mMainPathCount.replace(segment, curCount + 1);
                 }
+                prev = curt;
             }
         }
     }
@@ -67,8 +68,10 @@ public class OverLapCounter implements PostProcess{
                 fos.write((to.getLat() + "," + to.getLon() + ",").getBytes());
                 fos.write((count + "\n").getBytes());
             }
+            fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }
