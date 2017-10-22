@@ -33,5 +33,17 @@ public class Convex {
         double val = (q.mFirst - p.mFirst) * (r.mSecond - q.mSecond) - (q.mSecond - p.mSecond) * (r.mFirst - q.mFirst);
         return !(val >= 0);
     }
+
+    public static double getConvexArea(ArrayList<MapPoint> dots) {
+        /* http://www.mathopenref.com/coordpolygonarea2.html */
+        double area = 0.0;
+        int j = dots.size() - 1;
+        for (int i = 0; i < dots.size(); i++) {
+            MapPoint mapPointi = dots.get(i);
+            MapPoint mapPointj = dots.get(j);
+            area += (mapPointi.getLat() + mapPointj.getLat()) * (mapPointj.getLon() - mapPointj.getLat());
+        }
+        return area / -2;
+    }
 }
 

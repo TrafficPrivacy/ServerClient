@@ -30,6 +30,7 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.reader.ReadBuffer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
+import sun.rmi.runtime.Log;
 import util.Convex;
 import util.Logger;
 import util.MapPoint;
@@ -352,7 +353,7 @@ public final class MapUI implements PostProcess{
                 mapViewPosition, false, false, false, GRAPHIC_FACTORY) {
             @Override
             public boolean onTap(LatLong tapLatLong, org.mapsforge.core.model.Point layerXY, org.mapsforge.core.model.Point tapXY) {
-                System.out.println("Tap on: " + tapLatLong);
+                Logger.println(Logger.DEBUG, "Tap on: " + tapLatLong);
                 return true;
             }
         };
@@ -432,10 +433,12 @@ public final class MapUI implements PostProcess{
             paintStroke.setStrokeWidth(pathstrokeWidth);
             this.setPaintStroke(paintStroke);
             List<LatLong> convex = MapPoint.convertToLatlong(Convex.getConvex(MapPoint.convertFromLatlong(dots)));
-            if (convex != null)
+            if (convex != null) {
                 super.getLatLongs().addAll(convex);
-            else
+            }
+            else {
                 System.out.println("got null");
+            }
         }
     }
 
