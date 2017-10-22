@@ -26,5 +26,13 @@ mvn exec:java -Dexec.mainClass="client.ClientRunner" \
 --port 12280 --osmPath data/illinois-latest.osm.pbf \
 --ghPath data/illinois --mapPath data/illinois.map"
 ```
- - Change the arguments in `-Dexec.args=` for different command line arguments
+ - ServerProfiler:
+ ```bash
+ mvn exec:java -Dexec.mainClass="server.ServerProfiler" \
+ -Dexec.args="--iterations 500 --strategy astar \
+ --osmPath data/illinois-latest.osm.pbf \ 
+ --ghPath data/illinois \
+ --outFilePath data/server-astar.csv"
+ ```
 
+ - Change the arguments in `-Dexec.args=` for different command line arguments
