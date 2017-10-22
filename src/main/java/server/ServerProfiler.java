@@ -7,8 +7,8 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.shapes.GHPoint;
+import me.tongfei.progressbar.ProgressBar;
 import util.FlagParser;
-import util.Reply;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,6 +65,8 @@ public class ServerProfiler {
                     double.class, double.class, double.class, double.class);
             method.setAccessible(true);
             int numNodes = mHopper.getGraphHopperStorage().getNodes();
+            ProgressBar progressBar = new ProgressBar("Server Profile Test", numIterations);
+            progressBar.start();
             for (int i = 0; i < numIterations; i++) {
                 int from = ThreadLocalRandom.current().nextInt(0, numNodes);
                 int to = ThreadLocalRandom.current().nextInt(0, numNodes);
@@ -94,10 +96,12 @@ public class ServerProfiler {
                     fout.write((toLon + ",").getBytes());
                     fout.write((response.getBest().getDistance() + ",").getBytes());
                     fout.write((runTime + "\n").getBytes());
+                    progressBar.step();
                 } else {
                     i--;
                 }
             }
+            progressBar.stop();
         } catch (Exception e) {
             e.printStackTrace();
         }
