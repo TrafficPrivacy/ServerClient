@@ -1,32 +1,33 @@
 package client;
 
 import algorithm.CallBacks;
-import algorithm.EdgeIter;
+import algorithm.EdgeIterator;
 import algorithm.S2SStrategy;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.storage.NodeAccess;
 import util.*;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Client {
     private int mServerPort;
-    private MapUI mUI;
+    private PostProcess mPostProcess;
     private GraphHopper mHopper;
     private String mServerIP;
-    private S2SStrategy mStrategy;
 
-    public Client(String serverIP, int serverPort, String pbfPath, String ghPath, String mapPath) throws Exception{
+    public Client(
+            String serverIP,
+            int serverPort,
+            String pbfPath,
+            String ghPath,
+            PostProcess postProcess
+    ) throws Exception{
         mServerPort = serverPort;
-        mUI = new MapUI(mapPath, "Client");
         EncodingManager em = new EncodingManager("car");
         mHopper = new GraphHopperOSM()
                 .setOSMFile(pbfPath)
@@ -35,6 +36,7 @@ public class Client {
                 .setEncodingManager(em)
                 .importOrLoad();
         mServerIP = serverIP;
+        mPostProcess = postProcess;
     }
 
     private int findNearest(Pair<Double, Double> original) {
@@ -50,7 +52,10 @@ public class Client {
      * @param startPoint The start point
      * @param endPoint The end point
      */
-    public void compute(Pair<Double, Double> startPoint, Pair<Double, Double> endPoint) throws Exception{
+    public void compute(
+            Pair<Double, Double> startPoint,
+            Pair<Double, Double> endPoint
+    ) throws Exception{
         /*TODO: add random shift*/
         Pair<Double, Double> shiftStart = startPoint;
         Pair<Double, Double> shiftEnd = endPoint;
@@ -75,9 +80,9 @@ public class Client {
 
         AdjacencyList<Integer> graph = reply.parse();
 
-        mStrategy = S2SStrategy.strategyFactory(S2SStrategy.DIJKSTRA, new CallBacks() {
+        S2SStrategy strategy = S2SStrategy.strategyFactory(S2SStrategy.DIJKSTRA, new CallBacks() {
             @Override
-            public EdgeIter getIterator(int current, int prevEdgeID) {
+            public EdgeIterator getIterator(int current, int prevEdgeID) {
                 return new ClientEdgeIterator(current, graph);
             }
 
@@ -88,25 +93,23 @@ public class Client {
         });
 
         Profiler profiler = new Profiler().start();
-        Paths paths = mStrategy.compute(reply.getSrcPoints(), reply.getDstPoints());
+        Paths paths = strategy.compute(reply.getSrcPoints(), reply.getDstPoints());
         profiler.endAndPrint().start();
 
         // path recovery and visualization
-
-        mUI.setVisible(true);
 
         int start = findNearest(startPoint);
         int end = findNearest(endPoint);
         ArrayList<MapPoint> mainPath =
                 reply.recoveryPath(paths.findPath(start, end), mHopper.getGraphHopperStorage().getNodeAccess());
-        mUI.setMainPath(mainPath);
+        mPostProcess.setMainPath(mainPath);
 
         for (Integer[] path : paths.getPaths()) {
             ArrayList<MapPoint> otherPath = reply.recoveryPath(path, mHopper.getGraphHopperStorage().getNodeAccess());
-            mUI.addPath(otherPath);
+            mPostProcess.addPath(otherPath);
         }
         profiler.endAndPrint();
-        mUI.showUpdate();
+        mPostProcess.done();
     }
 }
 

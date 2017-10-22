@@ -1,7 +1,5 @@
 package algorithm;
 
-import sun.rmi.runtime.Log;
-import util.Logger;
 import util.Paths;
 
 import java.util.ArrayList;
@@ -62,7 +60,7 @@ public class Dijkstra extends S2SStrategy {
             if (current.mNodeID == -1)
                 continue;
             current.mCost -= current.mPotential;
-            EdgeIter nextNodes = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
+            EdgeIterator nextNodes = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
             while (nextNodes.next()) {
                 int nextID = nextNodes.getNext();
                 double nextPotential = mCallBacks.getPotential(nextID, mTargets);

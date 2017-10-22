@@ -31,6 +31,7 @@ import org.mapsforge.map.reader.ReadBuffer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 import util.Convex;
+import util.Logger;
 import util.MapPoint;
 import util.Pair;
 
@@ -46,7 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-public final class MapUI {
+public final class MapUI implements PostProcess{
     private final GraphicFactory GRAPHIC_FACTORY = AwtGraphicFactory.INSTANCE;
     private final boolean SHOW_DEBUG_LAYERS = false;
 
@@ -115,10 +116,6 @@ public final class MapUI {
         mTargets= new ArrayList<>();
     }
 
-    public void setVisible(boolean visible) {
-        FRAME.setVisible(visible);
-    }
-
     public int createDot(LatLong coordinates, int color, float strokeWidth) {
         ArrayList<LatLong> list = new ArrayList<>();
         list.add(coordinates);
@@ -149,24 +146,24 @@ public final class MapUI {
         return 0;
     }
 
+    @Override
     public void setMainPath(ArrayList<MapPoint> path) {
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<LatLong>();
-            LatLong prev = new LatLong(path.get(0).mFirst, path.get(0).mSecond);
+            LatLong prev = new MapPoint.LatLongAdapter(path.get(0));
             LatLong curt;
             list.add(prev);
-            System.out.println("set main path");
             for (int i = 1; i < path.size(); i++) {
-                curt = new LatLong(path.get(i).mFirst, path.get(i).mSecond);
+                curt = new MapPoint.LatLongAdapter(path.get(i));
                 list.add(curt);
                 mMainPathSet.add(new Pair<>(prev, curt));
             }
             mMainPath = list;
             mPaths.add(list);
-//            createPolyline(mMainPath, new java.awt.Color(6, 0, 133, 255).getRGB(), 6.0f);
         }
     }
 
+    @Override
     public void addPath(ArrayList<MapPoint> path) {
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<>();
@@ -180,23 +177,17 @@ public final class MapUI {
         }
     }
 
-    public void showUpdate() {
-        // draw the paths
-        mSources.add(new MyConvexLayer(GRAPHIC_FACTORY,
-                new java.awt.Color(6, 0, 133, 255).getRGB(),
-                6.0f, mStarts));
-        mTargets.add(new MyConvexLayer(GRAPHIC_FACTORY,
-                new java.awt.Color(6, 0, 133, 255).getRGB(),
-                6.0f, mEnds));
+    @Override
+    public void done() {
 
-        System.out.println("Total number of path: " + mPaths.size());
+        Logger.printf(Logger.DEBUG, "Total number of path: " + mPaths.size());
 
         if (mMainPath != null) {
             for (MyLineLayer myLineLayer : mLayers) {
                 MAP_VIEW.getLayerManager().getLayers().remove(myLineLayer);
             }
             mLayers.clear();
-            HashSet<Pair<LatLong, LatLong>> overLapList = null;        // List for the start and end point of the paths
+            HashSet<Pair<LatLong, LatLong>> overLapList;        // List for the start and end point of the paths
             HashMap<Pair<LatLong, LatLong>, HashSet<Pair<LatLong, LatLong>>> otherPaths = new HashMap<>();
             // convert path to hashset
             for (int i = 0; i < mPaths.size(); i++) {
@@ -292,6 +283,7 @@ public final class MapUI {
                 prev = curt;
             }
         }
+        FRAME.setVisible(true);
     }
 
     /////// Helper Functions ///////
@@ -367,16 +359,6 @@ public final class MapUI {
         return tileRendererLayer;
     }
 
-    private class OverLapCounter {
-        int mNumOverlap;
-        boolean mMain;
-
-        OverLapCounter(boolean onMain) {
-            mMain = onMain;
-            mNumOverlap = 0;
-        }
-    }
-
     private class MouseEvent implements MouseListener {
 
         private MapViewProjection mReference;
@@ -402,9 +384,7 @@ public final class MapUI {
         }
 
         public void mouseClicked(java.awt.event.MouseEvent e) {
-            System.out.println("mouse clicked at: " + e.getX() + ", " + e.getY());
             LatLong location = mReference.fromPixels(e.getX(), e.getY());
-            System.out.println("Geolocation clicked at: " + location.latitude + ", " + location.longitude);
             double min_dist = 100.0;
             MyLineLayer bestLayer = null;
             int bestIdx = 0;
@@ -491,8 +471,6 @@ public final class MapUI {
                 canvas.drawCircle(pixelX, pixelY, 3, paintStroke);
             }
         }
-
-
 
         public double contains(LatLong point) {
             double threshold = 0.01;

@@ -4,12 +4,11 @@ import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.routing.weighting.FastestWeighting;
 import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.util.EdgeExplorer;
-import com.graphhopper.util.EdgeIterator;
 
-public class DefaultEdgeIterator extends EdgeIter {
+public class DefaultEdgeIterator extends EdgeIterator {
 
     protected int mPrevEdge;
-    protected EdgeIterator mGhEdgeIterator;
+    protected com.graphhopper.util.EdgeIterator mGhEdgeIterator;
     protected Weighting mWeight;
 
     /**

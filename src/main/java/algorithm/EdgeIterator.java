@@ -2,7 +2,7 @@ package algorithm;
 
 import java.util.Iterator;
 
-public abstract class EdgeIter implements Iterator<Boolean> {
+public abstract class EdgeIterator implements Iterator<Boolean> {
 
     /**
      * Deprecated. Do not use. Always returns false

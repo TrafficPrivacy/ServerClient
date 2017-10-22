@@ -9,7 +9,7 @@ public interface CallBacks {
      * @return an iterator will return each edge represented by the end node and the
      * weight
      */
-    EdgeIter getIterator(int current, int prevEdgeID);
+    EdgeIterator getIterator(int current, int prevEdgeID);
 
     /**
      * Get the potential at the current node

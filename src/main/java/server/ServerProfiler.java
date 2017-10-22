@@ -9,6 +9,7 @@ import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.shapes.GHPoint;
 import me.tongfei.progressbar.ProgressBar;
 import util.FlagParser;
+import util.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,6 +59,10 @@ public class ServerProfiler {
 
     private static void run(int numIterations, String outPath) {
         File file = new File(outPath);
+        if (file.exists()) {
+            Logger.printf(Logger.ERROR, "Target csv %s already exists", outPath);
+            exit(1);
+        }
         NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
         try (FileOutputStream fout = new FileOutputStream(file)) {
             fout.write("from lat, from lon, to lat, to lon, distance, time(ns)\n".getBytes());

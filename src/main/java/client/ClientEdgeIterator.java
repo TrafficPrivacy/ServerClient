@@ -1,11 +1,11 @@
 package client;
 
-import algorithm.EdgeIter;
+import algorithm.EdgeIterator;
 import util.AdjacencyList;
 
 import java.util.ArrayList;
 
-public class ClientEdgeIterator extends EdgeIter {
+public class ClientEdgeIterator extends EdgeIterator {
     private AdjacencyList<Integer> mGraph;
     private ArrayList<Integer> mNeighbors;
     private int mCurrent;

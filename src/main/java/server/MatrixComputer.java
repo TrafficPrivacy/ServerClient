@@ -74,7 +74,7 @@ public class MatrixComputer {
             /*TODO: change the weight*/
             S2SStrategy strategy = S2SStrategy.strategyFactory(mStrategy, new CallBacks() {
                 @Override
-                public EdgeIter getIterator(int current, int prevEdgeID) {
+                public EdgeIterator getIterator(int current, int prevEdgeID) {
                     /*TODO: change the hard coded name too*/
                     if (mStrategy.equalsIgnoreCase(S2SStrategy.ASTAR)) {
                         return new AStarEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()

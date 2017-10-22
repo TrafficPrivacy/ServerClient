@@ -18,6 +18,14 @@ public class MapPoint extends Pair<Double, Double>{
         this(ghPoint.getLat(), ghPoint.getLon());
     }
 
+    public double getLat() {
+        return mFirst;
+    }
+
+    public double getLon() {
+        return mSecond;
+    }
+
     public static ArrayList<MapPoint> convertFromLatlong(ArrayList<LatLong> input) {
         ArrayList<MapPoint> result = new ArrayList<>();
         for (LatLong latLong : input) {
@@ -37,7 +45,7 @@ public class MapPoint extends Pair<Double, Double>{
     public static ArrayList<LatLong> convertToLatlong(ArrayList<MapPoint> input) {
         ArrayList<LatLong> result = new ArrayList<>();
         for (MapPoint mapPoint : input) {
-            result.add(new LatLong(mapPoint.mFirst, mapPoint.mSecond));
+            result.add(new LatLongAdapter(mapPoint));
         }
         return result;
     }
@@ -45,13 +53,13 @@ public class MapPoint extends Pair<Double, Double>{
     public static ArrayList<GHPoint> convertToGHPoint(ArrayList<MapPoint> input) {
         ArrayList<GHPoint> result = new ArrayList<>();
         for (MapPoint mapPoint : input) {
-            result.add(new GHPoint(mapPoint.mFirst, mapPoint.mSecond));
+            result.add(new GHPointAdapter(mapPoint));
         }
         return result;
     }
 
-    public static class GHAdapter extends GHPoint {
-        public GHAdapter(MapPoint mapPoint) {
+    public static class GHPointAdapter extends GHPoint {
+        public GHPointAdapter(MapPoint mapPoint) {
             super(mapPoint.mFirst, mapPoint.mSecond);
         }
     }
