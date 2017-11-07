@@ -26,6 +26,10 @@ public class MapPoint extends Pair<Double, Double>{
         return mSecond;
     }
 
+    public String toString() {
+        return mFirst + "," + mSecond;
+    }
+
     public static ArrayList<MapPoint> convertFromLatlong(ArrayList<LatLong> input) {
         ArrayList<MapPoint> result = new ArrayList<>();
         for (LatLong latLong : input) {

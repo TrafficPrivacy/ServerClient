@@ -59,7 +59,7 @@ public class Client {
     public void compute(
             Pair<Double, Double> startPoint,
             Pair<Double, Double> endPoint
-    ) throws Exception{
+    ) throws Exception {
         /*TODO: add random shift*/
         Pair<Double, Double> shiftStart = startPoint;
         Pair<Double, Double> shiftEnd = endPoint;

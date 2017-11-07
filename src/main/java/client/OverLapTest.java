@@ -38,8 +38,7 @@ public class OverLapTest {
                     port,
                     osmPath,
                     ghPath,
-                    null
-            );
+                    null);
         } catch (IOException e) {
             e.printStackTrace();
             exit(1);
@@ -54,11 +53,8 @@ public class OverLapTest {
             int from = ThreadLocalRandom.current().nextInt(0, numNodes);
             int to = ThreadLocalRandom.current().nextInt(0, numNodes);
             if (from != to) {
-                // 40.102039 -88.224335 41.8941 -87.711411
-                MapPoint src = new MapPoint(40.102039, -88.224335);
-                MapPoint dst = new MapPoint(41.8941, -87.711411);
-//                MapPoint src = new MapPoint(nodeAccess.getLat(from), nodeAccess.getLon(from));
-//                MapPoint dst = new MapPoint(nodeAccess.getLat(to), nodeAccess.getLon(to));
+                MapPoint src = new MapPoint(nodeAccess.getLat(from), nodeAccess.getLon(from));
+                MapPoint dst = new MapPoint(nodeAccess.getLat(to), nodeAccess.getLon(to));
                 try {
                     mClient.compute(src, dst);
                 } catch (Exception e) {

@@ -10,10 +10,6 @@ public class ClientRunner {
     public static void main(String[] args) throws Exception{
         addFlags();
 
-
-        System.out.println("Working Directory = " +
-                System.getProperty("user.dir"));
-
         mFlagParser.parseArgs(args);
         String[] coords = mFlagParser.getUnflagged();
         String ip = mFlagParser.getArg("--ip");

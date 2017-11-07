@@ -15,10 +15,12 @@ import static java.lang.System.exit;
 public class OverLapCounter implements PostProcess{
     private String mCsvPath;
     private LinkedHashMap<Pair<MapPoint, MapPoint>, Integer> mMainPathCount;  // for quick check of existence and count
+    private int mPathCounter;
 
     public OverLapCounter(String csvPath) {
         mCsvPath = csvPath;
         mMainPathCount = new LinkedHashMap<>();
+        mPathCounter = 0;
     }
 
     @Override
@@ -37,6 +39,7 @@ public class OverLapCounter implements PostProcess{
     @Override
     public void addPath(ArrayList<MapPoint> path) {
         if (path.size() > 0 && !mMainPathCount.isEmpty()) {
+            mPathCounter ++;
             MapPoint prev = path.get(0);
             MapPoint curt;
             for (int i = 1; i < path.size(); i++) {
@@ -58,6 +61,7 @@ public class OverLapCounter implements PostProcess{
             Logger.printf(Logger.ERROR, "Target csv %s already exists", mCsvPath);
             exit(1);
         }
+        Logger.printf(Logger.DEBUG, "Total number of path: %d\n", mPathCounter);
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write("from Lat, from Lon, to Lat, to Lon, overlap\n".getBytes());
             for (Pair<MapPoint, MapPoint> segment : mMainPathCount.keySet()) {

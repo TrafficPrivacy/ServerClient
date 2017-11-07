@@ -30,11 +30,9 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.reader.ReadBuffer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
+import sun.applet.Main;
 import sun.rmi.runtime.Log;
-import util.Convex;
-import util.Logger;
-import util.MapPoint;
-import util.Pair;
+import util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -148,7 +146,7 @@ public final class MapUI implements PostProcess{
     }
 
     @Override
-    public void setMainPath(ArrayList<MapPoint> path) {
+    public void setMainPath(ArrayList<MapPoint> path) throws MainPathEmptyException{
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<LatLong>();
             LatLong prev = new MapPoint.LatLongAdapter(path.get(0));
@@ -162,11 +160,16 @@ public final class MapUI implements PostProcess{
             }
             mMainPath = list;
             mPaths.add(list);
+        } else {
+            throw new MainPathEmptyException();
         }
     }
 
     @Override
-    public void addPath(ArrayList<MapPoint> path) {
+    public void addPath(ArrayList<MapPoint> path) throws MainPathEmptyException {
+        if (mPaths.size() == 0) {
+            throw new MainPathEmptyException();
+        }
         if (path.size() > 0) {
             ArrayList<LatLong> list = new ArrayList<>();
             for (int i = 0; i < path.size(); i++) {
