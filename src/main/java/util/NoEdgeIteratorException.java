@@ -1,6 +1,6 @@
 package util;
 
-public class NoEdgeIteratorException extends Exception {
+public class NoEdgeIteratorException extends ServerClientException {
 
     public NoEdgeIteratorException() {
         super("No edge provider provided");

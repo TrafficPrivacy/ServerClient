@@ -60,9 +60,9 @@ public class Client {
             MapPoint startPoint,
             MapPoint endPoint) throws
             IOException,
+            ClassNotFoundException,
             NoSuchStrategyException,
             NoEdgeIteratorException,
-            ClassNotFoundException,
             MainPathEmptyException {
         /*TODO: add random shift*/
         MapPoint shiftStart = startPoint;
