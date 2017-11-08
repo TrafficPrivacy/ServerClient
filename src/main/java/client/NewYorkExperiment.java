@@ -36,15 +36,24 @@ public class NewYorkExperiment {
 
         for (String line = reader.readLine(); line != null && i < numTrips; i++, line = reader.readLine()) {
             String[] elements = line.split(",");
+            double startLat = Double.parseDouble(elements[6]);
+            double startLon = Double.parseDouble(elements[5]);
+            double endLat = Double.parseDouble(elements[10]);
+            double endLon = Double.parseDouble(elements[9]);
+            /* Just to skip some dirty data */
+            if (startLat < 20 || startLon > -20 || endLat < 20 || endLon > -20) {
+                i--;
+                continue;
+            }
             try {
                 client.compute(
-                        new MapPoint(Double.parseDouble(elements[6]), Double.parseDouble(elements[5])),
-                        new MapPoint(Double.parseDouble(elements[10]), Double.parseDouble(elements[9])));
+                        new MapPoint(startLat, startLon),
+                        new MapPoint(endLat, endLon));
             } catch (MainPathEmptyException e) {
                 Logger.printf(Logger.ERROR, "No such path: (%s, %s), (%s, %s)\n",
                         elements[6], elements[5],
                         elements[10], elements[9]);
-                e.printStackTrace();
+                i--;
             }
         }
 
