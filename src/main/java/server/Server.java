@@ -61,33 +61,22 @@ public class Server {
         out.close();
     }
 
-    private Reply calculate(double srcLat, double srcLon, double dstLat, double dstLon) throws Exception {
-        Pair<int[], int[]> srcCircle = mMatrixComputer.getCircle(new GHPoint(srcLat, srcLon), RADIUS);
-        Pair<int[], int[]> dstCircle = mMatrixComputer.getCircle(new GHPoint(dstLat, dstLon), RADIUS);
-        Paths srcPaths = new Paths();
-        Paths dstPaths = new Paths();
-        Paths interPaths = new Paths();
-        int endCenter = mMatrixComputer.getmSurroundings().lookupNearest(dstLat, dstLon);
+    private Reply calculate(double srcLat, double srcLon, double dstLat, double dstLon) {
+        Pair<int[], int[]> srcCircle;
+        Pair<int[], int[]> dstCircle;
         try {
-            /*TODO: refactor this*/
-            srcPaths = mMatrixComputer.set2Set(srcCircle.mFirst, srcCircle.mSecond, false, endCenter, RADIUS);
-            dstPaths = mMatrixComputer.set2Set(dstCircle.mSecond, dstCircle.mFirst, false, endCenter, RADIUS);
-            interPaths = mMatrixComputer.set2Set(srcCircle.mSecond, dstCircle.mSecond, true, endCenter, RADIUS);
-        } catch (Exception e) {
+            srcCircle = mMatrixComputer.getCircle(new GHPoint(srcLat, srcLon), RADIUS);
+            dstCircle = mMatrixComputer.getCircle(new GHPoint(dstLat, dstLon), RADIUS);
+        } catch (PointNotFoundException e) {
             e.printStackTrace();
+            return new Reply(null, null, null, null, null, Reply.ERROR);
         }
+        int endCenter = mMatrixComputer.getmSurroundings().lookupNearest(dstLat, dstLon);
+        /*TODO: refactor this*/
+        Paths srcPaths = mMatrixComputer.set2Set(srcCircle.mFirst, srcCircle.mSecond, false, endCenter, RADIUS);
+        Paths dstPaths = mMatrixComputer.set2Set(dstCircle.mSecond, dstCircle.mFirst, false, endCenter, RADIUS);
+        Paths interPaths = mMatrixComputer.set2Set(srcCircle.mSecond, dstCircle.mSecond, true, endCenter, RADIUS);
 
-        // generate the index to Geo-location reference
-        ArrayList<MapPoint> srcGeo = new ArrayList<>();
-        ArrayList<MapPoint> dstGeo = new ArrayList<>();
-        NodeAccess nodeAccess = mMatrixComputer.getNodeAccess();
-        for (int i = 0; i < srcCircle.mFirst.length; i++) {
-            srcGeo.add(new MapPoint(nodeAccess.getLat(srcCircle.mFirst[i]), nodeAccess.getLon(srcCircle.mFirst[i])));
-        }
-        for (int i = 0; i < dstCircle.mFirst.length; i++) {
-            dstGeo.add(new MapPoint(nodeAccess.getLat(dstCircle.mFirst[i]), nodeAccess.getLon(dstCircle.mFirst[i])));
-        }
-
-        return new Reply(srcCircle, dstCircle, srcPaths, dstPaths, interPaths);
+        return new Reply(srcCircle, dstCircle, srcPaths, dstPaths, interPaths, Reply.OK);
     }
 }

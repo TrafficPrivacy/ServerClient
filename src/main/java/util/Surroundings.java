@@ -50,7 +50,10 @@ public class Surroundings {
      */
     public ArrayList<GHPoint> getSurrounding(double latitude, double longitude, double distance) {
         QueryResult closest = mIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES);
-        return DijkstraSSSP(closest.getClosestNode(), distance);
+        if (closest.isValid()) {
+            return DijkstraSSSP(closest.getClosestNode(), distance);
+        }
+        return new ArrayList<>();
     }
 
     public int lookupNearest(double latitude, double longitude) {

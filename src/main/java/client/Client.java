@@ -86,7 +86,12 @@ public class Client {
         in.close();
         out.close();
 
-        AdjacencyList<Integer> graph = reply.parse();
+        AdjacencyList<Integer> graph;
+        try {
+            graph = reply.parse();
+        } catch (ReplyOnErrorException e) {
+            throw new MainPathEmptyException();
+        }
 
         S2SStrategy strategy = S2SStrategy.strategyFactory(S2SStrategy.DIJKSTRA, new CallBacks() {
             @Override

@@ -47,8 +47,11 @@ public class MatrixComputer {
      * @return A pair of integer arrays. The first in the pair represents all the points in the
      *         circle. The second represents the border points.
      */
-    public Pair<int[], int[]> getCircle(GHPoint center, double radius) {
+    public Pair<int[], int[]> getCircle(GHPoint center, double radius) throws PointNotFoundException {
         ArrayList<GHPoint> points = mSurroundings.getSurrounding(center.getLat(), center.getLon(), radius);
+        if (points.size() == 0) {
+            throw new PointNotFoundException(new MapPoint(center));
+        }
         int[] allArray = new int[points.size()];
         // find all points
         for (int i = 0; i < allArray.length; i++) {
@@ -69,7 +72,7 @@ public class MatrixComputer {
         return new Pair<>(allArray, borderArray);
     }
 
-    public Paths set2Set(int[] set1, int[] set2, boolean hasCenter, int targetCenter, double radius) throws Exception {
+    public Paths set2Set(int[] set1, int[] set2, boolean hasCenter, int targetCenter, double radius) {
         try {
             /*TODO: change the weight*/
             S2SStrategy strategy = S2SStrategy.strategyFactory(mStrategy, new CallBacks() {

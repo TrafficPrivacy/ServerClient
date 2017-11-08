@@ -6,22 +6,35 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Reply implements Serializable {
+    public static final int OK = 0;
+    public static final int ERROR = 1;
     private final Pair<int[], int[]> mSrcCircle;         // first element is all the elements, second is the border
     private final Pair<int[], int[]> mDstCircle;
     private final Paths mSrcPaths;
     private final Paths mDestPaths;
     private final Paths mInterPaths;
+    private final int mStatus;
 
-    public Reply(Pair<int[], int[]> srcCircle, Pair<int[], int[]> destCircle, Paths srcPaths, Paths destPaths,
-                 Paths interPaths) {
+    public Reply(
+            Pair<int[], int[]> srcCircle,
+            Pair<int[], int[]> dstCircle,
+            Paths srcPaths,
+            Paths dstPaths,
+            Paths interPaths,
+            int status) {
         mSrcCircle = srcCircle;
-        mDstCircle = destCircle;
+        mDstCircle = dstCircle;
         mSrcPaths = srcPaths;
-        mDestPaths = destPaths;
+        mDestPaths = dstPaths;
         mInterPaths = interPaths;
+        mStatus = status;
     }
 
-    public AdjacencyList<Integer> parse() {
+    public AdjacencyList<Integer> parse() throws ReplyOnErrorException {
+        if (mStatus == ERROR) {
+            throw new ReplyOnErrorException();
+        }
+
         AdjacencyList<Integer> graph = new AdjacencyList<>();
         int[] srcAll = mSrcCircle.mFirst;
         int[] srcBorder = mSrcCircle.mSecond;
@@ -89,6 +102,10 @@ public class Reply implements Serializable {
 
     public int[] getDstPoints() {
         return mDstCircle.mFirst;
+    }
+
+    public boolean isValid() {
+        return mStatus == OK;
     }
 
 }

@@ -50,9 +50,8 @@ public class NewYorkExperiment {
                         new MapPoint(startLat, startLon),
                         new MapPoint(endLat, endLon));
             } catch (MainPathEmptyException e) {
-                Logger.printf(Logger.ERROR, "No such path: (%s, %s), (%s, %s)\n",
-                        elements[6], elements[5],
-                        elements[10], elements[9]);
+                Logger.printf(Logger.ERROR, "No such path: (%f, %f), (%f, %f)\n",
+                        startLat, startLon, endLat, endLon);
                 i--;
             }
         }
