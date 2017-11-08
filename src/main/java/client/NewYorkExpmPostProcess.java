@@ -14,6 +14,8 @@ import static java.lang.System.exit;
 public class NewYorkExpmPostProcess implements PostProcess {
     /* Counts how many main paths go through a segment */
     private HashMap<Segment, MutableInt> mSegPathCounter;
+    /* Counts how many main paths go through a segment */
+    private HashMap<Segment, MutableInt> mSegOverlapCounter;
     /* Keep track of the segment id */
     private LinkedHashMap<Segment, Integer> mSegID;
     /* Counts the overlaps for current path */
@@ -25,6 +27,7 @@ public class NewYorkExpmPostProcess implements PostProcess {
 
     public NewYorkExpmPostProcess(String mainPathCSV, String segmentCSV) {
         mSegPathCounter = new HashMap<>();
+        mSegOverlapCounter = new HashMap<>();
         mSegID = new LinkedHashMap<>();
         mOverlapCounter = new LinkedHashMap<>();
         File mainPathFile = new File(mainPathCSV);
@@ -57,13 +60,17 @@ public class NewYorkExpmPostProcess implements PostProcess {
         for (int i = 1; i < path.size(); i++) {
             curr = path.get(i);
             Segment segment = new Segment(prev, curr);
-            MutableInt count = mSegPathCounter.get(segment);
-            if (count == null) {
-                count = new MutableInt();
-                mSegPathCounter.put(segment, count);
+            MutableInt countPath = mSegPathCounter.get(segment);
+            MutableInt countOverlap = mSegOverlapCounter.get(segment);
+            if (countPath == null) {
+                countPath = new MutableInt();
+                countOverlap = new MutableInt();
+                mSegPathCounter.put(segment, countPath);
+                mSegOverlapCounter.put(segment, countOverlap);
                 mSegID.put(segment, mSegID.size());
             }
-            count.increment();
+            countPath.increment();
+            countOverlap.increment();
 
             mOverlapCounter.put(segment, new MutableInt(1));
             prev = curr;
@@ -84,9 +91,10 @@ public class NewYorkExpmPostProcess implements PostProcess {
         for (int i = 1; i < path.size(); i++) {
             curr = path.get(i);
             Segment segment = new Segment(prev, curr);
-            MutableInt count = mOverlapCounter.get(segment);
-            if (count != null) {
-                count.increment();
+            MutableInt countThisPath = mOverlapCounter.get(segment);
+            if (countThisPath != null) {
+                countThisPath.increment();
+                mSegOverlapCounter.get(segment).increment();
             }
             prev = curr;
         }
@@ -114,11 +122,20 @@ public class NewYorkExpmPostProcess implements PostProcess {
     }
 
     public void finishUp() throws IOException {
-        mSegCSVOut.write("ID, Start Lat, Start Lon, End Lat, End Lon, num of paths\n".getBytes());
+        mSegCSVOut.write("ID, Start Lat, Start Lon, End Lat, End Lon, num of paths, num of overlaps\n".getBytes());
         int id = 0;
         for (Segment segment : mSegID.keySet()) {
-            String segInfo = id + "," + segment.toString() + mSegPathCounter.get(segment).get() + "\n";
-            mSegCSVOut.write(segInfo.getBytes());
+            StringBuilder segInfo = new StringBuilder();
+            segInfo
+                    .append(id)
+                    .append(',')
+                    .append(segment.toString())
+                    .append(',')
+                    .append(mSegPathCounter.get(segment).get())
+                    .append(',')
+                    .append(mSegOverlapCounter.get(segment).get())
+                    .append('\n');
+            mSegCSVOut.write(segInfo.toString().getBytes());
             id ++;
         }
         mSegCSVOut.close();
