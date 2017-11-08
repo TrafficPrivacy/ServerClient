@@ -34,5 +34,18 @@ mvn exec:java -Dexec.mainClass="client.ClientRunner" \
  --ghPath data/illinois \
  --outFilePath data/server-astar.csv"
  ```
+ - New York Cab Data Server:
+```bash
+mvn exec:java -Dexec.mainClass="server.ServerRunner" \
+-Dexec.args="--port 12280 --osmPath data/new-york-latest.osm.pbf \
+--ghPath data/newyork"
+```
+
+ - New York Cab Data Client:
+```bash
+mvn exec:java -Dexec.mainClass="client.NewYorkExperiment" \
+-Dexec.args="--port 12280 --osmPath data/new-york-latest.osm.pbf \
+--ghPath data/newyork --tripCSV data/yellow_tripdata_2015-12.csv"
+```
 
  - Change the arguments in `-Dexec.args=` for different command line arguments
