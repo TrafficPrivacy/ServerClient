@@ -1,5 +1,7 @@
 package algorithm;
 
+import util.NoEdgeIteratorException;
+import util.NoSuchStrategyException;
 import util.Paths;
 
 public abstract class S2SStrategy {
@@ -12,7 +14,7 @@ public abstract class S2SStrategy {
     public static final String ASTAR = "ASTAR";
     public static final String ASTARNOREEVALUATE = "ASTARNOREEVALUATE";
 
-    public static S2SStrategy strategyFactory(String type, CallBacks callBacks) throws Exception {
+    public static S2SStrategy strategyFactory(String type, CallBacks callBacks) throws NoSuchStrategyException {
 
         if (type.equalsIgnoreCase(DIJKSTRA)) {
 
@@ -36,7 +38,7 @@ public abstract class S2SStrategy {
 
         } else {
 
-            throw new Exception("Invalid option for strategy");
+            throw new NoSuchStrategyException(type);
 
         }
     }
@@ -51,6 +53,6 @@ public abstract class S2SStrategy {
         return this;
     }
 
-    public abstract Paths compute(int[] set1, int[] set2) throws Exception;
+    public abstract Paths compute(int[] set1, int[] set2) throws NoEdgeIteratorException;
 
 }

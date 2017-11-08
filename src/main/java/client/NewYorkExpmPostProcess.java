@@ -94,19 +94,23 @@ public class NewYorkExpmPostProcess implements PostProcess {
 
     @Override
     public void done() {
-        mOverlapCounter.clear();
-        String pathInfo = mOverlapCounter.size() + "";
+        StringBuilder pathInfoBuilder = new StringBuilder();
+        pathInfoBuilder.append(mOverlapCounter.size());
         for (Segment segment : mOverlapCounter.keySet()) {
             int segID = mSegID.get(segment);
             int overlap = mOverlapCounter.get(segment).get();
-            pathInfo += "," + segID + "," + overlap;
+            pathInfoBuilder.append(",");
+            pathInfoBuilder.append(segID);
+            pathInfoBuilder.append(",");
+            pathInfoBuilder.append(overlap);
         }
-
+        pathInfoBuilder.append("\n");
         try {
-            mPathCSVOut.write((pathInfo + "\n").getBytes());
+            mPathCSVOut.write(pathInfoBuilder.toString().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mOverlapCounter.clear();
     }
 
     public void finishUp() throws IOException {
@@ -115,6 +119,7 @@ public class NewYorkExpmPostProcess implements PostProcess {
         for (Segment segment : mSegID.keySet()) {
             String segInfo = id + "," + segment.toString() + mSegPathCounter.get(segment).get() + "\n";
             mSegCSVOut.write(segInfo.getBytes());
+            id ++;
         }
         mSegCSVOut.close();
         mPathCSVOut.close();

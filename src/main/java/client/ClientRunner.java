@@ -1,16 +1,22 @@
 package client;
 
-import util.FlagParser;
-import util.Pair;
+import util.*;
+
+import java.io.IOException;
 
 public class ClientRunner {
     private static FlagParser mFlagParser;
-    private static Client mClient;
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws
+            IOException,
+            NoSuchFlagException,
+            NoSuchStrategyException,
+            NoEdgeIteratorException,
+            ClassNotFoundException,
+            MainPathEmptyException {
         addFlags();
-
         mFlagParser.parseArgs(args);
+
         String[] coords = mFlagParser.getUnflagged();
         String ip = mFlagParser.getArg("--ip");
         int port  = Integer.parseInt(mFlagParser.getArg("--port"));
@@ -18,13 +24,13 @@ public class ClientRunner {
         String ghPath  = mFlagParser.getArg("--ghPath");
         String mapPath = mFlagParser.getArg("--mapPath");
         PostProcess mapUI = new MapUI(mapPath, "Client");
-        mClient = new Client(ip, port, osmPath, ghPath, mapUI);
-        mClient.compute(new Pair<>(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])),
-                new Pair<>(Double.parseDouble(coords[2]), Double.parseDouble(coords[3])));
-        System.out.println("Going to return");
+        Client client = new Client(ip, port, osmPath, ghPath, mapUI);
+        client.compute(
+                new MapPoint(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])),
+                new MapPoint(Double.parseDouble(coords[2]), Double.parseDouble(coords[3])));
     }
 
-    public static void addFlags() {
+    private static void addFlags() {
         if (mFlagParser == null) {
             mFlagParser = new FlagParser();
         }

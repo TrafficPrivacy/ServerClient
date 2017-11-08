@@ -1,5 +1,6 @@
 package algorithm;
 
+import util.NoEdgeIteratorException;
 import util.Paths;
 
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ public class Dijkstra extends S2SStrategy {
     }
 
     @Override
-    public Paths compute(int[] set1, int[] set2) throws Exception {
+    public Paths compute(int[] set1, int[] set2) throws NoEdgeIteratorException {
         if (mCallBacks == null) {
-            throw new Exception("No edge provider provided");
+            throw new NoEdgeIteratorException();
         }
         Paths paths = new Paths();
         for (int start : set1) {

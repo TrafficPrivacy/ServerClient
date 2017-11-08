@@ -6,8 +6,8 @@ import org.mapsforge.core.model.LatLong;
 import java.util.ArrayList;
 
 public class MapPoint extends Pair<Double, Double>{
-    public MapPoint(Double first, Double second) {
-        super(first, second);
+    public MapPoint(Double latitude, Double longitude) {
+        super(latitude, longitude);
     }
 
     public MapPoint(LatLong latLong) {

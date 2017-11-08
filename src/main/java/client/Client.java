@@ -57,21 +57,25 @@ public class Client {
      * @param endPoint The end point
      */
     public void compute(
-            Pair<Double, Double> startPoint,
-            Pair<Double, Double> endPoint
-    ) throws Exception {
+            MapPoint startPoint,
+            MapPoint endPoint) throws
+            IOException,
+            NoSuchStrategyException,
+            NoEdgeIteratorException,
+            ClassNotFoundException,
+            MainPathEmptyException {
         /*TODO: add random shift*/
-        Pair<Double, Double> shiftStart = startPoint;
-        Pair<Double, Double> shiftEnd = endPoint;
+        MapPoint shiftStart = startPoint;
+        MapPoint shiftEnd = endPoint;
 
         Socket client = new Socket(mServerIP, mServerPort);
         OutputStream socketOut = client.getOutputStream();
         DataOutputStream out = new DataOutputStream(socketOut);
 
-        out.writeDouble(shiftStart.mFirst);
-        out.writeDouble(shiftStart.mSecond);
-        out.writeDouble(shiftEnd.mFirst);
-        out.writeDouble(shiftEnd.mSecond);
+        out.writeDouble(shiftStart.getLat());
+        out.writeDouble(shiftStart.getLon());
+        out.writeDouble(shiftEnd.getLat());
+        out.writeDouble(shiftEnd.getLon());
 
         InputStream socketIn = client.getInputStream();
         DataInputStream in = new DataInputStream(socketIn);

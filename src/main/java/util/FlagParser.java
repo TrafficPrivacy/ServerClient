@@ -77,9 +77,9 @@ public class FlagParser {
         }
     }
 
-    public String getArg(String flag) throws Exception {
+    public String getArg(String flag) throws NoSuchFlagException {
         if (!mFlags.containsKey(flag))
-            throw new Exception("No such flag: " + flag);
+            throw new NoSuchFlagException(flag);
         return mFlags.get(flag);
     }
 

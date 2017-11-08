@@ -59,6 +59,7 @@ public class Surroundings {
 
     private ArrayList<GHPoint> DijkstraSSSP(int start, double distBound) {
         /* TODO: maybe reuse the dijkstra from algorithm */
+
         HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
         PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
         /* Dijkstra */
@@ -71,6 +72,9 @@ public class Surroundings {
             EdgeIterator iter = mOutEdgeExplorer.setBaseNode(current.mNodeID);
             while (iter.next()) {
                 int nextID = iter.getAdjNode();
+                if (nextID == -1) {
+                    continue;
+                }
                 double tempDist = current.mDistance + iter.getDistance();
                 if (nodeReference.containsKey(nextID)) {
                     NodeWrapper next = nodeReference.get(nextID);
