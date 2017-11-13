@@ -45,6 +45,11 @@ public class NewYorkExpmPostProcess implements PostProcess {
         try {
             mSegCSVOut = new FileOutputStream(segmentFile);
             mPathCSVOut = new FileOutputStream(mainPathFile);
+            mPathCSVOut.write(("# of generated path, " +
+                              "# of segments, [segID, " +
+                              "# of overlaps on that segment]\n")
+                              .getBytes());
+            //mPathCSVOut.write(pathInfoBuilder.toString().getBytes());
         } catch (Exception e) {
             e.printStackTrace();
             exit(1);
