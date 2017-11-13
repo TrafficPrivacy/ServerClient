@@ -24,6 +24,8 @@ public class NewYorkExpmPostProcess implements PostProcess {
     private FileOutputStream mSegCSVOut;
     /* Out stream for main path overlap CSV */
     private FileOutputStream mPathCSVOut;
+    /* Count total generated paths for each main path */
+    private int mCounter;
 
     public NewYorkExpmPostProcess(String mainPathCSV, String segmentCSV) {
         mSegPathCounter = new HashMap<>();
@@ -75,6 +77,8 @@ public class NewYorkExpmPostProcess implements PostProcess {
             mOverlapCounter.put(segment, new MutableInt(1));
             prev = curr;
         }
+
+        mCounter = 0;
     }
 
     @Override
@@ -98,11 +102,14 @@ public class NewYorkExpmPostProcess implements PostProcess {
             }
             prev = curr;
         }
+        mCounter++;
     }
 
     @Override
     public void done() {
         StringBuilder pathInfoBuilder = new StringBuilder();
+        pathInfoBuilder.append(mCounter);
+        pathInfoBuilder.append(",");
         pathInfoBuilder.append(mOverlapCounter.size());
         for (Segment segment : mOverlapCounter.keySet()) {
             int segID = mSegID.get(segment);
