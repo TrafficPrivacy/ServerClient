@@ -105,12 +105,12 @@ public class Surroundings {
     }
 
     private class NodeWrapper implements Comparable {
-        public double mDistance;
-        public final int mNodeID;
-        public int mParent;
-        public MapPoint mMapPoint;
+        double mDistance;
+        final int mNodeID;
+        int mParent;
+        MapPoint mMapPoint;
 
-        public NodeWrapper(int mID, double distance, int parent) {
+        NodeWrapper(int mID, double distance, int parent) {
             mNodeID = mID;
             mDistance = distance;
             mParent = parent;

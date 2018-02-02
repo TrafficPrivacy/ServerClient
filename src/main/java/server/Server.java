@@ -21,8 +21,8 @@ public class Server {
     private MatrixComputer mMatrixComputer;
 
     private final double RADIUS = 1000.0;
-    private final double LATRANGE = 0.01;
-    private final double LONRANGE = 0.01;
+    private final double LATRANGE = 0.005;
+    private final double LONRANGE = 0.007;
 
     public Server(int port, String osmPath, String osmFolder, String strategy) throws IOException {
         mServer = new ServerSocket(port);
