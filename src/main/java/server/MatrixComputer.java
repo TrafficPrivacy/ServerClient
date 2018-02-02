@@ -9,7 +9,6 @@ import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.DistanceCalcEarth;
-import com.graphhopper.util.shapes.GHPoint;
 import util.*;
 
 import java.util.ArrayList;
@@ -43,25 +42,25 @@ public class MatrixComputer {
     /**
      * Find all the points inside a circle of certain radius
      * @param center The center point
-     * @param radius The radius of the circle. In meters?
+     * @param inRegionTest The in region check call back
      * @return A pair of integer arrays. The first in the pair represents all the points in the
      *         circle. The second represents the border points.
      */
-    public Pair<int[], int[]> getCircle(GHPoint center, double radius) throws PointNotFoundException {
-        ArrayList<GHPoint> points = mSurroundings.getSurrounding(center.getLat(), center.getLon(), radius);
+    public Pair<int[], int[]> getPrivacyRegion(MapPoint center, InRegionTest inRegionTest) throws PointNotFoundException {
+        ArrayList<MapPoint> points = mSurroundings.getSurrounding(center.getLat(), center.getLon(), inRegionTest);
         if (points.size() == 0) {
-            throw new PointNotFoundException(new MapPoint(center));
+            throw new PointNotFoundException(center);
         }
         int[] allArray = new int[points.size()];
         // find all points
         for (int i = 0; i < allArray.length; i++) {
             QueryResult closest = mHopper
                     .getLocationIndex()
-                    .findClosest(points.get(i).lat, points.get(i).lon, EdgeFilter.ALL_EDGES);
+                    .findClosest(points.get(i).getLat(), points.get(i).getLon(), EdgeFilter.ALL_EDGES);
             allArray[i] = closest.getClosestNode();
         }
         // find all the border points
-        ArrayList<MapPoint> border = Convex.getConvex(MapPoint.convertFromGHPoint(points));
+        ArrayList<MapPoint> border = Convex.getConvex(points);
         int[] borderArray = new int[border.size()];
         for (int i = 0; i < borderArray.length; i++) {
             QueryResult closest = mHopper
@@ -72,7 +71,7 @@ public class MatrixComputer {
         return new Pair<>(allArray, borderArray);
     }
 
-    public Paths set2Set(int[] set1, int[] set2, boolean hasCenter, int targetCenter, double radius) {
+    public Paths set2Set(int[] sourceSet, int[] targetSet, boolean hasCenter, int targetCenter, double radius) {
         try {
             /*TODO: change the weight*/
             S2SStrategy strategy = S2SStrategy.strategyFactory(mStrategy, new CallBacks() {
@@ -120,7 +119,7 @@ public class MatrixComputer {
                     return toCenter - radius;
                 }
             });
-            return strategy.compute(set1, set2);
+            return strategy.compute(sourceSet, targetSet);
         } catch (Exception e) {
             e.printStackTrace();
         }

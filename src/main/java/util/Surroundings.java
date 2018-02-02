@@ -11,7 +11,7 @@ import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
-import com.graphhopper.util.shapes.GHPoint;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,13 +45,13 @@ public class Surroundings {
      * Get the surrounding around a center in a certain distance in meters
      * @param latitude
      * @param longitude
-     * @param distance
+     * @param inRegionTest
      * @return
      */
-    public ArrayList<GHPoint> getSurrounding(double latitude, double longitude, double distance) {
+    public ArrayList<MapPoint> getSurrounding(double latitude, double longitude, InRegionTest inRegionTest) {
         QueryResult closest = mIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES);
         if (closest.isValid()) {
-            return DijkstraSSSP(closest.getClosestNode(), distance);
+            return DijkstraSSSP(closest.getClosestNode(), inRegionTest);
         }
         return new ArrayList<>();
     }
@@ -60,13 +60,13 @@ public class Surroundings {
         return mIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES).getClosestNode();
     }
 
-    private ArrayList<GHPoint> DijkstraSSSP(int start, double distBound) {
+    private ArrayList<MapPoint> DijkstraSSSP(int start, InRegionTest inRegionTest) {
         /* TODO: maybe reuse the dijkstra from algorithm */
-
         HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
         PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
         /* Dijkstra */
-        nodeReference.put(start, new NodeWrapper(start, 0, start));
+        NodeWrapper startPointWrapper = new NodeWrapper(start, 0, start);
+        nodeReference.put(start, startPointWrapper);
         queue.add(nodeReference.get(start));
         while (!queue.isEmpty()) {
             NodeWrapper current = queue.poll();
@@ -88,19 +88,19 @@ public class Surroundings {
                         queue.add(next);
                     }
                 } else {
-                    if (tempDist < distBound) {
-                        NodeWrapper next = new NodeWrapper(nextID, tempDist, current.mNodeID);
+                    NodeWrapper next = new NodeWrapper(nextID, tempDist, current.mNodeID);
+                    if (inRegionTest.isInRegion(tempDist, next.mMapPoint)) {
                         nodeReference.put(nextID, next);
                         queue.add(next);
                     }
                 }
             }
         }
-        ArrayList<GHPoint> nodes = new ArrayList<>();
-        NodeAccess nodeAccess = mGhStore.getNodeAccess();
-        for (int idx : nodeReference.keySet()) {
-            nodes.add(new GHPoint(nodeAccess.getLat(idx), nodeAccess.getLon(idx)));
+        ArrayList<MapPoint> nodes = new ArrayList<>();
+        for (NodeWrapper nodeWrapper : nodeReference.values()) {
+            nodes.add(nodeWrapper.mMapPoint);
         }
+        Logger.printf(Logger.DEBUG, "number of nodes: %d\n", nodes.size());
         return nodes;
     }
 
@@ -108,11 +108,14 @@ public class Surroundings {
         public double mDistance;
         public final int mNodeID;
         public int mParent;
+        public MapPoint mMapPoint;
 
         public NodeWrapper(int mID, double distance, int parent) {
             mNodeID = mID;
             mDistance = distance;
             mParent = parent;
+            NodeAccess nodeAccess = mGhStore.getNodeAccess();
+            mMapPoint = new MapPoint(nodeAccess.getLat(mID), nodeAccess.getLon(mID));
         }
 
         public int compareTo(Object o) {
