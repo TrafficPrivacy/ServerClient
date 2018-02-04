@@ -37,7 +37,7 @@ public class Dijkstra extends S2SStrategy {
     /**
      * Implementation of one to all dijkstra
      * @param start The graphhopper index for start node
-     * @param set The set of desitination ndoes
+     * @param set The set of destination nodes
      * @return a map of each pair of nodes to the distance and path (represented by an array of index)
      */
     private Paths dijkstra(int start, int[] set) {
@@ -60,7 +60,7 @@ public class Dijkstra extends S2SStrategy {
             NodeWrapper current = mQueue.poll();
             if (current.mNodeID == -1)
                 continue;
-            current.mCost -= current.mPotential;
+            current.mCost -= current.mPotential;    // The costs is potential (0 here) + distance from source
             EdgeIterator nextNodes = mCallBacks.getIterator(current.mNodeID, current.mPreviousEdgeID);
             while (nextNodes.next()) {
                 int nextID = nextNodes.getNext();

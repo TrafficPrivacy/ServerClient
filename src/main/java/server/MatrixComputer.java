@@ -126,8 +126,5 @@ public class MatrixComputer {
         return null;
     }
 
-    public NodeAccess getNodeAccess() {
-        return mHopper.getGraphHopperStorage().getNodeAccess();
-    }
 }
 
