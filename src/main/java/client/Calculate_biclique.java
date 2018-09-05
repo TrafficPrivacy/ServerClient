@@ -14,7 +14,7 @@ public class Calculate_biclique implements PostProcess{
     private Integer num;
 
 
-    private HashSet<Integer> create_z(Boolean left,Integer current,HashMap<Integer,Integer>matched_pairs,HashMap<Pair<Integer,Integer>,Integer> edges_complement,HashSet<Integer> matched_right)
+    private HashSet<Integer> create_z(Boolean left,boolean []visited, Integer current,HashMap<Integer,Integer> matched_pairs,HashMap<Pair<Integer,Integer>,Integer> edges_complement,HashSet<Integer> matched_right)
     {
         HashSet<Integer> result=new HashSet<>();
         result.add(current);
@@ -23,8 +23,9 @@ public class Calculate_biclique implements PostProcess{
             for(Integer tmp:matched_right)
             {
                 Pair<Integer,Integer> segment_two=new Pair<>(current,tmp);
-                if(edges_complement.containsKey(segment_two) && edges_complement.get(segment_two)>0) {
-                    HashSet<Integer> intermediate_result = create_z(false, tmp, matched_pairs, edges_complement, matched_right);
+                if(edges_complement.containsKey(segment_two) && edges_complement.get(segment_two)>0 && !visited[tmp]) {
+                    visited[tmp]=true;
+                    HashSet<Integer> intermediate_result = create_z(false, visited,tmp, matched_pairs, edges_complement, matched_right);
                     result.addAll(intermediate_result);
                 }
             }
@@ -32,9 +33,12 @@ public class Calculate_biclique implements PostProcess{
         else
         {
             Integer a=matched_pairs.get(current);
-            result.add(a);
-            HashSet<Integer>intermediate_result=create_z(true,a,matched_pairs,edges_complement,matched_right);
-            result.addAll(intermediate_result);
+            if(!visited[a]) {
+                result.add(a);
+                visited[a]=true;
+                HashSet<Integer> intermediate_result = create_z(true, visited,a, matched_pairs, edges_complement, matched_right);
+                result.addAll(intermediate_result);
+            }
         }
         return result;
     }
@@ -92,6 +96,7 @@ public class Calculate_biclique implements PostProcess{
     {
         MapPoint pre=mainpath.get(0);
         System.out.print("There are "+otherpaths.size()+" paths\n");
+        System.out.print("Mainpath length is "+mainpath.size()+"\n");
         for(int i=1;i<mainpath.size();++i)
         {
             Integer source=new Integer(num+5);
@@ -223,7 +228,7 @@ public class Calculate_biclique implements PostProcess{
                     maxflow+=1;
                 }
             }
-          //  System.out.print("Maxflow for graph G' is "+maxflow+"\n");
+            System.out.print("Maxflow for graph G' is "+maxflow+"\n");
             //get minimum vertex cover in G'
             left.remove(source);
             right.remove(destination);
@@ -270,9 +275,11 @@ public class Calculate_biclique implements PostProcess{
                     matched_right.add(a);
                 }
             }
+            boolean[] visited=new boolean[num+20];
             for(Integer tmp:unmatched_left)
             {
-                z.addAll(create_z(true,tmp,matched_pairs,edges_complement,matched_right));
+                visited[tmp]=true;
+                z.addAll(create_z(true,visited,tmp,matched_pairs,edges_complement,matched_right));
             }
             HashSet<Integer> tmp_left=new HashSet<>(left);
             HashSet<Integer> tmp_right=new HashSet<>(right);
@@ -280,11 +287,11 @@ public class Calculate_biclique implements PostProcess{
             tmp_right.retainAll(z);
             k.addAll(tmp_left);
             k.addAll(tmp_right);
+            System.out.print("Minimal vertex cover size "+k.size()+"\n");
             tmp_left=new HashSet<>(left);
             tmp_right=new HashSet<>(right);
             tmp_left.removeAll(k);
             tmp_right.removeAll(k);
-            /*
             for(Integer tmp: tmp_left)
             {
                 for(Integer tmp2:tmp_right)
@@ -293,7 +300,7 @@ public class Calculate_biclique implements PostProcess{
                     if(!edges.containsKey(segment_tmp))System.out.print("Error\n");
                 }
             }
-            */
+
             System.out.print("Segment: "+pre.toString()+"->"+cur.toString()+"; Maximal Biclique: Left:"+tmp_left.size()+" Right: "+tmp_right.size()+"\n");
             pre=cur;
         }
