@@ -50,8 +50,9 @@ public class MatrixComputer {
    */
   public Pair<int[], int[]> getPrivacyRegion(MapPoint center, InRegionTest inRegionTest)
       throws PointNotFoundException {
-    ArrayList<MapPoint> points = mSurroundings
-        .getSurrounding(center.getLat(), center.getLon(), inRegionTest);
+    Pair<ArrayList<MapPoint>, ArrayList<MapPoint>> pointsAndBorder = mSurroundings
+        .getSurroundingAndBoundary(center.getLat(), center.getLon(), inRegionTest);
+    ArrayList<MapPoint> points = pointsAndBorder.mFirst;
     if (points.size() == 0) {
       throw new PointNotFoundException(center);
     }
@@ -64,7 +65,7 @@ public class MatrixComputer {
       allArray[i] = closest.getClosestNode();
     }
     // find all the border points
-    ArrayList<MapPoint> border = Convex.getConvex(points);
+    ArrayList<MapPoint> border = pointsAndBorder.mSecond;
     int[] borderArray = new int[border.size()];
     for (int i = 0; i < borderArray.length; i++) {
       QueryResult closest = mHopper

@@ -11,6 +11,8 @@ import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
+import com.vividsolutions.jts.operation.valid.TopologyValidationError;
+import java.util.HashSet;
 import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
@@ -46,22 +48,25 @@ public class Surroundings {
   /**
    * Get the surrounding around a center in a certain distance in meters
    */
-  public ArrayList<MapPoint> getSurrounding(double latitude, double longitude,
+  public Pair<ArrayList<MapPoint>, ArrayList<MapPoint>> getSurroundingAndBoundary(double latitude,
+      double longitude,
       InRegionTest inRegionTest) {
     QueryResult closest = mIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES);
     if (closest.isValid()) {
       return DijkstraSSSP(closest.getClosestNode(), inRegionTest);
     }
-    return new ArrayList<>();
+    return new Pair<>(new ArrayList<>(), new ArrayList<>());
   }
 
   public int lookupNearest(double latitude, double longitude) {
     return mIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES).getClosestNode();
   }
 
-  private ArrayList<MapPoint> DijkstraSSSP(int start, InRegionTest inRegionTest) {
+  private Pair<ArrayList<MapPoint>, ArrayList<MapPoint>> DijkstraSSSP(int start,
+      InRegionTest inRegionTest) {
     /* TODO: maybe reuse the dijkstra from algorithm */
     HashMap<Integer, NodeWrapper> nodeReference = new HashMap<>();
+    HashSet<MapPoint> boundary = new HashSet<>();
     PriorityQueue<NodeWrapper> queue = new PriorityQueue<>();
     /* Dijkstra */
     NodeWrapper startPointWrapper = new NodeWrapper(start, 0, start);
@@ -92,6 +97,8 @@ public class Surroundings {
           if (inRegionTest.isInRegion(tempDist, next.mMapPoint)) {
             nodeReference.put(nextID, next);
             queue.add(next);
+          } else {
+            boundary.add(current.mMapPoint);
           }
         }
       }
@@ -101,7 +108,9 @@ public class Surroundings {
       nodes.add(nodeWrapper.mMapPoint);
     }
     Logger.printf(Logger.DEBUG, "number of nodes: %d\n", nodes.size());
-    return nodes;
+    ArrayList<MapPoint> boundaryNodes = new ArrayList<>(boundary);
+    Logger.printf(Logger.DEBUG, "number of nodes on boundary: %d\n", boundaryNodes.size());
+    return new Pair<>(nodes, boundaryNodes);
   }
 
   private class NodeWrapper implements Comparable {
