@@ -30,8 +30,6 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.reader.ReadBuffer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
-import sun.applet.Main;
-import sun.rmi.runtime.Log;
 import util.*;
 
 import javax.swing.*;
@@ -57,13 +55,15 @@ public final class MapUI implements PostProcess {
   // shitty implementation
   private ArrayList<LatLong> mStarts;
   private ArrayList<LatLong> mEnds;
-  private List<MyConvexLayer> mSources;
-  private List<MyConvexLayer> mTargets;
+  private List<ConvexLayer> mSources;
+  private List<ConvexLayer> mTargets;
 
-  private List<MyLineLayer> mLayers;
+  private List<LineLayer> mLayers;
   private List<ArrayList<LatLong>> mPaths;
   private HashSet<Pair> mMainPathSet;
   private List<LatLong> mMainPath;
+
+  private List<Triple<LineLayer, ConvexLayer, ConvexLayer>> mLineSourcesTargets;
 
   private final float THRESHOLD = 0.8f;
 
@@ -118,6 +118,7 @@ public final class MapUI implements PostProcess {
     mEnds = new ArrayList<>();
     mSources = new ArrayList<>();
     mTargets = new ArrayList<>();
+    mLineSourcesTargets = new ArrayList<>();
   }
 
   public int createDot(LatLong coordinates, int color, float strokeWidth) {
@@ -193,7 +194,7 @@ public final class MapUI implements PostProcess {
     Logger.printf(Logger.DEBUG, "Total number of path: " + mPaths.size());
 
     if (mMainPath != null) {
-      for (MyLineLayer myLineLayer : mLayers) {
+      for (LineLayer myLineLayer : mLayers) {
         MAP_VIEW.getLayerManager().getLayers().remove(myLineLayer);
       }
       mLayers.clear();
@@ -266,22 +267,24 @@ public final class MapUI implements PostProcess {
         }
 
         if (overLapList.size() > 1) {
-          MyLineLayer myLineLayer = new MyLineLayer(GRAPHIC_FACTORY, dots,
+          LineLayer lineLayer = new LineLayer(GRAPHIC_FACTORY, dots,
               getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())),
               6.0f, list);
 
-          MAP_VIEW.getLayerManager().getLayers().add(myLineLayer);
-          mLayers.add(myLineLayer);
-          MyConvexLayer newSource = new MyConvexLayer(GRAPHIC_FACTORY,
+          MAP_VIEW.getLayerManager().getLayers().add(lineLayer);
+          mLayers.add(lineLayer);
+          ConvexLayer newSource = new ConvexLayer(GRAPHIC_FACTORY,
               getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())),
               6.0f, sourceDots);
 
           mSources.add(newSource);
-          MyConvexLayer newTarget = new MyConvexLayer(GRAPHIC_FACTORY,
+          ConvexLayer newTarget = new ConvexLayer(GRAPHIC_FACTORY,
               getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())),
               6.0f, targetDots);
 
           mTargets.add(newTarget);
+
+          mLineSourcesTargets.add(new Triple<>(lineLayer, newSource, newTarget));
           MAP_VIEW.getLayerManager().getLayers().add(newSource);
           MAP_VIEW.getLayerManager().getLayers().add(newTarget);
           newSource.setVisible(false);
@@ -397,50 +400,42 @@ public final class MapUI implements PostProcess {
     public void mouseClicked(java.awt.event.MouseEvent e) {
       LatLong location = mReference.fromPixels(e.getX(), e.getY());
       double min_dist = 100.0;
-      MyLineLayer bestLayer = null;
-      int bestIdx = 0;
-      for (int i = 0; i < mLayers.size(); i++) {
-        MyLineLayer myLineLayer = mLayers.get(i);
-        double dist = myLineLayer.contains(location);
+      Triple<LineLayer, ConvexLayer, ConvexLayer> bestLayer = null;
+      for (Triple<LineLayer, ConvexLayer, ConvexLayer> triple : mLineSourcesTargets) {
+        LineLayer lineLayer = triple.mFirst;
+        double dist = lineLayer.contains(location);
         if (dist > 0 && dist < min_dist) {
           min_dist = dist;
-          bestLayer = myLineLayer;
-          bestIdx = i;
+          bestLayer = triple;
         }
       }
-      for (MyConvexLayer myConvexLayer : mSources) {
-        myConvexLayer.setVisible(false);
-      }
-      for (MyConvexLayer myConvexLayer : mTargets) {
-        myConvexLayer.setVisible(false);
+      for (Triple<LineLayer, ConvexLayer, ConvexLayer> triple : mLineSourcesTargets) {
+        triple.mFirst.setVisible(false);
+        triple.mSecond.setVisible(false);
+        triple.mThird.setVisible(false);
       }
       if (bestLayer == null) {
-        for (MyLineLayer myLineLayer : mLayers) {
-          myLineLayer.setVisible(true);
+        for (Triple<LineLayer, ConvexLayer, ConvexLayer> triple : mLineSourcesTargets) {
+          triple.mFirst.setVisible(true);
         }
-        mSources.get(1).setVisible(true);
-        mTargets.get(1).setVisible(true);
       } else {
-        for (MyLineLayer myLineLayer : mLayers) {
-          myLineLayer.setVisible(false);
-        }
-        bestLayer.setVisible(true);
-        mSources.get(bestIdx + 1).setVisible(true);
-        mTargets.get(bestIdx + 1).setVisible(true);
+        bestLayer.mFirst.setVisible(true);
+        bestLayer.mSecond.setVisible(true);
+        bestLayer.mThird.setVisible(true);
       }
       MAP_VIEW.getLayerManager().redrawLayers();
     }
   }
 
-  private class MyConvexLayer extends Polyline {
+  private class ConvexLayer extends Polyline {
 
-    public MyConvexLayer(GraphicFactory graphicFactory, int pathcolor,
-        float pathstrokeWidth, ArrayList<LatLong> dots) {
+    public ConvexLayer(GraphicFactory graphicFactory, int pathColor,
+        float pathStrokeWidth, ArrayList<LatLong> dots) {
       super(null, graphicFactory);
       org.mapsforge.core.graphics.Paint paintStroke = GRAPHIC_FACTORY.createPaint();
       paintStroke.setStyle(Style.STROKE);
-      paintStroke.setColor(pathcolor);
-      paintStroke.setStrokeWidth(pathstrokeWidth);
+      paintStroke.setColor(pathColor);
+      paintStroke.setStrokeWidth(pathStrokeWidth);
       this.setPaintStroke(paintStroke);
       List<LatLong> convex = MapPoint
           .convertToLatlong(Convex.getConvex(MapPoint.convertFromLatlong(dots)));
@@ -452,19 +447,19 @@ public final class MapUI implements PostProcess {
     }
   }
 
-  private class MyLineLayer extends Polyline {
+  private class LineLayer extends Polyline {
 
     private HashMap<LatLong, Integer> mDots;
     private List<LatLong> mPath;
 
-    public MyLineLayer(GraphicFactory graphicFactory, HashMap<LatLong, Integer> dotWithColor,
-        int pathcolor,
-        float pathstrokeWidth, List<LatLong> path) {
+    public LineLayer(GraphicFactory graphicFactory, HashMap<LatLong, Integer> dotWithColor,
+        int pathColor,
+        float pathStrokeWidth, List<LatLong> path) {
       super(null, graphicFactory);
       org.mapsforge.core.graphics.Paint paintStroke = GRAPHIC_FACTORY.createPaint();
       paintStroke.setStyle(Style.STROKE);
-      paintStroke.setColor(pathcolor);
-      paintStroke.setStrokeWidth(pathstrokeWidth);
+      paintStroke.setColor(pathColor);
+      paintStroke.setStrokeWidth(pathStrokeWidth);
       this.setPaintStroke(paintStroke);
       mDots = dotWithColor;
       mPath = path;
