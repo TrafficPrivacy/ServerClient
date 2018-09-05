@@ -6,53 +6,54 @@ import util.Paths;
 
 public abstract class S2SStrategy {
 
-    protected CallBacks mCallBacks;
+  protected CallBacks mCallBacks;
 
-    public static final String DIJKSTRA = "DIJKSTRA";
-    public static final String FLOYWARSHALL = "FLOYWARSHALL";
-    public static final String BELLMANFORD = "BELLMANFORD";
-    public static final String ASTAR = "ASTAR";
-    public static final String ASTARNOREEVALUATE = "ASTARNOREEVALUATE";
+  public static final String DIJKSTRA = "DIJKSTRA";
+  public static final String FLOYWARSHALL = "FLOYWARSHALL";
+  public static final String BELLMANFORD = "BELLMANFORD";
+  public static final String ASTAR = "ASTAR";
+  public static final String ASTARNOREEVALUATE = "ASTARNOREEVALUATE";
 
-    public static S2SStrategy strategyFactory(String type, CallBacks callBacks) throws NoSuchStrategyException {
+  public static S2SStrategy strategyFactory(String type, CallBacks callBacks)
+      throws NoSuchStrategyException {
 
-        if (type.equalsIgnoreCase(DIJKSTRA)) {
+    if (type.equalsIgnoreCase(DIJKSTRA)) {
 
-            return new Dijkstra(callBacks);
+      return new Dijkstra(callBacks);
 
-        } else if (type.equalsIgnoreCase(FLOYWARSHALL)) {
+    } else if (type.equalsIgnoreCase(FLOYWARSHALL)) {
 
-            return new FloydWarshall(callBacks);
+      return new FloydWarshall(callBacks);
 
-        } else if (type.equalsIgnoreCase(BELLMANFORD)) {
+    } else if (type.equalsIgnoreCase(BELLMANFORD)) {
 
-            return new BellmanFord(callBacks);
+      return new BellmanFord(callBacks);
 
-        } else if (type.equalsIgnoreCase(ASTAR)) {
+    } else if (type.equalsIgnoreCase(ASTAR)) {
 
-            return new AStar(callBacks);
+      return new AStar(callBacks);
 
-        } else if (type.equalsIgnoreCase(ASTARNOREEVALUATE)) {
+    } else if (type.equalsIgnoreCase(ASTARNOREEVALUATE)) {
 
-            return new Dijkstra(callBacks);
+      return new Dijkstra(callBacks);
 
-        } else {
+    } else {
 
-            throw new NoSuchStrategyException(type);
+      throw new NoSuchStrategyException(type);
 
-        }
     }
+  }
 
 
-    public S2SStrategy(CallBacks callBacks) {
-        mCallBacks = callBacks;
-    }
+  public S2SStrategy(CallBacks callBacks) {
+    mCallBacks = callBacks;
+  }
 
-    public S2SStrategy setEdgeProvider(CallBacks callBacks) {
-        mCallBacks = callBacks;
-        return this;
-    }
+  public S2SStrategy setEdgeProvider(CallBacks callBacks) {
+    mCallBacks = callBacks;
+    return this;
+  }
 
-    public abstract Paths compute(int[] set1, int[] set2) throws NoEdgeIteratorException;
+  public abstract Paths compute(int[] set1, int[] set2) throws NoEdgeIteratorException;
 
 }

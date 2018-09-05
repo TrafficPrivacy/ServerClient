@@ -1,25 +1,26 @@
 package util;
 
 public class MutableInt {
-    private int mValue;
 
-    public MutableInt() {
-        this(0);
-    }
+  private int mValue;
 
-    public MutableInt(int initialVal) {
-        mValue = initialVal;
-    }
+  public MutableInt() {
+    this(0);
+  }
 
-    public void increment() {
-        mValue++;
-    }
+  public MutableInt(int initialVal) {
+    mValue = initialVal;
+  }
 
-    public int get() {
-        return mValue;
-    }
+  public void increment() {
+    mValue++;
+  }
 
-    public void set(int value) {
-        mValue = value;
-    }
+  public int get() {
+    return mValue;
+  }
+
+  public void set(int value) {
+    mValue = value;
+  }
 }

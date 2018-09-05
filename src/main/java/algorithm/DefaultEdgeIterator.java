@@ -7,56 +7,58 @@ import com.graphhopper.util.EdgeExplorer;
 
 public class DefaultEdgeIterator extends EdgeIterator {
 
-    protected int mPrevEdge;
-    protected com.graphhopper.util.EdgeIterator mGhEdgeIterator;
-    protected Weighting mWeight;
+  protected int mPrevEdge;
+  protected com.graphhopper.util.EdgeIterator mGhEdgeIterator;
+  protected Weighting mWeight;
 
-    /**
-     * Construct a new edge iterator
-     * @param current the current node id
-     * @param prevEdge the edge leads to this node
-     * @param outEdgeExplorer base graph edge iterator
-     */
-    public DefaultEdgeIterator(int current, int prevEdge, EdgeExplorer outEdgeExplorer) {
-        mPrevEdge = prevEdge;
-        mGhEdgeIterator = outEdgeExplorer.setBaseNode(current);
-        EncodingManager em = new EncodingManager("car");
-        mWeight = new FastestWeighting(em.getEncoder("car"));
-    }
+  /**
+   * Construct a new edge iterator
+   *
+   * @param current the current node id
+   * @param prevEdge the edge leads to this node
+   * @param outEdgeExplorer base graph edge iterator
+   */
+  public DefaultEdgeIterator(int current, int prevEdge, EdgeExplorer outEdgeExplorer) {
+    mPrevEdge = prevEdge;
+    mGhEdgeIterator = outEdgeExplorer.setBaseNode(current);
+    EncodingManager em = new EncodingManager("car");
+    mWeight = new FastestWeighting(em.getEncoder("car"));
+  }
 
-    /**
-     * Do not use
-     * @return always returns false
-     */
-    @Deprecated
-    @Override
-    public boolean hasNext() {
-        return false;
-    }
+  /**
+   * Do not use
+   *
+   * @return always returns false
+   */
+  @Deprecated
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
 
-    @Override
-    public Boolean next() {
-        return mGhEdgeIterator.next();
-    }
+  @Override
+  public Boolean next() {
+    return mGhEdgeIterator.next();
+  }
 
-    @Override
-    public double getCost() {
-        //return mWeight.calcWeight(mGhEdgeIterator, false, mPrevEdge);
-        return mGhEdgeIterator.getDistance();
-    }
+  @Override
+  public double getCost() {
+    //return mWeight.calcWeight(mGhEdgeIterator, false, mPrevEdge);
+    return mGhEdgeIterator.getDistance();
+  }
 
-    @Override
-    public double getDistance() {
-        return mGhEdgeIterator.getDistance();
-    }
+  @Override
+  public double getDistance() {
+    return mGhEdgeIterator.getDistance();
+  }
 
-    @Override
-    public int getNext() {
-        return mGhEdgeIterator.getAdjNode();
-    }
+  @Override
+  public int getNext() {
+    return mGhEdgeIterator.getAdjNode();
+  }
 
-    @Override
-    public int getEdge() {
-        return mGhEdgeIterator.getEdge();
-    }
+  @Override
+  public int getEdge() {
+    return mGhEdgeIterator.getEdge();
+  }
 }

@@ -15,116 +15,121 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class MatrixComputer {
-    private String mStrategy;
-    private EncodingManager mEm;
-    private GraphHopper mHopper;
-    private Surroundings mSurroundings;
 
-    public MatrixComputer(String osmPath, String osmFolder, String strategy) {
-        /*TODO: change this hard coded encoding*/
-        mEm = new EncodingManager("car");
-        mHopper = new GraphHopperOSM()
-                .setOSMFile(osmPath)
-                .forDesktop()
-                .setGraphHopperLocation(osmFolder)
-                .setEncodingManager(mEm)
-                .importOrLoad();
+  private String mStrategy;
+  private EncodingManager mEm;
+  private GraphHopper mHopper;
+  private Surroundings mSurroundings;
 
-        mStrategy = strategy;
-        mSurroundings = new Surroundings(mHopper.getGraphHopperStorage(),
-                mHopper.getLocationIndex(), mEm.getEncoder("car"));
+  public MatrixComputer(String osmPath, String osmFolder, String strategy) {
+    /*TODO: change this hard coded encoding*/
+    mEm = new EncodingManager("car");
+    mHopper = new GraphHopperOSM()
+        .setOSMFile(osmPath)
+        .forDesktop()
+        .setGraphHopperLocation(osmFolder)
+        .setEncodingManager(mEm)
+        .importOrLoad();
+
+    mStrategy = strategy;
+    mSurroundings = new Surroundings(mHopper.getGraphHopperStorage(),
+        mHopper.getLocationIndex(), mEm.getEncoder("car"));
+  }
+
+  public Surroundings getmSurroundings() {
+    return mSurroundings;
+  }
+
+  /**
+   * Find all the points inside a circle of certain radius
+   *
+   * @param center The center point
+   * @param inRegionTest The in region check call back
+   * @return A pair of integer arrays. The first in the pair represents all the points in the
+   * circle. The second represents the border points.
+   */
+  public Pair<int[], int[]> getPrivacyRegion(MapPoint center, InRegionTest inRegionTest)
+      throws PointNotFoundException {
+    ArrayList<MapPoint> points = mSurroundings
+        .getSurrounding(center.getLat(), center.getLon(), inRegionTest);
+    if (points.size() == 0) {
+      throw new PointNotFoundException(center);
     }
-
-    public Surroundings getmSurroundings() {
-        return mSurroundings;
+    int[] allArray = new int[points.size()];
+    // find all points
+    for (int i = 0; i < allArray.length; i++) {
+      QueryResult closest = mHopper
+          .getLocationIndex()
+          .findClosest(points.get(i).getLat(), points.get(i).getLon(), EdgeFilter.ALL_EDGES);
+      allArray[i] = closest.getClosestNode();
     }
-
-    /**
-     * Find all the points inside a circle of certain radius
-     * @param center The center point
-     * @param inRegionTest The in region check call back
-     * @return A pair of integer arrays. The first in the pair represents all the points in the
-     *         circle. The second represents the border points.
-     */
-    public Pair<int[], int[]> getPrivacyRegion(MapPoint center, InRegionTest inRegionTest) throws PointNotFoundException {
-        ArrayList<MapPoint> points = mSurroundings.getSurrounding(center.getLat(), center.getLon(), inRegionTest);
-        if (points.size() == 0) {
-            throw new PointNotFoundException(center);
-        }
-        int[] allArray = new int[points.size()];
-        // find all points
-        for (int i = 0; i < allArray.length; i++) {
-            QueryResult closest = mHopper
-                    .getLocationIndex()
-                    .findClosest(points.get(i).getLat(), points.get(i).getLon(), EdgeFilter.ALL_EDGES);
-            allArray[i] = closest.getClosestNode();
-        }
-        // find all the border points
-        ArrayList<MapPoint> border = Convex.getConvex(points);
-        int[] borderArray = new int[border.size()];
-        for (int i = 0; i < borderArray.length; i++) {
-            QueryResult closest = mHopper
-                    .getLocationIndex()
-                    .findClosest(border.get(i).mFirst, border.get(i).mSecond, EdgeFilter.ALL_EDGES);
-            borderArray[i] = closest.getClosestNode();
-        }
-        return new Pair<>(allArray, borderArray);
+    // find all the border points
+    ArrayList<MapPoint> border = Convex.getConvex(points);
+    int[] borderArray = new int[border.size()];
+    for (int i = 0; i < borderArray.length; i++) {
+      QueryResult closest = mHopper
+          .getLocationIndex()
+          .findClosest(border.get(i).mFirst, border.get(i).mSecond, EdgeFilter.ALL_EDGES);
+      borderArray[i] = closest.getClosestNode();
     }
+    return new Pair<>(allArray, borderArray);
+  }
 
-    public Paths set2Set(int[] sourceSet, int[] targetSet, boolean hasCenter, int targetCenter, double radius) {
-        try {
-            /*TODO: change the weight*/
-            S2SStrategy strategy = S2SStrategy.strategyFactory(mStrategy, new CallBacks() {
-                @Override
-                public EdgeIterator getIterator(int current, int prevEdgeID) {
-                    /*TODO: change the hard coded name too*/
-                    if (mStrategy.equalsIgnoreCase(S2SStrategy.ASTAR)) {
-                        return new AStarEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
-                                .createEdgeExplorer(new DefaultEdgeFilter(mEm.getEncoder("car"), false, true)));
-                    }
-                    return new DefaultEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
-                            .createEdgeExplorer(new DefaultEdgeFilter(mEm.getEncoder("car"), false, true)));
-                }
-
-                /**
-                 * Get the minimum potential among all the targets
-                 * @param current current node
-                 * @param targets the targets
-                 * @return the minimum potential
-                 */
-                @Override
-                public double getPotential(int current, HashSet<Integer> targets) {
-                    if (!mStrategy.equalsIgnoreCase(S2SStrategy.ASTAR)) {
-                        return 0.0;
-                    }
-                    NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
-                    DistanceCalcEarth distanceCalcEarth = new DistanceCalcEarth();
-                    double fromLat = nodeAccess.getLat(current);
-                    double fromLon = nodeAccess.getLon(current);
-                    double toLat = nodeAccess.getLat(targetCenter);
-                    double toLon = nodeAccess.getLon(targetCenter);
-                    double toCenter = distanceCalcEarth.calcDist(fromLat, fromLon, toLat, toLon);
-                    if (!hasCenter || toCenter < radius) {
-                        double minDist = 1e100;
-                        for (int target : targets) {
-                            toLat = nodeAccess.getLat(target);
-                            toLon = nodeAccess.getLon(target);
-                            double distance = distanceCalcEarth.calcDist(fromLat, fromLon, toLat, toLon);
-                            if (distance < minDist) {
-                                minDist = distance;
-                            }
-                        }
-                        return minDist;
-                    }
-                    return toCenter - radius;
-                }
-            });
-            return strategy.compute(sourceSet, targetSet);
-        } catch (Exception e) {
-            e.printStackTrace();
+  public Paths set2Set(int[] sourceSet, int[] targetSet, boolean hasCenter, int targetCenter,
+      double radius) {
+    try {
+      /*TODO: change the weight*/
+      S2SStrategy strategy = S2SStrategy.strategyFactory(mStrategy, new CallBacks() {
+        @Override
+        public EdgeIterator getIterator(int current, int prevEdgeID) {
+          /*TODO: change the hard coded name too*/
+          if (mStrategy.equalsIgnoreCase(S2SStrategy.ASTAR)) {
+            return new AStarEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
+                .createEdgeExplorer(new DefaultEdgeFilter(mEm.getEncoder("car"), false, true)));
+          }
+          return new DefaultEdgeIterator(current, prevEdgeID, mHopper.getGraphHopperStorage()
+              .createEdgeExplorer(new DefaultEdgeFilter(mEm.getEncoder("car"), false, true)));
         }
-        return null;
+
+        /**
+         * Get the minimum potential among all the targets
+         * @param current current node
+         * @param targets the targets
+         * @return the minimum potential
+         */
+        @Override
+        public double getPotential(int current, HashSet<Integer> targets) {
+          if (!mStrategy.equalsIgnoreCase(S2SStrategy.ASTAR)) {
+            return 0.0;
+          }
+          NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
+          DistanceCalcEarth distanceCalcEarth = new DistanceCalcEarth();
+          double fromLat = nodeAccess.getLat(current);
+          double fromLon = nodeAccess.getLon(current);
+          double toLat = nodeAccess.getLat(targetCenter);
+          double toLon = nodeAccess.getLon(targetCenter);
+          double toCenter = distanceCalcEarth.calcDist(fromLat, fromLon, toLat, toLon);
+          if (!hasCenter || toCenter < radius) {
+            double minDist = 1e100;
+            for (int target : targets) {
+              toLat = nodeAccess.getLat(target);
+              toLon = nodeAccess.getLon(target);
+              double distance = distanceCalcEarth.calcDist(fromLat, fromLon, toLat, toLon);
+              if (distance < minDist) {
+                minDist = distance;
+              }
+            }
+            return minDist;
+          }
+          return toCenter - radius;
+        }
+      });
+      return strategy.compute(sourceSet, targetSet);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+    return null;
+  }
 
 }
 
