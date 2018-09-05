@@ -23,9 +23,10 @@ public class Calculate_biclique implements PostProcess{
             for(Integer tmp:matched_right)
             {
                 Pair<Integer,Integer> segment_two=new Pair<>(current,tmp);
-                edges_complement.containsKey(segment_two);
-                HashSet<Integer> intermediate_result=create_z(false,tmp,matched_pairs,edges_complement,matched_right);
-                result.addAll(intermediate_result);
+                if(edges_complement.containsKey(segment_two) && edges_complement.get(segment_two)>0) {
+                    HashSet<Integer> intermediate_result = create_z(false, tmp, matched_pairs, edges_complement, matched_right);
+                    result.addAll(intermediate_result);
+                }
             }
         }
         else
@@ -91,8 +92,7 @@ public class Calculate_biclique implements PostProcess{
     {
         MapPoint pre=mainpath.get(0);
         System.out.print("There are "+otherpaths.size()+" paths\n");
-        System.out.print("mainpath: "+mainpath.get(0)+" "+mainpath.get(mainpath.size()-1)+"\n");
-        for(int i=1;i<2;++i)
+        for(int i=1;i<mainpath.size();++i)
         {
             Integer source=new Integer(num+5);
             Integer destination=new Integer(num+10);
@@ -111,14 +111,13 @@ public class Calculate_biclique implements PostProcess{
                 {
                     Integer start=new Integer(indexer.get(path.get(0)));
                     Integer end=new Integer(indexer.get(path.get(path.size()-1)));
-                    System.out.print(path.get(0)+" "+path.get(path.size()-1)+"\n");
                     left.add(start);
                     right.add(end);
                     edges.put(new Pair<>(start,end),1);
                 }
             }
            // System.out.print("Building graph G done!\n");
-           // System.out.print("There are "+left.size()+" nodes in the left and "+right.size()+" nodes in the right\n");
+           //System.out.print("There are "+left.size()+" nodes in the left and "+right.size()+" nodes in the right\n");
            // System.out.print("There are "+edges.size()+" edges in Graph G!\n");
             //build G'
             Iterator<Integer> it=left.iterator();
@@ -142,8 +141,13 @@ public class Calculate_biclique implements PostProcess{
                     }
                 }
             }
-            System.out.print("There are "+edges_complement.size()+"edges in Graph G'!\n");
-           // System.out.print("Building graph G' done!");
+            if(edges_complement.size()>0)System.out.print("There are "+edges_complement.size()+" edges in Graph G'!\n");
+            else
+            {
+                pre=cur;
+                continue;
+            }
+         //   System.out.print("There are "+left.size()+" nodes in the left and "+right.size()+" nodes in the right\n");
             it=left.iterator();
             while(it.hasNext())
             {
@@ -160,17 +164,16 @@ public class Calculate_biclique implements PostProcess{
             }
 
             //maxflow algorithm for finding maximum matching in bipartite graph G'
+            left.add(source);
+            right.add(destination);
             Integer maxflow=new Integer(0);
             while(true)
             {
-                Integer[] distance=new Integer[num+20];
                 Integer[] previous=new Integer[num+20];
                 boolean[] visited=new boolean[num+20];
-                for(int k=0;k<distance.length;++k) {
-                    distance[k] = -1;
+                for(int k=0;k<visited.length;++k) {
                     visited[k]=false;
                 }
-                distance[source]=0;
                 visited[source]=true;
                 previous[source]=-1;
                 LinkedList<Integer> q = new LinkedList<>();
@@ -204,33 +207,33 @@ public class Calculate_biclique implements PostProcess{
                         }
                     }
                 }
-                if(distance[destination]==-1)break;
+                if(!visited[destination])break;
                 else
                 {
                     Integer current=destination;
                     while(previous[current]!=-1)
                     {
                         Integer p=previous[current];
-                        Pair<Integer,Integer> segment_tmp=new Pair<>(current,p);
-                        edges_complement.put(segment_tmp,edges.get(segment_tmp)-1);
-                        segment_tmp=new Pair<>(p,current);
-                        edges_complement.put(segment_tmp,edges.get(segment_tmp)+1);
+                        Pair<Integer,Integer> segment_tmp=new Pair<>(p,current);
+                        edges_complement.put(segment_tmp,edges_complement.get(segment_tmp)-1);
+                        segment_tmp=new Pair<>(current,p);
+                        edges_complement.put(segment_tmp,edges_complement.get(segment_tmp)+1);
                         current=p;
                     }
-                    maxflow+=distance[destination];
+                    maxflow+=1;
                 }
             }
+          //  System.out.print("Maxflow for graph G' is "+maxflow+"\n");
             //get minimum vertex cover in G'
             left.remove(source);
             right.remove(destination);
             HashSet<Integer> unmatched_left=new HashSet<>();
             HashSet<Integer> matched_right=new HashSet<>();
-            HashSet<Integer> z=new HashSet<>();//z is used to create minimum covert
-            HashSet<Integer> k=new HashSet<>();//k is the vertest cover
+            HashSet<Integer> z=new HashSet<>();//z is used to create minimum cover
+            HashSet<Integer> k=new HashSet<>();//k is the vertex cover
             HashMap<Integer,Integer>matched_pairs=new HashMap<>();
             boolean[] matched=new boolean[num+20];
             for(int j=0;j<matched.length;++j)matched[j]=false;
-            HashSet<Integer> cover=new HashSet<>();
             it=left.iterator();
             while(it.hasNext())
             {
@@ -273,16 +276,26 @@ public class Calculate_biclique implements PostProcess{
             }
             HashSet<Integer> tmp_left=new HashSet<>(left);
             HashSet<Integer> tmp_right=new HashSet<>(right);
-            tmp_left.remove(z);
+            tmp_left.removeAll(z);
             tmp_right.retainAll(z);
             k.addAll(tmp_left);
             k.addAll(tmp_right);
             tmp_left=new HashSet<>(left);
             tmp_right=new HashSet<>(right);
-            tmp_left.retainAll(k);
-            tmp_right.retainAll(k);
+            tmp_left.removeAll(k);
+            tmp_right.removeAll(k);
+            /*
+            for(Integer tmp: tmp_left)
+            {
+                for(Integer tmp2:tmp_right)
+                {
+                    Pair<Integer,Integer> segment_tmp=new Pair<>(tmp,tmp2);
+                    if(!edges.containsKey(segment_tmp))System.out.print("Error\n");
+                }
+            }
+            */
+            System.out.print("Segment: "+pre.toString()+"->"+cur.toString()+"; Maximal Biclique: Left:"+tmp_left.size()+" Right: "+tmp_right.size()+"\n");
             pre=cur;
-            //System.out.print("Segment: "+pre.toString()+"->"+cur.toString()+"; Maximal Biclique: Left:"+tmp_left.size()+" Right: "+tmp_right.size()+"\n");
         }
     };
 }
