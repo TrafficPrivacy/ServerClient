@@ -1,6 +1,5 @@
 package client;
 
-import util.MainPathEmptyException;
 import util.MapPoint;
 import util.Pair;
 
