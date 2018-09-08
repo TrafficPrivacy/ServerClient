@@ -171,6 +171,47 @@ public class Conditional_biclique{
                     }
                 }
             }
+            //deleting nodes
+            boolean flag=true;
+            while(flag)
+            {
+                flag=false;
+                for(Integer tmp:left)
+                {
+                    if (degree.get(tmp)<right_k)
+                    {
+                        left.remove(tmp);
+                        flag=true;
+                        for (Integer tmp2:right)
+                        {
+                            Pair<Integer,Integer>segemnt=new Pair<>(tmp,tmp2);
+                            if(edges.containsKey(segemnt))
+                            {
+                                edges.remove(segemnt);
+                                degree.put(tmp2,degree.get(tmp2)-1);
+                            }
+                        }
+                    }
+                }
+                for(Integer tmp:right)
+                {
+                    if(degree.get(tmp)<left_k)
+                    {
+                        right.remove(tmp);
+                        flag=true;
+                        for(Integer tmp2:left)
+                        {
+                            Pair<Integer,Integer> segemnt=new Pair<>(tmp2,tmp);
+                            if(edges.containsKey(segemnt))
+                            {
+                                edges.remove(segemnt);
+                                degree.put(tmp2,degree.get(tmp2)-1);
+                            }
+                        }
+                    }
+                }
+            }
+            //dfs for enumeration
             boolean [] visited=new boolean[num+10];
             if(dfs(left,right,visited,left_k,right_k,left_k,right_k))
             {
