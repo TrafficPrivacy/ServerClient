@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Double.min;
+
 public class NewYorkExperiment_2 {
 
     public static void main(String args[]) throws
@@ -37,7 +39,7 @@ public class NewYorkExperiment_2 {
         BufferedReader reader = new BufferedReader(new FileReader(tripCSV));
 
         //some settings like threshold
-        double threshold=0.8;//threshold
+        double threshold=0.9;//threshold
         HashMap<Pair<MapPoint,MapPoint>,Pair<Integer,Integer>> comparision=new HashMap<>();// for comparison
 
         reader.readLine();  // skip the header
@@ -78,9 +80,11 @@ public class NewYorkExperiment_2 {
                 HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> result=((Calculate_biclique) postProcess).get_result();
                 for (Pair<MapPoint,MapPoint> segement: result.keySet())
                 {
-                    double a=result.get(segement).mFirst.mFirst+result.get(segement).mSecond.mFirst;
-                    double b=result.get(segement).mFirst.mSecond+result.get(segement).mSecond.mSecond;
-                    if(a/b>=threshold)
+
+                    double a=result.get(segement).mFirst.mFirst+result.get(segement).mFirst.mSecond;
+                    double b=result.get(segement).mSecond.mFirst+result.get(segement).mSecond.mSecond;
+                    a=min(a,b);
+                    if(a>=threshold)
                     {
                         comparision.get(segement).mFirst+=1;
                     }
