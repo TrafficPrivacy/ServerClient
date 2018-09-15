@@ -24,8 +24,9 @@ public class ClientRunner {
     String osmPath = mFlagParser.getArg("--osmPath");
     String ghPath = mFlagParser.getArg("--ghPath");
     String mapPath = mFlagParser.getArg("--mapPath");
-    PostProcess mapUI = new MapUI(mapPath, "Client");
-    Client client = new Client(ip, port, osmPath, ghPath, mapUI);
+    //PostProcess mapUI = new MapUI(mapPath, "Client");
+    PostProcess biclique=new Calculate_biclique();
+    Client client = new Client(ip, port, osmPath, ghPath, biclique);
     client.compute(
         new MapPoint(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])),
         new MapPoint(Double.parseDouble(coords[2]), Double.parseDouble(coords[3])));
