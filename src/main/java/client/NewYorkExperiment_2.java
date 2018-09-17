@@ -39,6 +39,9 @@ public class NewYorkExperiment_2 {
         //file reader for trip information
         BufferedReader reader = new BufferedReader(new FileReader(tripCSV));
 
+        //for calculating distance
+        DistanceCalculator cal=new DistanceCalculator();
+        HashMap<Pair<MapPoint,MapPoint>,String> distances=new HashMap<>();
         //some settings like threshold
         double threshold=0.9;//threshold
         HashMap<Pair<MapPoint,MapPoint>,Pair<Integer,Integer>> comparision=new HashMap<>();// for comparison
@@ -74,6 +77,7 @@ public class NewYorkExperiment_2 {
                     }
                     else
                     {
+                        distances.put(segment,"");
                         comparision.put(segment,new Pair<>(0,1));
                     }
                     pre=cur;
@@ -83,11 +87,14 @@ public class NewYorkExperiment_2 {
                 {
 
                     double a=result.get(segement).mFirst.mFirst/result.get(segement).mFirst.mSecond;
-                    double b=result.get(segement).mSecond.mFirst*result.get(segement).mSecond.mSecond;
+                    double b=result.get(segement).mSecond.mFirst/result.get(segement).mSecond.mSecond;
                     a=min(a,b);
                     if(a>=threshold)
                     {
+                        double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
+                        double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
                         comparision.get(segement).mFirst+=1;
+                        distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
                     }
                 }
 
@@ -101,10 +108,10 @@ public class NewYorkExperiment_2 {
         FileOutputStream moutput;
         File outputfile = new File(output);
         moutput=new FileOutputStream(outputfile);
-        moutput.write("Segment count_1 count_2\n".getBytes());
+        moutput.write("Source Destination Segment Count_1 Count_2\n".getBytes());
         for(Pair<MapPoint,MapPoint> segment:comparision.keySet())
         {
-            String a=segment.mFirst.toString()+"->"+segment.mSecond.toString()+": "+comparision.get(segment).mFirst.toString()+" "+comparision.get(segment).mSecond.toString()+"\n";
+            String a=segment.mFirst.toString()+"->"+segment.mSecond.toString()+": "+comparision.get(segment).mFirst.toString()+" "+comparision.get(segment).mSecond.toString()+distances.get(segment)+"\n";
             moutput.write(a.getBytes());
         }
 
