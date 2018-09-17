@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Double.doubleToLongBits;
 import static java.lang.Double.min;
 
 public class NewYorkExperiment_2 {
@@ -81,8 +82,8 @@ public class NewYorkExperiment_2 {
                 for (Pair<MapPoint,MapPoint> segement: result.keySet())
                 {
 
-                    double a=result.get(segement).mFirst.mFirst+result.get(segement).mFirst.mSecond;
-                    double b=result.get(segement).mSecond.mFirst+result.get(segement).mSecond.mSecond;
+                    double a=result.get(segement).mFirst.mFirst/result.get(segement).mFirst.mSecond;
+                    double b=result.get(segement).mSecond.mFirst*result.get(segement).mSecond.mSecond;
                     a=min(a,b);
                     if(a>=threshold)
                     {
