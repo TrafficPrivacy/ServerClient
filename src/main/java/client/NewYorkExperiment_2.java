@@ -94,7 +94,9 @@ public class NewYorkExperiment_2 {
                         double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
                         double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
                         comparision.get(segement).mFirst+=1;
-                        distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
+                        System.out.print(String.valueOf(left_distance)+","+String.valueOf(right_distance)+'\n');
+                        String tmp=distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
+                        distances.put(segement,tmp);
                     }
                 }
 
@@ -108,7 +110,7 @@ public class NewYorkExperiment_2 {
         FileOutputStream moutput;
         File outputfile = new File(output);
         moutput=new FileOutputStream(outputfile);
-        moutput.write("Source Destination Segment Count_1 Count_2\n".getBytes());
+        moutput.write("Segment Count_1 Count_2 Distances\n".getBytes());
         for(Pair<MapPoint,MapPoint> segment:comparision.keySet())
         {
             String a=segment.mFirst.toString()+"->"+segment.mSecond.toString()+": "+comparision.get(segment).mFirst.toString()+" "+comparision.get(segment).mSecond.toString()+distances.get(segment)+"\n";
