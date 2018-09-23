@@ -56,6 +56,11 @@
             <artifactId>progressbar</artifactId>
             <version>0.5.5</version>
         </dependency>
+        <dependency>
+            <groupId>de.alsclo</groupId>
+            <artifactId>voronoi-java</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 
