@@ -37,6 +37,7 @@
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties>
+              <text value=""/>
               <toolTipText value="Source Latitude"/>
             </properties>
           </component>
