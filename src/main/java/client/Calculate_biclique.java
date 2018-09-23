@@ -8,7 +8,8 @@ import java.util.*;
 public class Calculate_biclique implements PostProcess{
     private ArrayList<MapPoint> mainpath;
     private ArrayList<ArrayList<MapPoint>> otherpaths;
-    private HashMap<Pair<MapPoint,MapPoint>,Pair<MapPoint[],MapPoint[]>>result;
+    private HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>>result;
+    private Pair<Integer,Integer> endpoints;
     private HashMap<MapPoint,Integer> indexer;
     private Integer num;
 
@@ -56,14 +57,48 @@ public class Calculate_biclique implements PostProcess{
         }
         return false;
     }
+    private void get_endpoints()
+    {
+        HashMap<MapPoint,Integer>m=new HashMap<>();
+        m.put(mainpath.get(0),1);
+        m.put(mainpath.get(mainpath.size()-1),1);
+        endpoints.mFirst+=1;
+        endpoints.mSecond+=1;
+        for(int i=0;i<otherpaths.size();++i)
+        {
+            if(m.containsKey(otherpaths.get(i).get(0)))
+            {
+
+            }
+            else
+            {
+                m.put(otherpaths.get(i).get(0),1);
+                endpoints.mFirst+=1;
+            }
+            int size=otherpaths.get(i).size();
+            if(m.containsKey(otherpaths.get(i).get(size-1)))
+            {
+
+            }
+            else
+            {
+                m.put(otherpaths.get(i).get(size-1),1);
+                endpoints.mSecond+=1;
+            }
+        }
+    }
     public Calculate_biclique() {
         mainpath=new ArrayList<>();
         otherpaths=new ArrayList<>();
         result=new HashMap<>();
         indexer=new HashMap<>();
+        endpoints=new Pair<>(0,0);
         num=new Integer(0);
     }
-
+    public ArrayList<MapPoint> get_mainpath()
+    {
+        return mainpath;
+    }
     @Override
     public void setMainPath(ArrayList<MapPoint> path)
     {
@@ -93,9 +128,20 @@ public class Calculate_biclique implements PostProcess{
     @Override
     public void done()
     {
+        return ;
+    }
+
+    public  HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> get_result()
+    {
+        //for initialization
+        result.clear();
+        endpoints.mFirst=0;
+        endpoints.mSecond=0;
+        get_endpoints();
+        //next is about the algorithm
         MapPoint pre=mainpath.get(0);
-        System.out.print("There are "+otherpaths.size()+" paths\n");
-        System.out.print("Mainpath length is "+mainpath.size()+"\n");
+      //  System.out.print("There are "+otherpaths.size()+" paths\n");
+       // System.out.print("Mainpath length is "+mainpath.size()+"\n");
         for(int i=1;i<mainpath.size();++i)
         {
             Integer source=new Integer(num+5);
@@ -145,12 +191,14 @@ public class Calculate_biclique implements PostProcess{
                     }
                 }
             }
+            /*
             if(edges_complement.size()>0)System.out.print("There are "+edges_complement.size()+" edges in Graph G'!\n");
             else
             {
                 pre=cur;
                 continue;
             }
+            */
          //   System.out.print("There are "+left.size()+" nodes in the left and "+right.size()+" nodes in the right\n");
             it=left.iterator();
             while(it.hasNext())
@@ -227,7 +275,7 @@ public class Calculate_biclique implements PostProcess{
                     maxflow+=1;
                 }
             }
-            System.out.print("Maxflow for graph G' is "+maxflow+"\n");
+           // System.out.print("Maxflow for graph G' is "+maxflow+"\n");
             //get minimum vertex cover in G'
             left.remove(source);
             right.remove(destination);
@@ -286,7 +334,7 @@ public class Calculate_biclique implements PostProcess{
             tmp_right.retainAll(z);
             k.addAll(tmp_left);
             k.addAll(tmp_right);
-            System.out.print("Minimal vertex cover size "+k.size()+"\n");
+           // System.out.print("Minimal vertex cover size "+k.size()+"\n");
             tmp_left=new HashSet<>(left);
             tmp_right=new HashSet<>(right);
             tmp_left.removeAll(k);
@@ -300,8 +348,17 @@ public class Calculate_biclique implements PostProcess{
                 }
             }
 
-            System.out.print("Segment: "+pre.toString()+"->"+cur.toString()+"; Maximal Biclique: Left:"+tmp_left.size()+" Right: "+tmp_right.size()+"\n");
+            //System.out.print("Segment: "+pre.toString()+"->"+cur.toString()+"; Maximal Biclique: Left:"+tmp_left.size()+" Right: "+tmp_right.size()+"\n");
+            segment=new Pair<>(pre,cur);
+            Pair<Integer,Integer>left_number=new Pair<>(left.size(),endpoints.mFirst);
+            Pair<Integer,Integer>right_number=new Pair<>(right.size(),endpoints.mSecond);
+            Pair<Pair<Integer,Integer>,Pair<Integer,Integer>> p=new Pair<>(left_number,right_number);
+            result.put(segment,p);
             pre=cur;
         }
-    };
+        otherpaths.clear();
+        indexer.clear();
+        num=0;
+        return result;
+    }
 }
