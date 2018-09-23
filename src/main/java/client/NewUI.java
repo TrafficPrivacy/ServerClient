@@ -20,9 +20,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import org.mapsforge.core.model.BoundingBox;
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.map.awt.graphics.AwtGraphicFactory;
+import org.mapsforge.map.awt.input.MouseEventListener;
 import org.mapsforge.map.awt.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.datastore.MultiMapDataStore;
@@ -57,16 +59,22 @@ public class NewUI extends JFrame {
   private OnMapRequest mRequestHandler;
   private ProcessedData mData;
 
+  // To specify the state current mouse handler is in
+  private int mUIStage;
+
   public NewUI(int width, int height, String mapFilePath, String title) {
     mStatus.setLineWrap(true);
     mStatus.setWrapStyleWord(true);
 
     mThreshold.setValue(100);
 
+    mUIStage = 0;
+
     mGoButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent actionEvent) {
         try {
+          mUIStage = 0;
           mStatus.setText("");
           String sourceLatStr = mSourceLat.getText();
           String sourceLongStr = mSourceLong.getText();
@@ -99,6 +107,7 @@ public class NewUI extends JFrame {
     ReadBuffer.setMaximumBufferSize(6500000);
 
     MAP_VIEW = new MapView();
+    MAP_VIEW.addMouseListener(new MouseEvent());
     MAP_VIEW.getMapScaleBar().setVisible(true);
     MAP_VIEW.getModel().displayModel.setFixedTileSize(512);
 
@@ -180,6 +189,55 @@ public class NewUI extends JFrame {
     newUI.run();
   }
 
+  private class MouseEvent implements MouseListener {
+
+    private MapViewProjection mReference;
+
+    MouseEvent() {
+      mReference = new MapViewProjection(MAP_VIEW);
+    }
+
+    public void mousePressed(java.awt.event.MouseEvent e) {
+
+    }
+
+    public void mouseReleased(java.awt.event.MouseEvent e) {
+
+    }
+
+    public void mouseEntered(java.awt.event.MouseEvent e) {
+
+    }
+
+    public void mouseExited(java.awt.event.MouseEvent e) {
+
+    }
+
+    public void mouseClicked(java.awt.event.MouseEvent e) {
+      LatLong location = mReference.fromPixels(e.getX(), e.getY());
+      switch (mUIStage) {
+        case 0: {
+          mSourceLat.setText(Double.toString(location.getLatitude()));
+          mSourceLong.setText(Double.toString(location.getLongitude()));
+          mUIStage = 1;
+          break;
+        }
+        case 1: {
+          mDestLat.setText(Double.toString(location.getLatitude()));
+          mDestLong.setText(Double.toString(location.getLongitude()));
+          mUIStage = 2;
+          break;
+        }
+        case 2: {
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+//      MAP_VIEW.getLayerManager().redrawLayers();
+    }
+  }
 
 }
 
