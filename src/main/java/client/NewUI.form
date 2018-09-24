@@ -37,6 +37,7 @@
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties>
+              <focusAccelerator value="A"/>
               <text value=""/>
               <toolTipText value="Source Latitude"/>
             </properties>
@@ -48,6 +49,7 @@
             </constraints>
             <properties>
               <text value="Go"/>
+              <toolTipText value="Make the request"/>
             </properties>
           </component>
           <component id="4fe73" class="javax.swing.JSlider" binding="mThreshold">
@@ -56,6 +58,7 @@
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties>
+              <toolTipText value="The threshold"/>
               <value value="0"/>
             </properties>
           </component>
@@ -95,6 +98,8 @@
             </constraints>
             <properties>
               <editable value="false"/>
+              <focusAccelerator value="A"/>
+              <toolTipText value="Status information"/>
             </properties>
           </component>
         </children>

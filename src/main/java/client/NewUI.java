@@ -1,18 +1,15 @@
 package client;
 
-import com.graphhopper.routing.util.EdgeFilter;
+import com.alee.laf.WebLookAndFeel;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -42,8 +39,22 @@ import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 import util.MapPoint;
 
+interface OnMapRequest {
+
+  ProcessedData fulfillRequest(MapPoint source, MapPoint destination);
+}
+
+//
+//  private int findNearest(MapPoint original) {
+//    int closest = mHopper.getLocationIndex()
+//        .findClosest(original.getLat(), original.getLon(), EdgeFilter.ALL_EDGES)
+//        .getClosestNode();
+//    return closest;
+//  }
+
 public class NewUI extends JFrame {
 
+  private final MapView MAP_VIEW;
   private JPanel mBasePanel;
   private JButton mGoButton;
   private JSlider mThreshold;
@@ -53,9 +64,6 @@ public class NewUI extends JFrame {
   private JTextField mDestLat;
   private JTextField mDestLong;
   private JTextArea mStatus;
-
-  private final MapView MAP_VIEW;
-
   private OnMapRequest mRequestHandler;
   private ProcessedData mData;
 
@@ -117,7 +125,6 @@ public class NewUI extends JFrame {
     // Multi-threading rendering
     MapWorkerPool.NUMBER_OF_THREADS = 2;
 
-    System.out.println(mMapContainer);
     mMapContainer.setLayout(new GridLayout());
     mMapContainer.add(MAP_VIEW);
 
@@ -140,10 +147,17 @@ public class NewUI extends JFrame {
       }
     });
 
+    setTitle(title);
     setSize(width, height);
     setContentPane(mBasePanel);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+  }
+
+  public static void main(String args[]) {
+    WebLookAndFeel.install();
+    NewUI newUI = new NewUI(800, 600, "data/illinois.map", "Test");
+    newUI.run();
   }
 
   public void run() {
@@ -151,11 +165,11 @@ public class NewUI extends JFrame {
     setVisible(true);
   }
 
+  // Load the map data for displaying
+
   private void UpdateVisualization(ProcessedData newData) {
     mData = newData;
   }
-
-  // Load the map data for displaying
 
   private BoundingBox addLayers(String mapUIPath) {
     MAP_VIEW.getModel().displayModel.setFixedTileSize(512);
@@ -184,36 +198,19 @@ public class NewUI extends JFrame {
     return tileRendererLayer;
   }
 
-  public static void main(String args[]) {
-    NewUI newUI = new NewUI(800, 600, "data/illinois.map", "Test");
-    newUI.run();
-  }
-
-  private class MouseEvent implements MouseListener {
+  private class MouseEvent extends MouseEventListener {
 
     private MapViewProjection mReference;
 
     MouseEvent() {
+      super(MAP_VIEW);
       mReference = new MapViewProjection(MAP_VIEW);
     }
 
-    public void mousePressed(java.awt.event.MouseEvent e) {
-
-    }
-
-    public void mouseReleased(java.awt.event.MouseEvent e) {
-
-    }
-
-    public void mouseEntered(java.awt.event.MouseEvent e) {
-
-    }
-
-    public void mouseExited(java.awt.event.MouseEvent e) {
-
-    }
-
+    @Override
     public void mouseClicked(java.awt.event.MouseEvent e) {
+      super.mouseClicked(e);
+
       LatLong location = mReference.fromPixels(e.getX(), e.getY());
       switch (mUIStage) {
         case 0: {
@@ -232,22 +229,14 @@ public class NewUI extends JFrame {
           break;
         }
         default: {
+          MAP_VIEW.getLayerManager().redrawLayers();
           break;
         }
       }
-//      MAP_VIEW.getLayerManager().redrawLayers();
     }
   }
 
 }
-
-//
-//  private int findNearest(MapPoint original) {
-//    int closest = mHopper.getLocationIndex()
-//        .findClosest(original.getLat(), original.getLon(), EdgeFilter.ALL_EDGES)
-//        .getClosestNode();
-//    return closest;
-//  }
 
 class ProcessedData {
 
@@ -257,6 +246,10 @@ class ProcessedData {
   public double mRegionTop;
   public double mRegionRight;
   public double mRegionBottom;
+
+  void sortPathAccordingToMetrics() {
+    Collections.sort(mPathParts);
+  }
 
   class PathPart implements Comparable<PathPart> {
 
@@ -270,14 +263,5 @@ class ProcessedData {
       return mMetrics.compareTo(other.mMetrics);
     }
   }
-
-  void sortPathAccordingToMetrics() {
-    Collections.sort(mPathParts);
-  }
-}
-
-interface OnMapRequest {
-
-  ProcessedData fulfillRequest(MapPoint source, MapPoint destination);
 }
 
