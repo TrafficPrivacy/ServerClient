@@ -39,9 +39,46 @@ import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 import util.MapPoint;
 
-interface OnMapRequest {
+abstract class OnMapRequest {
 
-  ProcessedData fulfillRequest(MapPoint source, MapPoint destination);
+  private ProcessedData mProcessedData;
+
+  /**
+   * Implement in subclasses, for initiating the request.
+   *
+   * @param source The source geo location
+   * @param destination The destination geo location
+   */
+  abstract public ProcessedData fulfillRequest(MapPoint source, MapPoint destination);
+
+  public ProcessedData runRequestThread(MapPoint source, MapPoint destination) {
+    mProcessedData = null;
+    RequestThread thread = new RequestThread(source, destination);
+    thread.start();
+    try {
+      // Timeout after one minute.
+      thread.join(60000);
+    } catch (InterruptedException e) {
+      return null;
+    }
+    return mProcessedData;
+  }
+
+  private class RequestThread extends Thread {
+
+    private MapPoint mSource;
+    private MapPoint mDestination;
+
+    public RequestThread(MapPoint source, MapPoint destination) {
+      mSource = source;
+      mDestination = destination;
+    }
+
+    @Override
+    public void run() {
+      mProcessedData = fulfillRequest(mSource, mDestination);
+    }
+  }
 }
 
 //
@@ -52,7 +89,7 @@ interface OnMapRequest {
 //    return closest;
 //  }
 
-public class NewUI extends JFrame {
+public class WindowUI extends JFrame {
 
   private final MapView MAP_VIEW;
   private JPanel mBasePanel;
@@ -70,7 +107,7 @@ public class NewUI extends JFrame {
   // To specify the state current mouse handler is in
   private int mUIStage;
 
-  public NewUI(int width, int height, String mapFilePath, String title) {
+  public WindowUI(int width, int height, String mapFilePath, String title) {
     mStatus.setLineWrap(true);
     mStatus.setWrapStyleWord(true);
 
@@ -156,12 +193,11 @@ public class NewUI extends JFrame {
 
   public static void main(String args[]) {
     WebLookAndFeel.install();
-    NewUI newUI = new NewUI(800, 600, "data/illinois.map", "Test");
+    WindowUI newUI = new WindowUI(1200, 800, "data/illinois.map", "Test");
     newUI.run();
   }
 
   public void run() {
-    System.out.println("Running");
     setVisible(true);
   }
 
