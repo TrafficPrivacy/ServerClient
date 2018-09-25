@@ -1,6 +1,6 @@
 package client;
 
-import com.alee.laf.WebLookAndFeel;
+import com.sun.istack.internal.NotNull;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +39,9 @@ import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 import util.MapPoint;
 
+/**
+ * Responsible for initiating request to server and computing the overlap.
+ */
 abstract class OnMapRequest {
 
   private ProcessedData mProcessedData;
@@ -60,6 +63,9 @@ abstract class OnMapRequest {
       thread.join(60000);
     } catch (InterruptedException e) {
       return null;
+    }
+    if (thread.isAlive()) {
+      thread.interrupt();
     }
     return mProcessedData;
   }
@@ -107,13 +113,16 @@ public class WindowUI extends JFrame {
   // To specify the state current mouse handler is in
   private int mUIStage;
 
-  public WindowUI(int width, int height, String mapFilePath, String title) {
+  public WindowUI(int width, int height, String mapFilePath, String title,
+      OnMapRequest requestHandler) {
     mStatus.setLineWrap(true);
     mStatus.setWrapStyleWord(true);
 
     mThreshold.setValue(100);
 
     mUIStage = 0;
+
+    mRequestHandler = requestHandler;
 
     mGoButton.addActionListener(new ActionListener() {
       @Override
@@ -139,7 +148,12 @@ public class WindowUI extends JFrame {
             return;
           }
           ProcessedData data = mRequestHandler
-              .fulfillRequest(new MapPoint(sourceLat, sourceLong), new MapPoint(destLat, destLong));
+              .runRequestThread(new MapPoint(sourceLat, sourceLong),
+                  new MapPoint(destLat, destLong));
+          System.out.println(Thread.activeCount());
+          if (data == null) {
+            mStatus.setText("Request failed. Check connection.");
+          }
           mThreshold.setValue(100);
           UpdateVisualization(data);
         } catch (NumberFormatException e) {
@@ -189,12 +203,6 @@ public class WindowUI extends JFrame {
     setContentPane(mBasePanel);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-  }
-
-  public static void main(String args[]) {
-    WebLookAndFeel.install();
-    WindowUI newUI = new WindowUI(1200, 800, "data/illinois.map", "Test");
-    newUI.run();
   }
 
   public void run() {
@@ -271,7 +279,6 @@ public class WindowUI extends JFrame {
       }
     }
   }
-
 }
 
 class ProcessedData {
@@ -287,7 +294,7 @@ class ProcessedData {
     Collections.sort(mPathParts);
   }
 
-  class PathPart implements Comparable<PathPart> {
+  public class PathPart implements Comparable<PathPart> {
 
     public ArrayList<MapPoint> mPathPoints;
     public ArrayList<MapPoint> mSourcePoints;
@@ -295,7 +302,7 @@ class ProcessedData {
     public Double mMetrics;
 
     @Override
-    public int compareTo(PathPart other) {
+    public int compareTo(@NotNull PathPart other) {
       return mMetrics.compareTo(other.mMetrics);
     }
   }
