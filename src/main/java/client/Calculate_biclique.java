@@ -59,30 +59,31 @@ public class Calculate_biclique implements PostProcess{
     }
     private void get_endpoints()
     {
-        HashMap<MapPoint,Integer>m=new HashMap<>();
-        m.put(mainpath.get(0),1);
-        m.put(mainpath.get(mainpath.size()-1),1);
+        HashMap<MapPoint,Integer>leftm=new HashMap<>();
+        HashMap<MapPoint,Integer>rightm=new HashMap<>();
+        leftm.put(mainpath.get(0),1);
+        rightm.put(mainpath.get(mainpath.size()-1),1);
         endpoints.mFirst+=1;
         endpoints.mSecond+=1;
         for(int i=0;i<otherpaths.size();++i)
         {
-            if(m.containsKey(otherpaths.get(i).get(0)))
+            if(leftm.containsKey(otherpaths.get(i).get(0)))
             {
 
             }
             else
             {
-                m.put(otherpaths.get(i).get(0),1);
+                leftm.put(otherpaths.get(i).get(0),1);
                 endpoints.mFirst+=1;
             }
             int size=otherpaths.get(i).size();
-            if(m.containsKey(otherpaths.get(i).get(size-1)))
+            if(rightm.containsKey(otherpaths.get(i).get(size-1)))
             {
 
             }
             else
             {
-                m.put(otherpaths.get(i).get(size-1),1);
+                rightm.put(otherpaths.get(i).get(size-1),1);
                 endpoints.mSecond+=1;
             }
         }
@@ -347,11 +348,9 @@ public class Calculate_biclique implements PostProcess{
                     if(!edges.containsKey(segment_tmp))System.out.print("Error\n");
                 }
             }
-
-            //System.out.print("Segment: "+pre.toString()+"->"+cur.toString()+"; Maximal Biclique: Left:"+tmp_left.size()+" Right: "+tmp_right.size()+"\n");
             segment=new Pair<>(pre,cur);
-            Pair<Integer,Integer>left_number=new Pair<>(left.size(),endpoints.mFirst);
-            Pair<Integer,Integer>right_number=new Pair<>(right.size(),endpoints.mSecond);
+            Pair<Integer,Integer>left_number=new Pair<>(tmp_left.size(),endpoints.mFirst);
+            Pair<Integer,Integer>right_number=new Pair<>(tmp_right.size(),endpoints.mSecond);
             Pair<Pair<Integer,Integer>,Pair<Integer,Integer>> p=new Pair<>(left_number,right_number);
             result.put(segment,p);
             pre=cur;
