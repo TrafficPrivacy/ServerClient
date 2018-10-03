@@ -6,6 +6,7 @@ import javax.swing.plaf.synth.SynthEditorPaneUI;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static java.lang.Double.doubleToLongBits;
@@ -71,7 +72,7 @@ public class NewYorkExperiment_2 {
                         new MapPoint(startLat, startLon),
                         new MapPoint(endLat, endLon));
                 ArrayList<MapPoint> path=((Calculate_biclique) postProcess).get_mainpath();
-                converage_study.put(source_destination,source_destination.mFirst.toString()+"->"+source_destination.mSecond.toString()+": ");
+                converage_study.put(source_destination,source_destination.mFirst.toString()+"->"+source_destination.mSecond.toString()+":");
 
                 if(path.size()==0)continue;
                 MapPoint pre=path.get(0);
@@ -90,21 +91,13 @@ public class NewYorkExperiment_2 {
                     }
                     pre=cur;
                 }
-                HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> result=((Calculate_biclique) postProcess).get_result();
-                for (Pair<MapPoint,MapPoint> segement: result.keySet())
+                ResultOfBiclique r=((Calculate_biclique) postProcess).get_result();
+                HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> result=r.get_result();
+                HashMap<Pair<MapPoint,MapPoint>,Pair<HashSet<Integer>,HashSet<Integer>>> result_detailed=r.get_detailed_result();
+
+                for (int k=1;k<=r.get_sequence().size();++k)
                 {
-
-                    if(result.get(segement).mFirst.mFirst/result.get(segement).mFirst.mSecond>1)
-                    {
-                        System.out.print(result.get(segement).mFirst.mFirst+"->"+result.get(segement).mFirst.mSecond+'\n');
-                        System.out.print("Error_threshold\n");
-                    }
-                    if(result.get(segement).mSecond.mFirst/result.get(segement).mSecond.mSecond>1)
-                    {
-                        System.out.print(result.get(segement).mSecond.mFirst+' '+result.get(segement).mSecond.mSecond+'\n');
-                        System.out.print("Error_threshold\n");
-                    }
-
+                    Pair<MapPoint,MapPoint>segement=r.get_sequence().get(k);
                     double a=result.get(segement).mFirst.mFirst;
                     double b=result.get(segement).mFirst.mSecond;
                     double c=result.get(segement).mSecond.mFirst;
@@ -126,13 +119,26 @@ public class NewYorkExperiment_2 {
                     }
                     if(a>=threshold)
                     {
-                        String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"yes";
+                        String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"yes:";
+                        tmp+="[";
+                        Pair<HashSet<Integer>,HashSet<Integer>>  tmp2=result_detailed.get(segement);
+                        for (Integer integer: tmp2.mFirst)
+                        {
+                            tmp+=integer+";";
+                        }
+                        tmp+="]";
+                        tmp+="[";
+                        for (Integer integer: tmp2.mSecond)
+                        {
+                            tmp+=integer+";";
+                        }
+                        tmp+="]";
                         converage_study.put(source_destination,tmp);
-                        double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
-                        double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
                         comparision.get(segement).mFirst+=1;
-                        tmp=distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
-                        distances.put(segement,tmp);
+                      //  double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
+                      //  double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
+//                      tmp=distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
+ //                     distances.put(segement,tmp);
                     }
                     else
                     {
@@ -153,7 +159,7 @@ public class NewYorkExperiment_2 {
         moutput.write("Segment Count_1 Count_2 Distances\n".getBytes());
         for(Pair<MapPoint,MapPoint> segment:comparision.keySet())
         {
-            String a=segment.mFirst.toString()+"->"+segment.mSecond.toString()+": "+comparision.get(segment).mFirst.toString()+" "+comparision.get(segment).mSecond.toString()+distances.get(segment)+"\n";
+            String a=segment.mFirst.toString()+"->"+segment.mSecond.toString()+": "+comparision.get(segment).mFirst.toString()+" "+comparision.get(segment).mSecond.toString()+"\n";
             moutput.write(a.getBytes());
         }
         moutput.close();
