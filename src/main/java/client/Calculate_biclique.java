@@ -2,6 +2,7 @@ package client;
 
 import util.MapPoint;
 import util.Pair;
+import util.ResultOfBiclique;
 
 import java.util.*;
 
@@ -9,6 +10,8 @@ public class Calculate_biclique implements PostProcess{
     private ArrayList<MapPoint> mainpath;
     private ArrayList<ArrayList<MapPoint>> otherpaths;
     private HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>>result;
+    private HashMap<Pair<MapPoint,MapPoint>,Pair<HashSet<Integer>,HashSet<Integer>>>result_detailed;
+    private HashMap<Integer,Pair<MapPoint,MapPoint>>sequence;
     private Pair<Integer,Integer> endpoints;
     private HashMap<MapPoint,Integer> indexer;
     private Integer num;
@@ -92,6 +95,8 @@ public class Calculate_biclique implements PostProcess{
         mainpath=new ArrayList<>();
         otherpaths=new ArrayList<>();
         result=new HashMap<>();
+        result_detailed=new HashMap<>();
+        sequence= new HashMap<>();
         indexer=new HashMap<>();
         endpoints=new Pair<>(0,0);
         num=new Integer(0);
@@ -132,10 +137,12 @@ public class Calculate_biclique implements PostProcess{
         return ;
     }
 
-    public  HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> get_result()
+    public  ResultOfBiclique get_result()
     {
         //for initialization
         result.clear();
+        result_detailed.clear();
+        sequence.clear();
         endpoints.mFirst=0;
         endpoints.mSecond=0;
         get_endpoints();
@@ -353,11 +360,14 @@ public class Calculate_biclique implements PostProcess{
             Pair<Integer,Integer>right_number=new Pair<>(tmp_right.size(),endpoints.mSecond);
             Pair<Pair<Integer,Integer>,Pair<Integer,Integer>> p=new Pair<>(left_number,right_number);
             result.put(segment,p);
+            result_detailed.put(segment,new Pair<>(tmp_left,tmp_right));
+            sequence.put(i,segment);
             pre=cur;
         }
         otherpaths.clear();
         indexer.clear();
         num=0;
-        return result;
+        ResultOfBiclique r= new ResultOfBiclique(result,result_detailed,sequence);
+        return r;
     }
 }
