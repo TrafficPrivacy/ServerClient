@@ -48,7 +48,8 @@ public class NewYorkExperiment_2 {
         //for considering coverage
         HashMap<Pair<MapPoint,MapPoint>,String> converage_study=new HashMap<>();
         //some settings like threshold
-        double threshold=Double.parseDouble(flagParser.getArg("--threshold"));//threshold
+        double threshold=Double.parseDouble(flagParser.getArg("--threshold"));
+        output+="_number="+numTrips+".txt";
         output+="_threshold="+threshold+".txt";
         HashMap<Pair<MapPoint,MapPoint>,Pair<Integer,Integer>> comparision=new HashMap<>();// for comparison
 
@@ -149,7 +150,7 @@ public class NewYorkExperiment_2 {
             } catch (MainPathEmptyException e) {
                 Logger.printf(Logger.ERROR, "No such path: (%f, %f), (%f, %f)\n",
                         startLat, startLon, endLat, endLon);
-                i--;
+               // i--;
             }
         }
 
