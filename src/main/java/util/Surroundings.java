@@ -57,6 +57,10 @@ public class Surroundings {
     }
     return new Pair<>(new ArrayList<>(), new ArrayList<>());
   }
+  public EdgeExplorer getEdgeout()
+  {
+    return mOutEdgeExplorer;
+  }
 
   public int lookupNearest(double latitude, double longitude) {
     return mIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES).getClosestNode();

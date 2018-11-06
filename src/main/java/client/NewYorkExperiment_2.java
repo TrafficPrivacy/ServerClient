@@ -2,9 +2,11 @@ package client;
 
 import util.*;
 
+import javax.swing.plaf.synth.SynthEditorPaneUI;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static java.lang.Double.doubleToLongBits;
@@ -29,7 +31,8 @@ public class NewYorkExperiment_2 {
         String tripCSV = flagParser.getArg("--tripCSV");
         int numTrips = Integer.parseInt(flagParser.getArg("--numTrips"));
         String output = flagParser.getArg("--output");
-
+        int version_number=Integer.parseInt(flagParser.getArg("--version"));
+        output+="_version="+version_number;
         //for client initialization
         PostProcess postProcess = new Calculate_biclique();
         System.out.print("Ok");
@@ -42,8 +45,12 @@ public class NewYorkExperiment_2 {
         //for calculating distance
         DistanceCalculator cal=new DistanceCalculator();
         HashMap<Pair<MapPoint,MapPoint>,String> distances=new HashMap<>();
+        //for considering coverage
+        HashMap<Pair<MapPoint,MapPoint>,String> converage_study=new HashMap<>();
         //some settings like threshold
-        double threshold=0.9;//threshold
+        double threshold=Double.parseDouble(flagParser.getArg("--threshold"));
+        output+="_number="+numTrips+".txt";
+        output+="_threshold="+threshold+".txt";
         HashMap<Pair<MapPoint,MapPoint>,Pair<Integer,Integer>> comparision=new HashMap<>();// for comparison
 
         reader.readLine();  // skip the header
@@ -55,6 +62,7 @@ public class NewYorkExperiment_2 {
             double startLon = Double.parseDouble(elements[5]);
             double endLat = Double.parseDouble(elements[10]);
             double endLon = Double.parseDouble(elements[9]);
+            Pair<MapPoint,MapPoint> source_destination=new Pair<>(new MapPoint(startLat, startLon),new MapPoint(endLat, endLon));
             /* Just to skip some dirty data */
             if (startLat < 20 || startLon > -20 || endLat < 20 || endLon > -20) {
                 i--;
@@ -65,6 +73,8 @@ public class NewYorkExperiment_2 {
                         new MapPoint(startLat, startLon),
                         new MapPoint(endLat, endLon));
                 ArrayList<MapPoint> path=((Calculate_biclique) postProcess).get_mainpath();
+                converage_study.put(source_destination,source_destination.mFirst.toString()+"->"+source_destination.mSecond.toString()+":");
+
                 if(path.size()==0)continue;
                 MapPoint pre=path.get(0);
                 for(int j=1;j<path.size();++j)
@@ -82,28 +92,65 @@ public class NewYorkExperiment_2 {
                     }
                     pre=cur;
                 }
-                HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> result=((Calculate_biclique) postProcess).get_result();
-                for (Pair<MapPoint,MapPoint> segement: result.keySet())
-                {
+                ResultOfBiclique r=((Calculate_biclique) postProcess).get_result();
+                HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> result=r.get_result();
+                HashMap<Pair<MapPoint,MapPoint>,Pair<HashSet<Integer>,HashSet<Integer>>> result_detailed=r.get_detailed_result();
 
-                    double a=result.get(segement).mFirst.mFirst/result.get(segement).mFirst.mSecond;
-                    double b=result.get(segement).mSecond.mFirst/result.get(segement).mSecond.mSecond;
-                    a=min(a,b);
+                for (int k=1;k<=r.get_sequence().size();++k)
+                {
+                    Pair<MapPoint,MapPoint>segement=r.get_sequence().get(k);
+                    double a=result.get(segement).mFirst.mFirst;
+                    double b=result.get(segement).mFirst.mSecond;
+                    double c=result.get(segement).mSecond.mFirst;
+                    double d=result.get(segement).mSecond.mSecond;
+                    if (version_number==1)
+                    {
+                        a=(a+c)/(b+d);
+                    }
+                    else
+                    {
+                        if(version_number==2)
+                        {
+                            a=min(a/b,c/d);
+                        }
+                        else
+                        {
+                            a=(a*c)/(b*d);
+                        }
+                    }
                     if(a>=threshold)
                     {
-                        double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
-                        double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
+                        String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"yes:";
+                        tmp+="[";
+                        Pair<HashSet<Integer>,HashSet<Integer>>  tmp2=result_detailed.get(segement);
+                        for (Integer integer: tmp2.mFirst)
+                        {
+                            tmp+=integer+";";
+                        }
+                        tmp+="]";
+                        tmp+="[";
+                        for (Integer integer: tmp2.mSecond)
+                        {
+                            tmp+=integer+";";
+                        }
+                        tmp+="]";
+                        converage_study.put(source_destination,tmp);
                         comparision.get(segement).mFirst+=1;
-                        System.out.print(String.valueOf(left_distance)+","+String.valueOf(right_distance)+'\n');
-                        String tmp=distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
-                        distances.put(segement,tmp);
+                      //  double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
+                      //  double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
+//                      tmp=distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
+ //                     distances.put(segement,tmp);
+                    }
+                    else
+                    {
+                        String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"no";
+                        converage_study.put(source_destination,tmp);
                     }
                 }
-
             } catch (MainPathEmptyException e) {
                 Logger.printf(Logger.ERROR, "No such path: (%f, %f), (%f, %f)\n",
                         startLat, startLon, endLat, endLon);
-                i--;
+               // i--;
             }
         }
 
@@ -113,10 +160,18 @@ public class NewYorkExperiment_2 {
         moutput.write("Segment Count_1 Count_2 Distances\n".getBytes());
         for(Pair<MapPoint,MapPoint> segment:comparision.keySet())
         {
-            String a=segment.mFirst.toString()+"->"+segment.mSecond.toString()+": "+comparision.get(segment).mFirst.toString()+" "+comparision.get(segment).mSecond.toString()+distances.get(segment)+"\n";
+            String a=segment.mFirst.toString()+"->"+segment.mSecond.toString()+": "+comparision.get(segment).mFirst.toString()+" "+comparision.get(segment).mSecond.toString()+"\n";
             moutput.write(a.getBytes());
         }
-
+        moutput.close();
+        File outputfile2=new File(output);
+        moutput=new FileOutputStream("Source_Destination_Coverage_Study_version="+version_number+"_threshold="+threshold+".txt");
+        for(Pair<MapPoint,MapPoint> segment:converage_study.keySet())
+        {
+            String a=converage_study.get(segment)+'\n';
+            moutput.write(a.getBytes());
+        }
+        moutput.close();
     }
 
     private static void addFlags(FlagParser flagParser) {
@@ -129,7 +184,9 @@ public class NewYorkExperiment_2 {
         flagParser.addFlag("--ghPath", "The location of the graph hopper data directory", "");
         flagParser.addFlag("--tripCSV", "The location of the trip data", "");
         flagParser.addFlag("--numTrips", "Run experiment on how many trips", "100");
-        flagParser.addFlag("--output", "Where to store the counting information", "./data/count.txt");
+        flagParser.addFlag("--output", "Where to store the counting information", "./data/count");
+        flagParser.addFlag("--threshold", "Client should choose a threshold", "0.9");
+        flagParser.addFlag("--version", "Client should choose the version for computing threshold", "3");
     }
 
 }
