@@ -1,5 +1,6 @@
 package util;
 
+import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.shapes.GHPoint;
 import org.mapsforge.core.model.LatLong;
 
@@ -61,6 +62,12 @@ public class MapPoint extends Pair<Double, Double> {
       result.add(new GHPointAdapter(mapPoint));
     }
     return result;
+  }
+
+  public static MapPoint convertFromGHPointIndex(int point, NodeAccess nodeAccess) {
+    double lat = nodeAccess.getLat(point);
+    double lon = nodeAccess.getLon(point);
+    return new MapPoint(lat, lon);
   }
 
   public static class GHPointAdapter extends GHPoint {

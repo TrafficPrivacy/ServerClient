@@ -1,13 +1,12 @@
 package client;
 
+import com.graphhopper.storage.NodeAccess;
 import java.awt.Dimension;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
 import javax.swing.JFrame;
@@ -33,6 +32,7 @@ import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.debug.TileCoordinatesLayer;
 import org.mapsforge.map.layer.debug.TileGridLayer;
 import org.mapsforge.map.layer.overlay.Circle;
+import org.mapsforge.map.layer.overlay.Polygon;
 import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.IMapViewPosition;
@@ -40,35 +40,28 @@ import org.mapsforge.map.model.Model;
 import org.mapsforge.map.model.common.PreferencesFacade;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
-import org.mapsforge.map.util.MapViewProjection;
 import util.Convex;
 import util.Logger;
-import util.MainPathEmptyException;
 import util.MapPoint;
+import util.MapPoint.LatLongAdapter;
 import util.Pair;
-import util.Triple;
 
-public final class MapUI implements PostProcess {
+public final class Visualizer {
 
   private final GraphicFactory GRAPHIC_FACTORY = AwtGraphicFactory.INSTANCE;
   private final boolean SHOW_DEBUG_LAYERS = false;
 
   private final MapView MAP_VIEW;
   private final JFrame FRAME;
-  private final float THRESHOLD = 0.8f;
-  // shitty implementation
-  private ArrayList<LatLong> mStarts;
-  private ArrayList<LatLong> mEnds;
-  private List<ConvexLayer> mSources;
-  private List<ConvexLayer> mTargets;
-  private List<LineLayer> mLayers;
-  private List<ArrayList<LatLong>> mPaths;
-  private HashSet<Pair> mMainPathSet;
-  private List<LatLong> mMainPath;
-  private List<Triple<LineLayer, ConvexLayer, ConvexLayer>> mLineSourcesTargets;
+  private final float STROKEWIDTH = 2.0f;
+  private final float BORDERSTROKEWIDTH = 1.0f;
+  private final java.awt.Color DOTCOLOR = new java.awt.Color(160, 178, 250, 255);
+  private final java.awt.Color FILLCOLOR = new java.awt.Color(255, 0, 4, 63);
+  private final java.awt.Color BORDERCOLOR = new java.awt.Color(255, 0, 4, 164);
+  private NodeAccess mNodeAccess;
 
-  public MapUI(String mapFileLocation, String windowTitle) {
-    // Multithreading rendering
+  public Visualizer(String mapFileLocation, String windowTitle, NodeAccess nodeAccess) {
+    // Multi threading rendering
     Parameters.NUMBER_OF_THREADS = 2;
 
     List<File> mapFiles = new ArrayList<File>();
@@ -82,7 +75,6 @@ public final class MapUI implements PostProcess {
 
     FRAME = new JFrame();
 
-    MAP_VIEW.addMouseListener(new MouseEvent());
     FRAME.setTitle(windowTitle);
     FRAME.add(MAP_VIEW);
     FRAME.pack();
@@ -108,24 +100,44 @@ public final class MapUI implements PostProcess {
             .setMapPosition(new MapPosition(boundingBox.getCenterPoint(), zoomLevel));
       }
     });
-    mPaths = new ArrayList<>();
-    mMainPathSet = new HashSet<>();
-    mLayers = new ArrayList<>();
-    mStarts = new ArrayList<>();
-    mEnds = new ArrayList<>();
-    mSources = new ArrayList<>();
-    mTargets = new ArrayList<>();
-    mLineSourcesTargets = new ArrayList<>();
+
+    mNodeAccess = nodeAccess;
   }
 
-  public int createDot(LatLong coordinates, int color, float strokeWidth) {
-    ArrayList<LatLong> list = new ArrayList<>();
-    list.add(coordinates);
-    list.add(coordinates);
-    return createPolyline(list, color, strokeWidth);
+  public void drawRegions(ArrayList<Pair<int[], int[]>> regions) {
+    for (Pair<int[], int[]> pair : regions) {
+      int[] points = pair.mFirst;
+      int[] borderPoints = pair.mSecond;
+      for (int point : points) {
+        MapPoint mapPoint = MapPoint.convertFromGHPointIndex(point, mNodeAccess);
+        createDot(new LatLongAdapter(mapPoint), STROKEWIDTH);
+      }
+      ArrayList<MapPoint> borders = new ArrayList<>();
+      for (int borderPoint : borderPoints) {
+        borders.add(MapPoint.convertFromGHPointIndex(borderPoint, mNodeAccess));
+      }
+      createPolygon(MapPoint.convertToLatlong(borders), BORDERSTROKEWIDTH);
+    }
   }
 
-  public int createPolyline(List<LatLong> coordinates, int color, float strokeWidth) {
+  public void createDot(LatLong coordinates, float strokeWidth) {
+    createCircle(coordinates, DOTCOLOR.getRGB(), 3);
+  }
+
+  public void createPolygon(List<LatLong> coordinates, float strokeWidth) {
+    org.mapsforge.core.graphics.Paint paintStroke = GRAPHIC_FACTORY.createPaint();
+    org.mapsforge.core.graphics.Paint paintFill = GRAPHIC_FACTORY.createPaint();
+    paintStroke.setStyle(Style.STROKE);
+    paintStroke.setColor(BORDERCOLOR.getRGB());
+    paintStroke.setStrokeWidth(strokeWidth);
+    paintFill.setColor(FILLCOLOR.getRGB());
+    Polygon pg = new Polygon(paintFill, paintStroke, GRAPHIC_FACTORY);
+    pg.addPoints(coordinates);
+    MAP_VIEW.getLayerManager().getLayers().add(pg);
+    MAP_VIEW.getLayerManager().redrawLayers();
+  }
+
+  public void createPolyline(List<LatLong> coordinates, int color, float strokeWidth) {
     org.mapsforge.core.graphics.Paint paintStroke = GRAPHIC_FACTORY.createPaint();
     paintStroke.setStyle(Style.STROKE);
     paintStroke.setColor(color);
@@ -134,7 +146,6 @@ public final class MapUI implements PostProcess {
     pl.getLatLongs().addAll(coordinates);
     MAP_VIEW.getLayerManager().getLayers().add(pl);
     MAP_VIEW.getLayerManager().redrawLayers();
-    return pl.hashCode();
   }
 
   public int createCircle(LatLong latLong, int color, float radius) {
@@ -148,172 +159,7 @@ public final class MapUI implements PostProcess {
     return 0;
   }
 
-  @Override
-  public void setMainPath(ArrayList<MapPoint> path) throws MainPathEmptyException {
-    if (path.size() > 0) {
-      ArrayList<LatLong> list = new ArrayList<LatLong>();
-      LatLong prev = new MapPoint.LatLongAdapter(path.get(0));
-      LatLong curt;
-      list.add(prev);
-      for (int i = 1; i < path.size(); i++) {
-        curt = new MapPoint.LatLongAdapter(path.get(i));
-        list.add(curt);
-        mMainPathSet.add(new Pair<>(prev, curt));
-        prev = curt;
-      }
-      mMainPath = list;
-      mPaths.add(list);
-    } else {
-      throw new MainPathEmptyException();
-    }
-  }
-
-  @Override
-  public void addPath(ArrayList<MapPoint> path) throws MainPathEmptyException {
-    if (mPaths.size() == 0) {
-      throw new MainPathEmptyException();
-    }
-    if (path.size() > 0) {
-      ArrayList<LatLong> list = new ArrayList<>();
-      for (int i = 0; i < path.size(); i++) {
-        list.add(new LatLong(path.get(i).mFirst, path.get(i).mSecond));
-      }
-      mPaths.add(list);
-      // shitty implementation
-      mStarts.add(new LatLong(path.get(0).mFirst, path.get(0).mSecond));
-      mEnds.add(new LatLong(path.get(path.size() - 1).mFirst, path.get(path.size() - 1).mSecond));
-    }
-  }
-
-  @Override
-  public void done() {
-
-    Logger.printf(Logger.DEBUG, "Total number of path: " + mPaths.size());
-
-    if (mMainPath != null) {
-      for (LineLayer myLineLayer : mLayers) {
-        MAP_VIEW.getLayerManager().getLayers().remove(myLineLayer);
-      }
-      mLayers.clear();
-      HashSet<Pair<LatLong, LatLong>> overLapList;        // List for the start and end point of the paths
-      HashMap<Pair<LatLong, LatLong>, HashSet<Pair<LatLong, LatLong>>> otherPaths = new HashMap<>();
-      // convert path to hashset
-      for (int i = 0; i < mPaths.size(); i++) {
-        List<LatLong> path = mPaths.get(i);
-        LatLong prev = path.get(0);
-        LatLong curt;
-        HashSet<Pair<LatLong, LatLong>> set = new HashSet<>();
-        for (int j = 1; j < path.size(); j++) {
-          curt = path.get(j);
-          set.add(new Pair<>(prev, curt));
-          prev = curt;
-        }
-        otherPaths.put(new Pair<>(path.get(0), path.get(path.size() - 1)), set);
-      }
-      LatLong prev = mMainPath.get(0);
-      LatLong curt;
-      for (int i = 1; i < mMainPath.size(); i++) {
-        curt = mMainPath.get(i);
-        overLapList = new HashSet<>();
-        Pair<LatLong, LatLong> curPair = new Pair<>(prev, curt);
-        ArrayList<LatLong> list = new ArrayList<>();
-
-        for (Pair<LatLong, LatLong> key : otherPaths.keySet()) {
-          if (otherPaths.get(key).contains(curPair)) {
-            overLapList.add(key);
-          }
-        }
-        list.add(prev);
-        list.add(curt);
-        while (overLapList.size() > 0) {
-          i++;
-          if (i >= mMainPath.size()) {
-            break;
-          }
-          prev = curt;
-          curt = mMainPath.get(i);
-          curPair = new Pair<>(prev, curt);
-          int counter = 0;
-          for (Pair key : otherPaths.keySet()) {
-            if (otherPaths.get(key).contains(curPair)) {
-              if (overLapList.contains(key)) {
-                counter++;
-              } else {
-                counter = -1;
-                break;
-              }
-            }
-          }
-          if (counter < 0 || counter != overLapList.size()) {
-            i--;
-            break;
-          }
-          list.add(curt);
-        }
-
-        HashMap<LatLong, Integer> dots = new HashMap<>();
-
-        ArrayList<LatLong> sourceDots = new ArrayList<>();
-        ArrayList<LatLong> targetDots = new ArrayList<>();
-
-        for (Pair<LatLong, LatLong> p : overLapList) {
-          dots.put(p.mFirst, new java.awt.Color(6, 0, 133, 255).getRGB());
-          dots.put(p.mSecond, new java.awt.Color(6, 0, 133, 255).getRGB());
-          sourceDots.add(p.mFirst);
-          targetDots.add(p.mSecond);
-        }
-
-        if (overLapList.size() > 1) {
-          LineLayer lineLayer = new LineLayer(GRAPHIC_FACTORY, dots,
-              getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())),
-              6.0f, list);
-
-          MAP_VIEW.getLayerManager().getLayers().add(lineLayer);
-          mLayers.add(lineLayer);
-          ConvexLayer newSource = new ConvexLayer(GRAPHIC_FACTORY,
-              getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())),
-              6.0f, sourceDots);
-
-          mSources.add(newSource);
-          ConvexLayer newTarget = new ConvexLayer(GRAPHIC_FACTORY,
-              getHeatMapColor(overLapList.size() / (0.0f + mPaths.size())),
-              6.0f, targetDots);
-
-          mTargets.add(newTarget);
-
-          mLineSourcesTargets.add(new Triple<>(lineLayer, newSource, newTarget));
-          MAP_VIEW.getLayerManager().getLayers().add(newSource);
-          MAP_VIEW.getLayerManager().getLayers().add(newTarget);
-          newSource.setVisible(false);
-          newTarget.setVisible(false);
-          MAP_VIEW.getLayerManager().redrawLayers();
-        }
-        prev = curt;
-      }
-    }
-    FRAME.setVisible(true);
-  }
-
   /////// Helper Functions ///////
-
-  private int getHeatMapColor(float value) {
-    int color[][] = {{6, 0, 133, 255}, {255, 255, 0}};
-    int color2[][] = {{255, 255, 0}, {255, 14, 29, 255}};
-    int r, g, b;
-    if (value < THRESHOLD) {
-      value *= 10.0f / (THRESHOLD * 10);
-      r = (int) ((color[1][0] - color[0][0]) * value + color[0][0]);
-      g = (int) ((color[1][1] - color[0][1]) * value + color[0][1]);
-      b = (int) ((color[1][2] - color[0][2]) * value + color[0][2]);
-    } else {
-      value -= THRESHOLD;
-      value *= 10.0f / ((1 - THRESHOLD) * 10);
-      r = (int) ((color2[1][0] - color2[0][0]) * value + color2[0][0]);
-      g = (int) ((color2[1][1] - color2[0][1]) * value + color2[0][1]);
-      b = (int) ((color2[1][2] - color2[0][2]) * value + color2[0][2]);
-    }
-    return new java.awt.Color(r, g, b, 255).getRGB();
-  }
 
   private BoundingBox addLayers(MapView mapView, List<File> mapFiles) {
     Layers layers = mapView.getLayerManager().getLayers();
@@ -370,60 +216,6 @@ public final class MapUI implements PostProcess {
     return tileRendererLayer;
   }
 
-  private class MouseEvent implements MouseListener {
-
-    private MapViewProjection mReference;
-
-    MouseEvent() {
-      mReference = new MapViewProjection(MAP_VIEW);
-    }
-
-    public void mousePressed(java.awt.event.MouseEvent e) {
-
-    }
-
-    public void mouseReleased(java.awt.event.MouseEvent e) {
-
-    }
-
-    public void mouseEntered(java.awt.event.MouseEvent e) {
-
-    }
-
-    public void mouseExited(java.awt.event.MouseEvent e) {
-
-    }
-
-    public void mouseClicked(java.awt.event.MouseEvent e) {
-      LatLong location = mReference.fromPixels(e.getX(), e.getY());
-      double min_dist = 100.0;
-      Triple<LineLayer, ConvexLayer, ConvexLayer> bestLayer = null;
-      for (Triple<LineLayer, ConvexLayer, ConvexLayer> triple : mLineSourcesTargets) {
-        LineLayer lineLayer = triple.mFirst;
-        double dist = lineLayer.contains(location);
-        if (dist > 0 && dist < min_dist) {
-          min_dist = dist;
-          bestLayer = triple;
-        }
-      }
-      for (Triple<LineLayer, ConvexLayer, ConvexLayer> triple : mLineSourcesTargets) {
-        triple.mFirst.setVisible(false);
-        triple.mSecond.setVisible(false);
-        triple.mThird.setVisible(false);
-      }
-      if (bestLayer == null) {
-        for (Triple<LineLayer, ConvexLayer, ConvexLayer> triple : mLineSourcesTargets) {
-          triple.mFirst.setVisible(true);
-        }
-      } else {
-        bestLayer.mFirst.setVisible(true);
-        bestLayer.mSecond.setVisible(true);
-        bestLayer.mThird.setVisible(true);
-      }
-      MAP_VIEW.getLayerManager().redrawLayers();
-    }
-  }
-
   private class ConvexLayer extends Polyline {
 
     public ConvexLayer(GraphicFactory graphicFactory, int pathColor,
@@ -469,7 +261,7 @@ public final class MapUI implements PostProcess {
         org.mapsforge.core.graphics.Canvas canvas, org.mapsforge.core.model.Point topLeftPoint) {
       super.draw(boundingBox, zoomLevel, canvas, topLeftPoint);
       long mapSize = MercatorProjection.getMapSize(zoomLevel, displayModel.getTileSize());
-      /** Draw the points **/
+      // Draw the points
       for (LatLong latLong : mDots.keySet()) {
         int pixelX = (int) (MercatorProjection.longitudeToPixelX(latLong.longitude, mapSize)
             - topLeftPoint.x);
