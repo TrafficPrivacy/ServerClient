@@ -2,7 +2,6 @@ package client;
 
 import client.ProcessedData.PathPart;
 import com.alee.laf.WebLookAndFeel;
-import com.graphhopper.GraphHopper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,12 +12,6 @@ import util.NoSuchFlagException;
 import util.Pair;
 
 public class WindowUIClient {
-
-  private static FlagParser mFlagParser;
-
-  private String mServerIP;
-  private int mServerPort;
-  private GraphHopper mHopper;
 
   public static void main(String args[]) {
     WebLookAndFeel.install();
@@ -52,7 +45,7 @@ class RequestHandler extends OnMapRequest {
 
   private Client mClient;
 
-  public RequestHandler(Client client) {
+  RequestHandler(Client client) {
     mClient = client;
   }
 
@@ -78,7 +71,7 @@ class OverLapPathCounter implements PostProcess {
   private ArrayList<Pair<MapPoint, MapPoint>> mDisguisePathStartEnds;
   private ProcessedData mProcessedData;
 
-  public OverLapPathCounter() {
+  OverLapPathCounter() {
     mMainPathSegments = new LinkedHashMap<>();
     mDisguisePathStartEnds = new ArrayList<>();
     mProcessedData = new ProcessedData();
@@ -123,9 +116,11 @@ class OverLapPathCounter implements PostProcess {
         pathPart.mPathPoints.add(entries.get(j).getKey().mSecond);
       }
       for (int idx : entries.get(i).getValue()) {
-        pathPart.mSourcePoints.add(mDisguisePathStartEnds.get(i).mFirst);
-        pathPart.mDestPoints.add(mDisguisePathStartEnds.get(i).mSecond);
+        pathPart.mSourcePoints.add(mDisguisePathStartEnds.get(idx).mFirst);
+        pathPart.mDestPoints.add(mDisguisePathStartEnds.get(idx).mSecond);
       }
+      pathPart.mMetrics =
+          entries.get(i).getValue().size() / ((double) mDisguisePathStartEnds.size());
       i = j;
       mProcessedData.mPathParts.add(pathPart);
     }
@@ -136,14 +131,14 @@ class OverLapPathCounter implements PostProcess {
       return false;
     }
     for (int i = 0; i < first.size(); ++i) {
-      if (first.get(i) != second.get(i)) {
+      if (first.get(i).equals(second.get(i))) {
         return false;
       }
     }
     return true;
   }
 
-  public ProcessedData getPathParts() {
+  ProcessedData getPathParts() {
     return mProcessedData;
   }
 }

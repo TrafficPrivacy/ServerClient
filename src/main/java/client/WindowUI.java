@@ -1,5 +1,6 @@
 package client;
 
+import com.alee.laf.WebLookAndFeel;
 import com.sun.istack.internal.NotNull;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -54,7 +55,7 @@ abstract class OnMapRequest {
    */
   abstract public ProcessedData fulfillRequest(MapPoint source, MapPoint destination);
 
-  public ProcessedData runRequestThread(MapPoint source, MapPoint destination) {
+  ProcessedData runRequestThread(MapPoint source, MapPoint destination) {
     mProcessedData = null;
     RequestThread thread = new RequestThread(source, destination);
     thread.start();
@@ -222,8 +223,7 @@ public class WindowUI extends JFrame {
     TileRendererLayer tileRendererLayer = createTileRendererLayer(createTileCache(64), mapDataStore,
         MAP_VIEW.getModel().mapViewPosition);
     MAP_VIEW.getLayerManager().getLayers().add(tileRendererLayer);
-    BoundingBox boundingBox = mapDataStore.boundingBox();
-    return boundingBox;
+    return mapDataStore.boundingBox();
   }
 
   private TileCache createTileCache(int capacity) {
