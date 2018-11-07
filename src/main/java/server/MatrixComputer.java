@@ -1,6 +1,7 @@
 package server;
 
 import algorithm.*;
+import client.Visualizer;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.DefaultEdgeFilter;
@@ -9,11 +10,13 @@ import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.DistanceCalcEarth;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import util.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 import static java.lang.Integer.min;
 
@@ -28,7 +31,9 @@ public class MatrixComputer {
   private HashMap<Integer,Boolean> border;
   private HashMap<Integer,Boolean> visited;
   private HashMap<Integer,Integer> group;
+  private HashMap<Integer,Integer>group_size;
   private HashMap<Integer,ArrayList<Pair<Integer, Double>>> edges;
+  private Visualizer visualizer;
   // the above is for partitioning the graph
 
   public MatrixComputer(String osmPath, String osmFolder, String strategy) {
@@ -44,6 +49,8 @@ public class MatrixComputer {
     mStrategy = strategy;
     mSurroundings = new Surroundings(mHopper.getGraphHopperStorage(),
         mHopper.getLocationIndex(), mEm.getEncoder("car"));
+    visualizer = new Visualizer("data/new-york.map", "Test",
+            mHopper.getGraphHopperStorage().getNodeAccess());
   }
 
   public Surroundings getmSurroundings() {
@@ -58,31 +65,66 @@ public class MatrixComputer {
    * @return A pair of integer arrays. The first in the pair represents all the points in the
    * circle. The second represents the border points.
    */
-  private ArrayList<Integer> FindNeighbors(Integer cur,double distance)
-  {
-    visited.put(cur,true);
-    ArrayList<Integer> result=new ArrayList<>();
-    LinkedList<Integer> q;q=new LinkedList<>();
+  private ArrayList<Integer> FindNeighbors(Integer cur,double distance) {
+    Integer min_size = new Integer(10);
+    Integer max_size = new Integer(30);
+    visited.put(cur, true);
+    ArrayList<Integer> result = new ArrayList<>();
+    LinkedList<Integer> q;
+    q = new LinkedList<>();
     q.add(cur);
-    while(!q.isEmpty() && result.size()<=50) {
-      Integer current_point=q.getFirst();q.pop();
+    while (!q.isEmpty() && result.size() <= max_size) {
+      Integer current_point = q.getFirst();
+      q.pop();
       result.add(current_point);
-      ArrayList<Pair<Integer,Double>> edge=edges.get(current_point);
-      boolean flag=false;
+      ArrayList<Pair<Integer, Double>> edge = edges.get(current_point);
+      boolean flag = false;
       for (int i = 0; i < edge.size(); ++i) {
         Pair<Integer, Double> tmp = edge.get(i);
-       if (!visited.get(tmp.mFirst) && tmp.mSecond <= distance && result.size()<=50) {
-       // if (!visited.get(tmp.mFirst)  && result.size()<=50) {
+        if (!visited.get(tmp.mFirst) && tmp.mSecond <= distance && result.size() <= max_size) {
+          // if (!visited.get(tmp.mFirst)  && result.size()<=50) {
           flag = true;
           visited.put(tmp.mFirst, true);
           q.add(tmp.mFirst);
-        //  ArrayList<Integer> sub_result = FindNeighbors(tmp.mFirst, distance);
-        //  result.addAll(sub_result);
-       }
+          //  ArrayList<Integer> sub_result = FindNeighbors(tmp.mFirst, distance);
+          //  result.addAll(sub_result);
+        }
       }
-      if(!flag)border.put(current_point,true);
+      if (!flag) border.put(current_point, true);
     }
 
+    Integer presize=-1;
+    //System.out.print(result.size()+" ");
+    while (result.size() < min_size)
+    {
+        presize=result.size();
+        for(int j=0;j<presize;++j) {
+          if (border.get(result.get(j))) {
+            ArrayList<Pair<Integer, Double>> edge = edges.get(result.get(j));
+            for (int k = 0; k < edge.size(); ++k) {
+              if (group.containsKey(edge.get(k).mFirst)) {
+                Integer index = group.get(edge.get(k).mFirst);
+                if (group_size.get(index) > min_size) ;
+                else continue;
+                result.add(edge.get(k).mFirst);
+                border.put(result.get(j), false);
+                border.put(edge.get(k).mFirst, true);
+                group.remove(edge.get(k).mFirst);
+                group_size.put(index, group_size.get(index) - 1);
+              } else {
+                if (!visited.get(edge.get(k).mFirst)) {
+                  result.add(edge.get(k).mFirst);
+                  border.put(result.get(j), false);
+                  border.put(edge.get(k).mFirst, true);
+                  visited.put(edge.get(k).mFirst, true);
+                }
+              }
+            }
+          }
+        }
+        if(presize==result.size())break;
+    }
+   // System.out.print(result.size()+"\n");
     return result;
   }
   public ArrayList<Pair<int[],int[]>> extension_Kernighan_Lin(ArrayList<Pair<int[],int[]>> candidate)
@@ -273,7 +315,6 @@ public class MatrixComputer {
     return candidate;
   }
   public ArrayList<Pair<int[],int[]>>getAllRegions(MapPoint center, InRegionTest inRegionTest) throws IOException {
-    Integer min_size=new Integer(20);
     ArrayList<Pair<int[],int[]>>result=new ArrayList();
     Pair<int[],int[]>points = null;
     try {
@@ -294,9 +335,9 @@ public class MatrixComputer {
     System.out.print("Total Number of Points in this graph is: "+allpoints.length+"\n");
     edges=new HashMap<>();
 
-    FileOutputStream moutput;
-    File outputfile = new File("distance_distribution.txt");
-    moutput=new FileOutputStream(outputfile);
+   // FileOutputStream moutput;
+  //  File outputfile = new File("distance_distribution.txt");
+  //  moutput=new FileOutputStream(outputfile);
     for(int i=0;i<allpoints.length;++i)
     {
       int NodeId=allpoints[i];
@@ -307,45 +348,143 @@ public class MatrixComputer {
         int NextId=iter.getAdjNode();
         if(!allpoints_set.contains(NextId))continue;
         double distance=iter.getDistance();
-        String dist=Double.toString(distance);
-        dist+="\n";
-        moutput.write(dist.getBytes());
+    //    String dist=Double.toString(distance);
+    //    dist+="\n";
+    //    moutput.write(dist.getBytes());
         edge.add(new Pair<>(NextId,distance));
       }
       edges.put(NodeId,edge);
     }
-    double distance=2000.0;
+    double distance=1000000.0;
     group=new HashMap<>();
+    group_size=new HashMap<>();
+    Integer group_num=new Integer(0);
+    ArrayList<ArrayList<Integer>>all_result=new ArrayList<>();
     for(int i=0;i<allpoints.length;++i)
     {
       if(!visited.get(allpoints[i]))
       {
+        group_num+=1;
         ArrayList<Integer> sub_result=FindNeighbors(allpoints[i],distance);
-        ArrayList<Integer> boarder_result=new ArrayList<>();
         for(int j=0;j<sub_result.size();++j)
         {
-          int id=sub_result.get(j);
-          if(border.get(id))
+          group.put(sub_result.get(j),group_num);
+        }
+        group_size.put(group_num,sub_result.size());
+        all_result.add(sub_result);
+      }
+    }
+    System.out.print("Partitioned\n");
+    for(int j=0;j<all_result.size();++j)
+    {
+      ArrayList<Integer>new_result=new ArrayList<>();
+      for(Integer tmp:all_result.get(j))
+      {
+        if(group.get(tmp)!=j+1)continue;
+        else
+        {
+          new_result.add(tmp);
+        }
+      }
+      all_result.set(j,new_result);
+    }
+    for(int i=0;i<all_result.size();++i)
+    {
+      int [] allArray=new int[all_result.get(i).size()];
+      ArrayList<Integer>border_result=new ArrayList<>();
+      for(int j=0;j<all_result.get(i).size();++j)
+      {
+        allArray[j]=all_result.get(i).get(j);
+        if(border.get(all_result.get(i).get(j)))
+        {
+          border_result.add(all_result.get(i).get(j));
+        }
+      }
+      int []borderArray=new int[border_result.size()];
+      for(int j=0;j<border_result.size();++j)
+      {
+        borderArray[j]=border_result.get(j);
+      }
+      result.add(new Pair<>(allArray,borderArray));
+    }
+
+        /*
+    DistanceCalcEarth distanceCalcEarth = new DistanceCalcEarth();
+    NodeAccess nodeAccess = mHopper.getGraphHopperStorage().getNodeAccess();
+    ArrayList<Integer>mapping=new ArrayList<>();
+    for(int i=0;i<result.size();++i)
+    {
+      if(result.get(i).mFirst.length<min_size)
+      {
+          int index=-1;
+          int compare_distance=-1;
+          double start_lat=nodeAccess.getLat(result.get(i).mFirst[0]);
+          double start_lon=nodeAccess.getLon(result.get(i).mFirst[0]);
+          for(int j=0;j<result.size();++j)
           {
-            boarder_result.add(id);
+              if(result.get(j).mFirst.length>=min_size && result.get(j).mFirst.length<=100)
+              {
+                 double end_lat=nodeAccess.getLat(result.get(j).mFirst[0]);
+                 double end_lon=nodeAccess.getLon(result.get(j).mFirst[0]);
+                 int tmp= (int) distanceCalcEarth.calcDist(start_lat,start_lon,end_lat,end_lon);
+                 if(index==-1 || tmp<compare_distance)
+                 {
+                   index=j;
+                   compare_distance=tmp;
+                 }
+              }
           }
-        }
-        int [] allArray=new int[sub_result.size()];
-        int [] borderArray=new int[boarder_result.size()];
-        for(int j=0;j<sub_result.size();++j)
-        {
-          allArray[j]=sub_result.get(j);
-        }
-        for(int j=0;j<boarder_result.size();++j)
-        {
-          borderArray[j]=boarder_result.get(j);
-        }
-        result.add(new Pair<>(allArray,borderArray));
+          mapping.add(index);
+      }
+      else
+      {
+          mapping.add(-1);
+      }
+    }
+    ArrayList<Pair<int[],int[]>>newresult=new ArrayList();
+    for(int i=0;i<result.size();++i)
+    {
+      if(mapping.get(i)==-1)continue;
+      else
+      {
+        int index=mapping.get(i);
+        int [] allpoints=new int[result.get(i).mFirst.length+result.get(index).mFirst.length];
+        for(int j=0;j<result.get(i).mFirst.length;++j)allpoints[j]=result.get(i).mFirst[j];
+        for(int j=0;j<result.get(index).mFirst.length;++j)allpoints[j+result.get(i).mFirst.length]=result.get(index).mFirst[j];
+        Pair<int[],int[]>newpair=new Pair<>(allpoints,result.get(index).mSecond);
+        result.set(index,newpair);
+      }
+    }
+    for(int i=0;i<result.size();++i)
+    {
+      if(mapping.get(i)==-1)
+      {
+        newresult.add(result.get(i));
       }
     }
 
+    newresult=extension_Kernighan_Lin(newresult);
+    */
     result=extension_Kernighan_Lin(result);
     System.out.print("The number of group is "+result.size()+"\n");
+
+/*
+    ArrayList<Pair<int[], int[]>> regions = new ArrayList<>();
+    int shown=result.size();
+    for (int i=0;i<result.size() && shown>0;++i)
+    {
+      if(result.get(i).mFirst.length>20)
+      {
+        int [] empty=new int[0];
+        Pair<int[],int[]>newregion=new Pair<>(empty,result.get(i).mSecond);
+        regions.add(newregion);
+        shown-=1;
+      }
+    }
+
+    visualizer.drawRegions(regions);
+    visualizer.show();
+*/
     return result;
   }
   public Pair<int[], int[]> getPrivacyRegion(MapPoint center, InRegionTest inRegionTest)
