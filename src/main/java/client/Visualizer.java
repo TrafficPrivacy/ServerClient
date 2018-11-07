@@ -2,6 +2,7 @@ package client;
 
 import com.graphhopper.storage.NodeAccess;
 import java.awt.Dimension;
+import java.awt.event.ContainerEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -36,6 +37,7 @@ import org.mapsforge.map.layer.overlay.Polygon;
 import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.Model;
 import org.mapsforge.map.model.common.PreferencesFacade;
 import org.mapsforge.map.reader.MapFile;
@@ -53,9 +55,9 @@ public final class Visualizer {
 
   private final MapView MAP_VIEW;
   private final JFrame FRAME;
-  private final float STROKEWIDTH = 2.0f;
+  private final float STROKEWIDTH = 1.0f;
   private final float BORDERSTROKEWIDTH = 1.0f;
-  private final java.awt.Color DOTCOLOR = new java.awt.Color(160, 178, 250, 255);
+  private final java.awt.Color DOTCOLOR = new java.awt.Color(31, 46, 250, 255);
   private final java.awt.Color FILLCOLOR = new java.awt.Color(255, 0, 4, 63);
   private final java.awt.Color BORDERCOLOR = new java.awt.Color(255, 0, 4, 164);
   private NodeAccess mNodeAccess;
@@ -104,6 +106,10 @@ public final class Visualizer {
     mNodeAccess = nodeAccess;
   }
 
+  public void show() {
+    FRAME.setVisible(true);
+  }
+
   public void drawRegions(ArrayList<Pair<int[], int[]>> regions) {
     for (Pair<int[], int[]> pair : regions) {
       int[] points = pair.mFirst;
@@ -116,12 +122,13 @@ public final class Visualizer {
       for (int borderPoint : borderPoints) {
         borders.add(MapPoint.convertFromGHPointIndex(borderPoint, mNodeAccess));
       }
-      createPolygon(MapPoint.convertToLatlong(borders), BORDERSTROKEWIDTH);
+      List<LatLong> convex = MapPoint.convertToLatlong(Convex.getConvex(borders));
+      createPolygon(convex, BORDERSTROKEWIDTH);
     }
   }
 
   public void createDot(LatLong coordinates, float strokeWidth) {
-    createCircle(coordinates, DOTCOLOR.getRGB(), 3);
+    createCircle(coordinates, DOTCOLOR.getRGB(), 3, true);
   }
 
   public void createPolygon(List<LatLong> coordinates, float strokeWidth) {
@@ -148,12 +155,14 @@ public final class Visualizer {
     MAP_VIEW.getLayerManager().redrawLayers();
   }
 
-  public int createCircle(LatLong latLong, int color, float radius) {
+  public int createCircle(LatLong latLong, int color, float radius, boolean fill) {
     org.mapsforge.core.graphics.Paint paintStroke = GRAPHIC_FACTORY.createPaint();
     paintStroke.setStyle(Style.STROKE);
     paintStroke.setColor(color);
-    paintStroke.setStrokeWidth(3.0f);
-    Circle circle = new Circle(latLong, radius, null, paintStroke);
+    paintStroke.setStrokeWidth(STROKEWIDTH);
+    org.mapsforge.core.graphics.Paint paintFill = GRAPHIC_FACTORY.createPaint();
+    paintFill.setColor(color);
+    Circle circle = new Circle(latLong, radius, fill ? paintFill : null, paintStroke);
     MAP_VIEW.getLayerManager().getLayers().add(circle);
     MAP_VIEW.getLayerManager().redrawLayers();
     return 0;
