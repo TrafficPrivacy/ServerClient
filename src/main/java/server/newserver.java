@@ -2,10 +2,7 @@ package server;
 
 import util.*;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -23,18 +20,18 @@ public class newserver {
     private ArrayList<Pair<int[],int[]>> allRegion;
     private ArrayList<HashSet<Integer>> allRegionSet;
     private MatrixComputer mMatrixComputer;
+    private FileOutputStream moutput_parition;
 
     private final double RADIUS = 1000.0;
-    private final double LATRANGE = 5.0;
-    private final double LONRANGE = 7.0;
+    private final double LATRANGE = 2.0;
+    private final double LONRANGE = 2.0;
 
     public newserver(int port, String osmPath, String osmFolder, String strategy) throws IOException {
         mServer = new ServerSocket(port);
         mMatrixComputer = new MatrixComputer(osmPath, osmFolder, strategy);
     }
-
     public void run() throws IOException {
-        MapPoint cankao=new MapPoint(40.706649, -73.831952);
+        MapPoint cankao=new MapPoint(40.734955, -73.921738);
         RegionCheck regioncheck = new RegionCheck(LATRANGE, LONRANGE, cankao);
         allRegion = mMatrixComputer.getAllRegions(cankao, regioncheck);
         allRegionSet=new ArrayList<>();
@@ -47,6 +44,9 @@ public class newserver {
                 allRegionSet.get(i).add(allpoints[j]);
             }
         }
+        //output partition
+        String output_partition="Partition_Size_Distribution.txt";
+        moutput_parition=new FileOutputStream(output_partition);
         while (true) {
             try {
                 Socket sock = mServer.accept();
@@ -79,7 +79,7 @@ public class newserver {
         oOut.close();
         out.close();
     }
-    private Reply calculate(MapPoint src, MapPoint dst) {
+    private Reply calculate(MapPoint src, MapPoint dst) throws IOException {
         int i=mMatrixComputer.getspecific_region(src,allRegionSet);
         int j=mMatrixComputer.getspecific_region(dst,allRegionSet);
         if (i==-1 || j==-1) {
@@ -89,6 +89,9 @@ public class newserver {
       //  System.out.print(i+" "+j+"\n");
         Pair<int[],int[]>srcRegion = allRegion.get(i);
         Pair<int[],int[]>dstRegion = allRegion.get(j);
+        String tmp=srcRegion.mFirst.length+" "+dstRegion.mFirst.length+"\n";
+        moutput_parition.write(tmp.getBytes());
+        moutput_parition.flush();
      //   System.out.print(srcRegion.mFirst.length+" "+srcRegion.mSecond.length+"\n");
      //   System.out.print(dstRegion.mFirst.length+" "+dstRegion.mSecond.length+"\n");
         int endCenter = mMatrixComputer.getmSurroundings().lookupNearest(dst.getLat(), dst.getLon());
