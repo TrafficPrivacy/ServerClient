@@ -15,7 +15,8 @@ public class ServerRunner {
     String ghPath = mFlagParser.getArg("--ghPath");
 
     /* TODO: use command line argument to pass the parameter */
-    Server server = new Server(port, osmPath, ghPath, S2SStrategy.ASTAR);
+    //Server server = new Server(port, osmPath, ghPath, S2SStrategy.ASTAR);
+    newserver server = new newserver(port, osmPath, ghPath, S2SStrategy.ASTAR);
     server.run();
   }
 
