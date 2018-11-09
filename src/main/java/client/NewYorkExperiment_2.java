@@ -13,7 +13,14 @@ import static java.lang.Double.doubleToLongBits;
 import static java.lang.Double.min;
 
 public class NewYorkExperiment_2 {
-
+    private static boolean check_lat(double latitude)
+    {
+        return latitude>=40 && latitude<=42;
+    }
+    private static boolean check_lon(double longitude)
+    {
+        return longitude>=-75 && longitude<=-72;
+    }
     public static void main(String args[]) throws
             IOException,
             NoSuchFlagException,
@@ -64,7 +71,8 @@ public class NewYorkExperiment_2 {
             double endLon = Double.parseDouble(elements[9]);
             Pair<MapPoint,MapPoint> source_destination=new Pair<>(new MapPoint(startLat, startLon),new MapPoint(endLat, endLon));
             /* Just to skip some dirty data */
-            if (startLat < 20 || startLon > -20 || endLat < 20 || endLon > -20) {
+            if(!check_lat(startLat) || !check_lat(endLat) || !check_lon(startLon) || !check_lon(endLon))
+            {
                 i--;
                 continue;
             }
