@@ -47,6 +47,13 @@ public class newserver {
         //output partition
         String output_partition="Partition_Size_Distribution.txt";
         moutput_parition=new FileOutputStream(output_partition);
+        for(int i=0;i<allRegion.size();++i)
+        {
+            String tmp=allRegion.get(i).mFirst.length+" "+allRegion.get(i).mSecond.length+"\n";
+            moutput_parition.write(tmp.getBytes());
+        }
+        moutput_parition.flush();
+        moutput_parition.close();
         while (true) {
             try {
                 Socket sock = mServer.accept();
@@ -89,9 +96,6 @@ public class newserver {
       //  System.out.print(i+" "+j+"\n");
         Pair<int[],int[]>srcRegion = allRegion.get(i);
         Pair<int[],int[]>dstRegion = allRegion.get(j);
-        String tmp=srcRegion.mFirst.length+" "+dstRegion.mFirst.length+"\n";
-        moutput_parition.write(tmp.getBytes());
-        moutput_parition.flush();
      //   System.out.print(srcRegion.mFirst.length+" "+srcRegion.mSecond.length+"\n");
      //   System.out.print(dstRegion.mFirst.length+" "+dstRegion.mSecond.length+"\n");
         int endCenter = mMatrixComputer.getmSurroundings().lookupNearest(dst.getLat(), dst.getLon());
