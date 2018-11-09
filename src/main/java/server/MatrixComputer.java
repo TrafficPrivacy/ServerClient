@@ -41,7 +41,7 @@ public class MatrixComputer {
   public MatrixComputer(String osmPath, String osmFolder, String strategy) {
     /*TODO: change this hard coded encoding*/
     min_size = new Integer(10);
-    max_size = new Integer(40);
+    max_size = new Integer(50);
     mEm = new EncodingManager("car");
     mHopper = new GraphHopperOSM()
         .setOSMFile(osmPath)
@@ -95,6 +95,7 @@ public class MatrixComputer {
       if (!flag) border.put(current_point, true);
     }
 
+    /*
     Integer presize=-1;
     //System.out.print(result.size()+" ");
     while (result.size() < min_size)
@@ -126,6 +127,7 @@ public class MatrixComputer {
         }
         if(presize==result.size())break;
     }
+    */
    // System.out.print(result.size()+"\n");
     return result;
   }
@@ -492,8 +494,6 @@ public class MatrixComputer {
         int index=-1;
         for(int j=0;j<result.size();++j)
           {
-            if(size[j]<=50)
-            {
               double end_lat=nodeAccess.getLat(result.get(j).mFirst[0]);
               double end_lon=nodeAccess.getLon(result.get(j).mFirst[0]);
               double compare=distanceCalcEarth.calcDist(start_lat,start_lon,end_lat,end_lon);
@@ -502,7 +502,6 @@ public class MatrixComputer {
                 index=j;
                 tmp=compare;
               }
-            }
           }
          existed[i]=index;
          size[index]+=size[i];
@@ -581,7 +580,6 @@ public class MatrixComputer {
       }
     }
 
-    /*
     for(int i=0;i<newresult.size();++i)
     {
       int [] allpoints = newresult.get(i).mFirst;
@@ -612,7 +610,6 @@ public class MatrixComputer {
     visualizer.drawRegions(regions);
     visualizer.show();
 
-*/
     newresult=extension_Kernighan_Lin(newresult);
     System.out.print("Finish KL algorithm\n");
     /*
