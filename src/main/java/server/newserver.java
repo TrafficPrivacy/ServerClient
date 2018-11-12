@@ -21,7 +21,6 @@ public class newserver {
     private ArrayList<HashSet<Integer>> allRegionSet;
     private MatrixComputer mMatrixComputer;
     private FileOutputStream moutput_parition;
-
     private final double RADIUS = 1000.0;
     private final double LATRANGE = 2.0;
     private final double LONRANGE = 2.0;
@@ -31,7 +30,7 @@ public class newserver {
         mMatrixComputer = new MatrixComputer(osmPath, osmFolder, strategy);
     }
     public void run() throws IOException {
-        MapPoint cankao=new MapPoint(40.734955, -73.921738);
+        MapPoint cankao=new MapPoint(40.762273, -73.986105);
         RegionCheck regioncheck = new RegionCheck(LATRANGE, LONRANGE, cankao);
         allRegion = mMatrixComputer.getAllRegions(cankao, regioncheck);
         allRegionSet=new ArrayList<>();
