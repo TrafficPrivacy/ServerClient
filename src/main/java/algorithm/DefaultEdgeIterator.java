@@ -43,8 +43,8 @@ public class DefaultEdgeIterator extends EdgeIterator {
 
   @Override
   public double getCost() {
-    //return mWeight.calcWeight(mGhEdgeIterator, false, mPrevEdge);
-    return mGhEdgeIterator.getDistance();
+    return mWeight.calcWeight(mGhEdgeIterator, false, mPrevEdge);
+    //return mGhEdgeIterator.getDistance();
   }
 
   @Override
