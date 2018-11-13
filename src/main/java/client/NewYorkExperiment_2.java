@@ -1,5 +1,6 @@
 package client;
 
+import com.graphhopper.routing.util.EdgeFilter;
 import util.*;
 
 import javax.swing.plaf.synth.SynthEditorPaneUI;
@@ -60,6 +61,12 @@ public class NewYorkExperiment_2 {
         output+="_threshold="+threshold+".txt";
         HashMap<Pair<MapPoint,MapPoint>,Pair<Integer,Integer>> comparision=new HashMap<>();// for comparison
 
+        //for getting time
+        String output_time_comparision="time_comparision_real.txt";
+        FileOutputStream moutput_partition_time;
+        moutput_partition_time=new FileOutputStream(output_time_comparision);
+
+
         reader.readLine();  // skip the header
         int i = 0;
         for (String line = reader.readLine(); line != null && i < numTrips;
@@ -81,9 +88,15 @@ public class NewYorkExperiment_2 {
                         new MapPoint(startLat, startLon),
                         new MapPoint(endLat, endLon));
                 ArrayList<MapPoint> path=((Calculate_biclique) postProcess).get_mainpath();
-                converage_study.put(source_destination,source_destination.mFirst.toString()+"->"+source_destination.mSecond.toString()+":");
+               // converage_study.put(source_destination,source_destination.mFirst.toString()+"->"+source_destination.mSecond.toString()+":");
 
                 if(path.size()==0)continue;
+
+                //for getting real_time
+                String result_time="";
+                result_time+=elements[1]+"->"+elements[2]+"\n";
+                moutput_partition_time.write(result_time.getBytes());
+
                 MapPoint pre=path.get(0);
                 for(int j=1;j<path.size();++j)
                 {
@@ -128,6 +141,8 @@ public class NewYorkExperiment_2 {
                     }
                     if(a>=threshold)
                     {
+
+                        /*
                         String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"yes:";
                         tmp+="[";
                         Pair<HashSet<Integer>,HashSet<Integer>>  tmp2=result_detailed.get(segement);
@@ -143,6 +158,7 @@ public class NewYorkExperiment_2 {
                         }
                         tmp+="]";
                         converage_study.put(source_destination,tmp);
+                        */
                         comparision.get(segement).mFirst+=1;
                       //  double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
                       //  double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
@@ -151,8 +167,8 @@ public class NewYorkExperiment_2 {
                     }
                     else
                     {
-                        String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"no";
-                        converage_study.put(source_destination,tmp);
+                       // String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"no";
+                       // converage_study.put(source_destination,tmp);
                     }
                 }
             } catch (MainPathEmptyException e) {
@@ -172,6 +188,9 @@ public class NewYorkExperiment_2 {
             moutput.write(a.getBytes());
         }
         moutput.close();
+
+
+        /*
         File outputfile2=new File(output);
         moutput=new FileOutputStream("Source_Destination_Coverage_Study_version="+version_number+"_threshold="+threshold+".txt");
         for(Pair<MapPoint,MapPoint> segment:converage_study.keySet())
@@ -180,6 +199,7 @@ public class NewYorkExperiment_2 {
             moutput.write(a.getBytes());
         }
         moutput.close();
+        */
     }
 
     private static void addFlags(FlagParser flagParser) {
