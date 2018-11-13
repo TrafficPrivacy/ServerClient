@@ -7,6 +7,7 @@ import com.graphhopper.GraphHopper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.storage.NodeAccess;
 import util.*;
 
 import java.io.*;
@@ -20,6 +21,9 @@ public class Client {
   private PostProcess mPostProcess;
   private GraphHopper mHopper;
   private String mServerIP;
+  private String output_time_comparision="time_comparision_estimate.txt";
+  private FileOutputStream moutput_partition_time;
+  private EncodingManager mEm;
 
   public Client(
       String serverIP,
@@ -38,6 +42,8 @@ public class Client {
         .importOrLoad();
     mServerIP = serverIP;
     mPostProcess = postProcess;
+    mEm = new EncodingManager("car");
+    moutput_partition_time=new FileOutputStream(output_time_comparision);
   }
 
   public void setPostProcess(PostProcess postProcess) {
@@ -68,6 +74,7 @@ public class Client {
     /*TODO: add random shift*/
     MapPoint shiftStart = startPoint;
     MapPoint shiftEnd = endPoint;
+
 
     Socket client = new Socket(mServerIP, mServerPort);
     OutputStream socketOut = client.getOutputStream();
@@ -110,6 +117,15 @@ public class Client {
     Paths paths = strategy.compute(reply.getSrcPoints(), reply.getDstPoints());
     profiler.endAndPrint().start();
 
+    Integer from=mHopper.getLocationIndex()
+            .findClosest(shiftStart.getLat(), shiftStart.getLon(), EdgeFilter.ALL_EDGES)
+            .getClosestNode();
+    Integer to=mHopper.getLocationIndex()
+            .findClosest(shiftEnd.getLat(), shiftEnd.getLon(), EdgeFilter.ALL_EDGES)
+            .getClosestNode();
+    GetTime g=new GetTime(from,to,mEm,mHopper);
+    String result=g.GetTime()+"\n";
+    moutput_partition_time.write(result.getBytes());
     // path recovery and visualization
 
     int start = findNearest(startPoint);
