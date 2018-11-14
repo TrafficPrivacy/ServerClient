@@ -50,6 +50,7 @@ public class MatrixComputer {
   private String poi_file;
   private FileOutputStream moutput_partition_time_distribution;
   private HashSet<Integer> allpoints_set;
+  public NodeAccess nodeAccess_for_out_usage;
   // the above is for partitioning the graph
 
   public MatrixComputer(String osmPath, String osmFolder, String strategy) {
@@ -71,14 +72,7 @@ public class MatrixComputer {
         mHopper.getLocationIndex(), mEm.getEncoder("car"));
     visualizer = new Visualizer("data/new-york.map", "Test",
             mHopper.getGraphHopperStorage().getNodeAccess());
-    /*
-    poi_file="poi_type.txt";
-    try {
-      moutput_partition_two=new FileOutputStream(poi_file);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-    */
+    nodeAccess_for_out_usage=mHopper.getGraphHopperStorage().getNodeAccess();
   }
   public Integer POI_count(int []allpoints,NodeAccess nodeAccess) throws IOException {
     HashSet<Integer> all_points=new HashSet<>();
