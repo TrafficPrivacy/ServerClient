@@ -16,11 +16,11 @@ import static java.lang.Double.min;
 public class SanFranciscoExperiment_3 {
     private static boolean check_lat(double latitude)
     {
-        return latitude>=40 && latitude<=42;
+        return latitude>=35. && latitude<=39.;
     }
     private static boolean check_lon(double longitude)
     {
-        return longitude>=-75 && longitude<=-72;
+        return longitude>=-123. && longitude<=-119.;
     }
     public static void main(String args[]) throws
             IOException,
@@ -42,19 +42,15 @@ public class SanFranciscoExperiment_3 {
         int version_number=Integer.parseInt(flagParser.getArg("--version"));
         output+="_version="+version_number;
         //for client initialization
-        PostProcess postProcess = new Calculate_biclique();
+        PostProcess postProcess = new Simple_biclique();
         System.out.print("Ok");
         Client client = new Client(ip, port, osmPath, ghPath, postProcess);
         System.out.print("Ok2");
 
         //file reader for trip information
         BufferedReader reader = new BufferedReader(new FileReader(tripCSV));
-
-        //for calculating distance
-        DistanceCalculator cal=new DistanceCalculator();
         HashMap<Pair<MapPoint,MapPoint>,String> distances=new HashMap<>();
-        //for considering coverage
-        HashMap<Pair<MapPoint,MapPoint>,String> converage_study=new HashMap<>();
+
         //some settings like threshold
         double threshold=Double.parseDouble(flagParser.getArg("--threshold"));
         output+="_number="+numTrips+".txt";
@@ -101,12 +97,9 @@ public class SanFranciscoExperiment_3 {
                 String rs=endTime-startTime+"\n";
                 moutput_partition_computation_cost.write(rs.getBytes());
 
-                ArrayList<MapPoint> path=((Calculate_biclique) postProcess).get_mainpath();
-                // converage_study.put(source_destination,source_destination.mFirst.toString()+"->"+source_destination.mSecond.toString()+":");
-
+                ArrayList<MapPoint> path=((Simple_biclique) postProcess).get_mainpath();
                 if(path.size()==0)continue;
                 boolean flag=true;
-
                 //for getting real_time
                 String result_time="";
                 result_time+=elements[1]+"->"+elements[2]+"\n";
@@ -128,13 +121,9 @@ public class SanFranciscoExperiment_3 {
                     }
                     pre=cur;
                 }
-                ResultOfBiclique r=((Calculate_biclique) postProcess).get_result();
-                HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> result=r.get_result();
-                HashMap<Pair<MapPoint,MapPoint>,Pair<HashSet<Integer>,HashSet<Integer>>> result_detailed=r.get_detailed_result();
-
-                for (int k=1;k<=r.get_sequence().size();++k)
+                HashMap<Pair<MapPoint,MapPoint>,Pair<Pair<Integer,Integer>,Pair<Integer,Integer>>> result=((Simple_biclique) postProcess).get_result();
+                for (Pair<MapPoint,MapPoint> segement:result.keySet())
                 {
-                    Pair<MapPoint,MapPoint>segement=r.get_sequence().get(k);
                     double a=result.get(segement).mFirst.mFirst;
                     double b=result.get(segement).mFirst.mSecond;
                     double c=result.get(segement).mSecond.mFirst;
@@ -156,24 +145,6 @@ public class SanFranciscoExperiment_3 {
                     }
                     if(a>=threshold)
                     {
-
-                        /*
-                        String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"yes:";
-                        tmp+="[";
-                        Pair<HashSet<Integer>,HashSet<Integer>>  tmp2=result_detailed.get(segement);
-                        for (Integer integer: tmp2.mFirst)
-                        {
-                            tmp+=integer+";";
-                        }
-                        tmp+="]";
-                        tmp+="[";
-                        for (Integer integer: tmp2.mSecond)
-                        {
-                            tmp+=integer+";";
-                        }
-                        tmp+="]";
-                        converage_study.put(source_destination,tmp);
-                        */
                         if(flag)
                         {
                             double fromlat=startLat;
@@ -190,21 +161,15 @@ public class SanFranciscoExperiment_3 {
                             flag=false;
                         }
                         comparision.get(segement).mFirst+=1;
-                        //  double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
-                        //  double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
-//                      tmp=distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
-                        //                     distances.put(segement,tmp);
                     }
                     else
                     {
-                        // String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"no";
-                        // converage_study.put(source_destination,tmp);
+
                     }
                 }
             } catch (MainPathEmptyException e) {
                 Logger.printf(Logger.ERROR, "No such path: (%f, %f), (%f, %f)\n",
                         startLat, startLon, endLat, endLon);
-                // i--;
             }
         }
 
@@ -218,18 +183,6 @@ public class SanFranciscoExperiment_3 {
             moutput.write(a.getBytes());
         }
         moutput.close();
-
-
-        /*
-        File outputfile2=new File(output);
-        moutput=new FileOutputStream("Source_Destination_Coverage_Study_version="+version_number+"_threshold="+threshold+".txt");
-        for(Pair<MapPoint,MapPoint> segment:converage_study.keySet())
-        {
-            String a=converage_study.get(segment)+'\n';
-            moutput.write(a.getBytes());
-        }
-        moutput.close();
-        */
     }
 
     private static void addFlags(FlagParser flagParser) {
