@@ -13,7 +13,7 @@ import java.util.Map;
 import static java.lang.Double.doubleToLongBits;
 import static java.lang.Double.min;
 
-public class NewYork_3 {
+public class NewYork_Simple_Biclique {
     private static boolean check_lat(double latitude)
     {
         return latitude>=40 && latitude<=42;

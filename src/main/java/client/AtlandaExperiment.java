@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.lang.Double.doubleToLongBits;
 import static java.lang.Double.min;
 
-public class AtlandaExperiment_4 {
+public class AtlandaExperiment {
  //   33.748202, -84.539388
  //           33.748499, -84.290833
  //           33.648165, -84.369346
