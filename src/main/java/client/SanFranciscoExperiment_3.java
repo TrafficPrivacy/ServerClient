@@ -81,7 +81,6 @@ public class SanFranciscoExperiment_3 {
             double startLon = Double.parseDouble(elements[5]);
             double endLat = Double.parseDouble(elements[10]);
             double endLon = Double.parseDouble(elements[9]);
-            Pair<MapPoint,MapPoint> source_destination=new Pair<>(new MapPoint(startLat, startLon),new MapPoint(endLat, endLon));
             /* Just to skip some dirty data */
             if(!check_lat(startLat) || !check_lat(endLat) || !check_lon(startLon) || !check_lon(endLon))
             {
@@ -199,5 +198,4 @@ public class SanFranciscoExperiment_3 {
         flagParser.addFlag("--threshold", "Client should choose a threshold", "0.9");
         flagParser.addFlag("--version", "Client should choose the version for computing threshold", "3");
     }
-
 }
