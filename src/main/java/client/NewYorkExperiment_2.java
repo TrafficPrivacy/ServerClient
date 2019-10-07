@@ -39,7 +39,7 @@ public class NewYorkExperiment_2 {
         String tripCSV = flagParser.getArg("--tripCSV");
         int numTrips = Integer.parseInt(flagParser.getArg("--numTrips"));
         String output = flagParser.getArg("--output");
-        int version_number=Integer.parseInt(flagParser.getArg("--version"));
+        int version_number = Integer.parseInt(flagParser.getArg("--version"));
         output+="_version="+version_number;
         //for client initialization
         PostProcess postProcess = new Calculate_biclique();
@@ -66,6 +66,15 @@ public class NewYorkExperiment_2 {
         FileOutputStream moutput_partition_time;
         moutput_partition_time=new FileOutputStream(output_time_comparision);
 
+        String output_computation_cost="computation_cost.txt";
+        FileOutputStream moutput_partition_computation_cost;
+        moutput_partition_computation_cost=new FileOutputStream(output_computation_cost);
+
+        String output_firstpoint_cost="first_point_distribution.txt";
+        FileOutputStream moutput_partition_first_point;
+        moutput_partition_first_point=new FileOutputStream(output_firstpoint_cost);
+
+
 
         reader.readLine();  // skip the header
         int i = 0;
@@ -84,13 +93,18 @@ public class NewYorkExperiment_2 {
                 continue;
             }
             try {
+                final long startTime = System.currentTimeMillis();
                 client.compute(
                         new MapPoint(startLat, startLon),
                         new MapPoint(endLat, endLon));
+                final long endTime = System.currentTimeMillis();
+                String rs=endTime-startTime+"\n";
+                moutput_partition_computation_cost.write(rs.getBytes());
+
                 ArrayList<MapPoint> path=((Calculate_biclique) postProcess).get_mainpath();
-               // converage_study.put(source_destination,source_destination.mFirst.toString()+"->"+source_destination.mSecond.toString()+":");
 
                 if(path.size()==0)continue;
+                boolean flag=true;
 
                 //for getting real_time
                 String result_time="";
@@ -141,34 +155,25 @@ public class NewYorkExperiment_2 {
                     }
                     if(a>=threshold)
                     {
-
-                        /*
-                        String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"yes:";
-                        tmp+="[";
-                        Pair<HashSet<Integer>,HashSet<Integer>>  tmp2=result_detailed.get(segement);
-                        for (Integer integer: tmp2.mFirst)
+                        if(flag)
                         {
-                            tmp+=integer+";";
+                            double fromlat=startLat;
+                            double fromlon=startLon;
+                            double tolat=segement.mFirst.getLat();
+                            double tolon=segement.mFirst.getLon();
+                            Integer from=client.mHopper.getLocationIndex()
+                                    .findClosest(fromlat,fromlon, EdgeFilter.ALL_EDGES)
+                                    .getClosestNode();
+                            Integer to=client.mHopper.getLocationIndex().findClosest(tolat,tolon,EdgeFilter.ALL_EDGES).getClosestNode();
+                            GetTime g=new GetTime(from,to,client.mEm,client.mHopper);
+                            String result_time_first=g.GetTime()+"\n";
+                            moutput_partition_first_point.write(result_time_first.getBytes());
+                            flag=false;
                         }
-                        tmp+="]";
-                        tmp+="[";
-                        for (Integer integer: tmp2.mSecond)
-                        {
-                            tmp+=integer+";";
-                        }
-                        tmp+="]";
-                        converage_study.put(source_destination,tmp);
-                        */
                         comparision.get(segement).mFirst+=1;
-                      //  double left_distance=cal.getdistance(startLat,startLon,segement.mFirst.mFirst,segement.mFirst.mSecond,new String("K"));
-                      //  double right_distance=cal.getdistance(segement.mSecond.mFirst,segement.mSecond.mSecond,endLat,endLon,new String("K"));
-//                      tmp=distances.get(segement).concat(" "+String.valueOf(left_distance)+","+String.valueOf(right_distance));
- //                     distances.put(segement,tmp);
                     }
                     else
                     {
-                       // String tmp=converage_study.get(source_destination)+' '+segement.mFirst.toString()+"->"+segement.mSecond.toString()+"no";
-                       // converage_study.put(source_destination,tmp);
                     }
                 }
             } catch (MainPathEmptyException e) {
