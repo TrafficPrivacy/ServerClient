@@ -1,8 +1,11 @@
 package client;
-
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
 import algorithm.CallBacks;
 import algorithm.EdgeIterator;
 import algorithm.S2SStrategy;
+import com.carrotsearch.sizeof.RamUsageEstimator;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EdgeFilter;
@@ -11,19 +14,24 @@ import com.graphhopper.storage.NodeAccess;
 import util.*;
 
 import java.io.*;
+import java.lang.instrument.UnmodifiableClassException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.jar.JarFile;
 
 public class Client {
 
   private int mServerPort;
   private PostProcess mPostProcess;
-  private GraphHopper mHopper;
+  public GraphHopper mHopper;
   private String mServerIP;
   private String output_time_comparision="time_comparision_estimate.txt";
+  private String communication_cost="communication_cost.txt";
   private FileOutputStream moutput_partition_time;
-  private EncodingManager mEm;
+  private FileOutputStream moutput_partition_cost;
+  public EncodingManager mEm;
+
 
   public Client(
       String serverIP,
@@ -44,6 +52,7 @@ public class Client {
     mPostProcess = postProcess;
     mEm = new EncodingManager("car");
     moutput_partition_time=new FileOutputStream(output_time_comparision);
+    moutput_partition_cost=new FileOutputStream(communication_cost);
   }
 
   public void setPostProcess(PostProcess postProcess) {
@@ -90,6 +99,9 @@ public class Client {
 
     ObjectInputStream oIn = new ObjectInputStream(in);
     Reply reply = (Reply) oIn.readObject();
+    long a=  RamUsageEstimator.sizeOf(reply);
+    String tmp=a+"\n";
+    moutput_partition_cost.write(tmp.getBytes());
     oIn.close();
     in.close();
     out.close();
