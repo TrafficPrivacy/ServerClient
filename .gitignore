@@ -1,6 +1,13 @@
 out/
 target/
+data_partition/
+graph/
 .idea/
 *.csv
 .idea/
 ServerClient.iml
+*.py
+*.csv
+*.txt
+*.fig
+*.eps
