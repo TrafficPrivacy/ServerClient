@@ -148,8 +148,6 @@ public class Simple_biclique implements PostProcess{
         get_endpoints();
         //next is about the algorithm
         MapPoint pre=mainpath.get(0);
-        //  System.out.print("There are "+otherpaths.size()+" paths\n");
-        // System.out.print("Mainpath length is "+mainpath.size()+"\n");
         for(int i=1;i<mainpath.size();++i)
         {
             Integer source=new Integer(num+5);
