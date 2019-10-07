@@ -28,13 +28,13 @@ public class Server {
   private final double RADIUS = 1000.0;
   private final double LATRANGE = 0.005;
   private final double LONRANGE = 0.007;
+  private int number=0;
 
   public Server(int port, String osmPath, String osmFolder, String strategy) throws IOException {
     mServer = new ServerSocket(port);
     mMatrixComputer = new MatrixComputer(osmPath, osmFolder, strategy);
     moutput_parition= new FileOutputStream("group_size_for_square_partition.txt");
     moutput_partition_two= new FileOutputStream("poi_size_for_square_partition.txt");
-
   }
 
   public void run() {
@@ -71,8 +71,6 @@ public class Server {
     out.close();
   }
 
-
-
   private Reply calculate(MapPoint src, MapPoint dst) throws IOException {
     Pair<int[], int[]> srcRegion;
     Pair<int[], int[]> dstRegion;
@@ -81,10 +79,17 @@ public class Server {
       RegionCheck dstRegionCheck = new RegionCheck(LATRANGE, LONRANGE, dst);
       srcRegion = mMatrixComputer.getPrivacyRegion(src, srcRegionCheck);
       dstRegion = mMatrixComputer.getPrivacyRegion(dst, dstRegionCheck);
+      if(srcRegionCheck.isInRegion(0,dst) || dstRegionCheck.isInRegion(0,src))
+      {
+        number+=1;
+        System.out.print("missed segment: "+number+"\n");
+        return new Reply(null, null, null, null, null, Reply.ERROR);
+      }
     } catch (PointNotFoundException e) {
       e.printStackTrace();
       return new Reply(null, null, null, null, null, Reply.ERROR);
     }
+
     int endCenter = mMatrixComputer.getmSurroundings().lookupNearest(dst.getLat(), dst.getLon());
     /*TODO: refactor this*/
 
@@ -103,8 +108,8 @@ public class Server {
     tmp=dstRegion.mFirst.length+"\n";
     moutput_parition.write(tmp.getBytes());
 
-    tmp=mMatrixComputer.POI_count(srcRegion.mFirst,mMatrixComputer.nodeAccess_for_out_usage)+"\n";
-    moutput_partition_two.write(tmp.getBytes());
+   // tmp=mMatrixComputer.POI_count(srcRegion.mFirst,mMatrixComputer.nodeAccess_for_out_usage)+"\n";
+   // moutput_partition_two.write(tmp.getBytes());
 
 
     return new Reply(srcRegion, dstRegion, srcPaths, dstPaths, interPaths, Reply.OK);

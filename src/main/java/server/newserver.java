@@ -21,16 +21,26 @@ public class newserver {
     private ArrayList<HashSet<Integer>> allRegionSet;
     private MatrixComputer mMatrixComputer;
     private FileOutputStream moutput_parition;
+    private FileOutputStream moutput_partition_three;
     private final double RADIUS = 1000.0;
-    private final double LATRANGE = 2.0;
-    private final double LONRANGE = 2.0;
+    //private final double LATRANGE = 2.0;
+    //private final double LONRANGE = 2.0;
+    private final double LATRANGE = 0.1;
+    private final double LONRANGE = 0.1;
+    private int number=0;
 
     public newserver(int port, String osmPath, String osmFolder, String strategy) throws IOException {
         mServer = new ServerSocket(port);
         mMatrixComputer = new MatrixComputer(osmPath, osmFolder, strategy);
+        moutput_partition_three= new FileOutputStream("server_calculation_cost.txt");
     }
     public void run() throws IOException {
-        MapPoint cankao=new MapPoint(40.762273, -73.986105);
+        //MapPoint cankao=new MapPoint(37.0, -121.0);//sanfan
+        //MapPoint cankao=new MapPoint(40.762273, -73.986105);//new york
+       // MapPoint cankao=new MapPoint(40.782188, -73.928488);//for drawing
+     // MapPoint cankao=new MapPoint(40.744393, -73.989837);//for rebuttal, urban
+       // MapPoint cankao=new MapPoint(40.574512, -74.187598);//for rebuttal, rural
+        MapPoint cankao=new MapPoint(33.768124, -84.419231);//for rebuttal, atlanta
         RegionCheck regioncheck = new RegionCheck(LATRANGE, LONRANGE, cankao);
         allRegion = mMatrixComputer.getAllRegions(cankao, regioncheck);
         allRegionSet=new ArrayList<>();
@@ -78,7 +88,11 @@ public class newserver {
         Logger.printf(Logger.DEBUG, "Handle one\n");
 
         Profiler profiler = new Profiler().start();
+        final long startTime = System.currentTimeMillis();
         Reply reply = calculate(new MapPoint(srcLat, srcLon), new MapPoint(dstLat, dstLon));
+        final long endTime = System.currentTimeMillis();
+        String rs=endTime-startTime+"\n";
+        moutput_partition_three.write(rs.getBytes());
         profiler.endAndPrint();
         ObjectOutputStream oOut = new ObjectOutputStream(out);
         oOut.writeObject(reply);
@@ -92,14 +106,16 @@ public class newserver {
             System.out.print("Error for getting regions: "+src+"->"+dst+"\n");
             return new Reply(null, null, null, null, null, Reply.ERROR);
         }
-      //  System.out.print(i+" "+j+"\n");
+        if(i==j)
+        {
+            number+=1;
+            System.out.print("in the same partition: "+number+"\n");
+            return new Reply(null, null, null, null, null, Reply.ERROR);
+        }
         Pair<int[],int[]>srcRegion = allRegion.get(i);
         Pair<int[],int[]>dstRegion = allRegion.get(j);
-     //   System.out.print(srcRegion.mFirst.length+" "+srcRegion.mSecond.length+"\n");
-     //   System.out.print(dstRegion.mFirst.length+" "+dstRegion.mSecond.length+"\n");
         int endCenter = mMatrixComputer.getmSurroundings().lookupNearest(dst.getLat(), dst.getLon());
         /*TODO: refactor this*/
-        //System.out.print("src->src"+"\n");
         Paths srcPaths = mMatrixComputer
                 .set2Set(srcRegion.mFirst, srcRegion.mSecond, false, endCenter, RADIUS);
        // System.out.print("des->des"+"\n");
